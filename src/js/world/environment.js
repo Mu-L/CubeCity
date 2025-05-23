@@ -10,51 +10,61 @@ export default class Environment {
     this.debug = this.experience.debug.ui
     this.debugActive = this.experience.debug.active
 
-    // Axes Helper
-    this.axesHelper = new THREE.AxesHelper(5)
-    this.axesHelper.visible = false
-    this.scene.add(this.axesHelper)
-
     // Setup
     this.setSunLight()
+    this.setAmbientLight()
     this.setEnvironmentMap()
     this.debuggerInit()
   }
 
   setSunLight() {
     this.sunLightColor = '#ffffff'
-    this.sunLightIntensity = 8
+    this.sunLightIntensity = 2.5
     this.sunLight = new THREE.DirectionalLight(
       this.sunLightColor,
       this.sunLightIntensity,
     )
+
     this.sunLight.castShadow = true
     this.sunLight.shadow.camera.far = 60
-    this.sunLight.shadow.mapSize.set(1024, 1024)
+    this.sunLight.shadow.camera.left = -10
+    this.sunLight.shadow.camera.right = 10
+    this.sunLight.shadow.camera.top = 10
+    this.sunLight.shadow.camera.bottom = -10
+    this.sunLight.shadow.mapSize.set(2048, 2048)
     this.sunLight.shadow.normalBias = 0.05
-    this.sunLightPosition = new THREE.Vector3(18, 10, 4.5)
+    this.sunLightPosition = new THREE.Vector3(17, 12, 6.5)
     this.sunLight.position.copy(this.sunLightPosition)
     this.scene.add(this.sunLight)
 
     // 设置 sunLight Target
     this.sunLight.target = new THREE.Object3D()
-    this.sunLightTarget = new THREE.Vector3(6.7, 2.3, -7)
+    this.sunLightTarget = new THREE.Vector3(0, 0, 0)
     this.sunLight.target.position.copy(this.sunLightTarget)
     this.scene.add(this.sunLight.target)
 
     this.helper = new THREE.CameraHelper(this.sunLight.shadow.camera)
     this.helper.visible = false
     this.scene.add(this.helper)
+
+    // 添加 sunLightHelper
+    this.sunLightHelper = new THREE.DirectionalLightHelper(this.sunLight, 5)
+    this.sunLightHelper.visible = true
+    this.scene.add(this.sunLightHelper)
+  }
+
+  setAmbientLight() {
+    this.ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5)
+    this.scene.add(this.ambientLight)
   }
 
   setEnvironmentMap() {
     this.environmentMap = {}
-    this.environmentMap.intensity = 1
+    this.environmentMap.intensity = 0.3
     this.environmentMap.texture = this.resources.items.environmentMapTexture
     this.environmentMap.texture.colorSpace = THREE.SRGBColorSpace
 
     this.scene.environment = this.environmentMap.texture
-    this.scene.background = this.environmentMap.texture
   }
 
   updateSunLightPosition() {
@@ -118,8 +128,55 @@ export default class Environment {
         })
         .on('change', this.updateSunLightIntensity.bind(this))
 
+      // 添加 shadowCamera 参数调控
+      const shadowCamera = this.sunLight.shadow.camera
+      const shadowCameraFolder = sunLightFolder.addFolder({
+        title: 'Shadow Camera',
+        expanded: false,
+      })
+      shadowCameraFolder.addBinding(shadowCamera, 'left', {
+        label: 'Shadow Left',
+        min: -100,
+        max: 0,
+        step: 0.1,
+      }).on('change', () => {
+        shadowCamera.updateProjectionMatrix()
+        this.helper.update()
+      })
+      shadowCameraFolder.addBinding(shadowCamera, 'right', {
+        label: 'Shadow Right',
+        min: 0,
+        max: 100,
+        step: 0.1,
+      }).on('change', () => {
+        shadowCamera.updateProjectionMatrix()
+        this.helper.update()
+      })
+      shadowCameraFolder.addBinding(shadowCamera, 'top', {
+        label: 'Shadow Top',
+        min: 0,
+        max: 100,
+        step: 0.1,
+      }).on('change', () => {
+        shadowCamera.updateProjectionMatrix()
+        this.helper.update()
+      })
+      shadowCameraFolder.addBinding(shadowCamera, 'bottom', {
+        label: 'Shadow Bottom',
+        min: -100,
+        max: 0,
+        step: 0.1,
+      }).on('change', () => {
+        shadowCamera.updateProjectionMatrix()
+        this.helper.update()
+      })
+
       sunLightFolder.addBinding(this.helper, 'visible', {
         label: 'Helper',
+      })
+
+      sunLightFolder.addBinding(this.sunLightHelper, 'visible', {
+        label: 'SunLight Helper',
       })
 
       if (this.axesHelper) {

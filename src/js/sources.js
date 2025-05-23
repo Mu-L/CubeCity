@@ -29,5 +29,8 @@ export default [
       'textures/environmentMap/nz.jpg',
     ],
   },
-
+  { name: 'grass', type: 'gltfModel', path: 'models/tile-grass.glb' },
+  { name: 'road', type: 'gltfModel', path: 'models/tile-road.glb' },
+  { name: 'house', type: 'gltfModel', path: 'models/house.glb' },
+  { name: 'house-2', type: 'gltfModel', path: 'models/house02.glb' },
 ]
