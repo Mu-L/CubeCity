@@ -33,4 +33,6 @@ export default [
   { name: 'road', type: 'gltfModel', path: 'models/tile-road.glb' },
   { name: 'house', type: 'gltfModel', path: 'models/house.glb' },
   { name: 'house-2', type: 'gltfModel', path: 'models/house02.glb' },
+  { name: 'house_level2', type: 'gltfModel', path: 'models/house_level2.glb' },
+  { name: 'house_level3', type: 'gltfModel', path: 'models/house_level3.glb' },
 ]
