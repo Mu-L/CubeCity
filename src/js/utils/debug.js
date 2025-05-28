@@ -6,6 +6,11 @@ export default class Debug {
 
     if (this.active) {
       this.ui = new Pane()
+      // 动态设置 tweakpane 容器的 z-index
+      const paneEl = document.querySelector('.tp-dfwv')
+      if (paneEl) {
+        paneEl.style.zIndex = '9999'
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ export function generateMetadata(size = SIZE) {
     Array.from({ length: size }, (_, x) => {
       // 统一遍历 SIZE x SIZE 区域，x/y 均为 0~15
       // 允许在任意位置生成 road+house
-      if (Math.random() > 0.7) {
+      if (Math.random() > 0.9) {
         return {
           type: 'road',
           building: 'house',

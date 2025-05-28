@@ -31,7 +31,7 @@ export default class Experience {
     // Panel
     this.debug = new Debug()
     this.stats = new Stats()
-    this.sizes = new Sizes()
+    this.sizes = new Sizes(this.canvas)
     this.time = new Time()
     this.scene = new THREE.Scene()
     this.camera = new Camera(true)

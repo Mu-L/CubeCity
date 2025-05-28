@@ -25,7 +25,7 @@ export default class Camera {
   setInstance() {
     if (this.orthographic) {
       const aspect = this.sizes.aspect
-      this.frustumSize = 7
+      this.frustumSize = 10
 
       this.instance = new THREE.OrthographicCamera(
         -this.frustumSize * aspect,

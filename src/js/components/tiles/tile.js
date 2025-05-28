@@ -93,7 +93,7 @@ export default class Tile extends SimObject {
     const sceneMetadata = this.experience.sceneMetadata
 
     if (this.building === 'house') {
-      if (Math.random() < 0.01) {
+      if (Math.random() < 0.001) {
         this.removeBuilding()
         this.building = 'house_level2'
         this.setBuilding()
