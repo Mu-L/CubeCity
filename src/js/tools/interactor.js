@@ -38,6 +38,10 @@ export default class Interactor {
     if (intersections.length > 0) {
       newFocused = intersections[0].object.userData
     }
+    else {
+      this.focused.setFocused(false)
+      this.focused = null
+    }
 
     // 切换高亮
     if (newFocused && this.focused !== newFocused) {
