@@ -48,7 +48,6 @@ export default class City {
         const tile = new Tile(x, y, {
           type: tileMeta.type,
           building: tileMeta.building,
-          color: this.params.color,
           direction: tileMeta.direction !== undefined ? tileMeta.direction : 0, // 传递建筑朝向
         })
         row.push(tile)

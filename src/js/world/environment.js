@@ -49,7 +49,7 @@ export default class Environment {
 
     // 添加 sunLightHelper
     this.sunLightHelper = new THREE.DirectionalLightHelper(this.sunLight, 5)
-    this.sunLightHelper.visible = true
+    this.sunLightHelper.visible = false
     this.scene.add(this.sunLightHelper)
   }
 

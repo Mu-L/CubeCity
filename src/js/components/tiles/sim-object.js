@@ -41,6 +41,8 @@ export default class SimObject extends THREE.Object3D {
     mesh.traverse((child) => {
       child.userData = this
       if (child instanceof THREE.Mesh && child.material) {
+        child.receiveShadow = true
+        child.castShadow = true
         child.material = child.material.clone()
         child.material.transparent = true
       }
