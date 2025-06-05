@@ -31,8 +31,21 @@ export default [
   },
   { name: 'grass', type: 'gltfModel', path: 'models/tile-grass.glb' },
   { name: 'road', type: 'gltfModel', path: 'models/tile-road.glb' },
+  // 房屋
   { name: 'house', type: 'gltfModel', path: 'models/house.glb' },
-  { name: 'house-2', type: 'gltfModel', path: 'models/house02.glb' },
   { name: 'house_level2', type: 'gltfModel', path: 'models/house_level2.glb' },
   { name: 'house_level3', type: 'gltfModel', path: 'models/house_level3.glb' },
+  // factory
+  {
+    name: 'factory',
+    type: 'gltfModel',
+    path: 'models/factory.glb',
+  },
+
+  // smoke 用 perlin 噪声
+  {
+    name: 'perlinNoise',
+    type: 'texture',
+    path: 'textures/perlin.png',
+  },
 ]
