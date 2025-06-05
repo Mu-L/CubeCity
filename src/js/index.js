@@ -1,6 +1,8 @@
-import Three from './experience'
-import '../css/global.css'
+import { buildingData } from './constant.js'
+import Experience from './experience'
+import { eventBus } from './utils/event-bus.js'
 
+import '../css/global.css'
 import '../scss/global.scss'
 import '../scss/index.scss'
 
@@ -10,29 +12,20 @@ window.addEventListener('load', () => {
   const canvas = document.querySelector('#canvas')
 
   if (canvas) {
-    new Three(document.querySelector('#canvas'))
+    window.experience = new Experience(document.querySelector('#canvas'))
   }
 })
 
 // 以下为 01.html 迁移的交互脚本
 // =============================
-let currentMode = 'build'
-let selectedBuilding = null
 let selectedCard = null
-
-// 建筑数据
-const buildingData = {
-  factory: { name: 'FACTORY UNIT', icon: '🏭', type: 'INDUSTRIAL BUILDING', cost: 500 },
-  warehouse: { name: 'WAREHOUSE', icon: '🏢', type: 'STORAGE FACILITY', cost: 300 },
-  apartment: { name: 'HOUSING UNIT', icon: '🏠', type: 'RESIDENTIAL BUILDING', cost: 200 },
-  complex: { name: 'RESIDENTIAL COMPLEX', icon: '🏘️', type: 'HOUSING COMPLEX', cost: 800 },
-  power: { name: 'POWER STATION', icon: '⚡', type: 'INFRASTRUCTURE', cost: 400 },
-  road: { name: 'TRANSPORT ROUTE', icon: '🛤️', type: 'INFRASTRUCTURE', cost: 100 },
-}
 
 // 选择建筑
 window.selectBuilding = function (type, cardElement) {
-  selectedBuilding = type
+  const experience = window.experience
+  experience.selectedBuilding = type
+
+  eventBus.emit('building:choosed', { type })
   const building = buildingData[type]
   // 更新选中状态
   if (selectedCard) {
@@ -60,7 +53,9 @@ function showBuildingDetails(type) {
 
 // 设置操作模式
 window.setMode = function (mode) {
-  currentMode = mode
+  const experience = window.experience
+  experience.currentMode = mode
+  eventBus.emit('mode:changed', { mode })
   document.getElementById('current-mode').textContent = mode.toUpperCase()
   const modeNames = {
     build: 'BUILD MODE',
@@ -111,13 +106,55 @@ function showToast(message, type = 'info') {
 const gameCanvas = document.getElementById('canvas')
 if (gameCanvas) {
   gameCanvas.addEventListener('click', (_e) => {
-    if (selectedBuilding && currentMode === 'build') {
-      const building = buildingData[selectedBuilding]
+    const experience = window.experience
+    if (experience.selectedBuilding && experience.currentMode === 'build') {
+      const building = buildingData[experience.selectedBuilding]
       showToast(`${building.name} PLACED`, 'success')
     }
   })
 }
 
+// 渲染建筑卡片
+function renderBuildingCards() {
+  const categories = [
+    { key: 'industrial', label: 'INDUSTRIAL', color: 'bg-industrial-red' },
+    { key: 'residential', label: 'RESIDENTIAL', color: 'bg-industrial-blue' },
+    { key: 'infrastructure', label: 'INFRASTRUCTURE', color: 'bg-industrial-green' },
+  ]
+  const container = document.getElementById('building-cards')
+  if (!container)
+    return
+  container.innerHTML = ''
+  categories.forEach((cat) => {
+    const section = document.createElement('div')
+    section.innerHTML = `
+      <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide flex items-center">
+        <span class="w-2 h-2 ${cat.color} rounded-full mr-2"></span>
+        ${cat.label}
+      </h3>
+      <div class="grid grid-cols-2 gap-2"></div>
+    `
+    const grid = section.querySelector('.grid')
+    Object.entries(buildingData)
+      .filter(([_, b]) => b.category === cat.key)
+      .forEach(([type, b]) => {
+        const card = document.createElement('div')
+        card.className = 'building-card-industrial rounded-lg p-3 cursor-pointer'
+        card.innerHTML = `
+          <div class="text-2xl text-center mb-1">${b.icon}</div>
+          <div class="text-xs text-center font-bold text-gray-300">${b.name.split(' ')[0]}</div>
+          <div class="text-xs text-center text-industrial-yellow">⚡${b.cost}</div>
+        `
+        card.onclick = function () {
+          window.selectBuilding(type, card)
+        }
+        grid.appendChild(card)
+      })
+    container.appendChild(section)
+  })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  renderBuildingCards()
   showToast('INDUSTRIAL CITY SYSTEM ONLINE', 'success')
 })
