@@ -36,10 +36,11 @@ export default class Interactor {
 
     let newFocused = null
     if (intersections.length > 0) {
-      newFocused = intersections[0].object.userData
+      // 确保 newFocused 是 Tile 实例
+      newFocused = this._findTileInstance(intersections[0].object)
     }
     else {
-      this.focused.setFocused(false)
+      this.focused && this.focused.setFocused(false)
       this.focused = null
     }
 
@@ -54,11 +55,52 @@ export default class Interactor {
   }
 
   _onClick(_event) {
+    // 拆除建筑
     if (this.focused) {
-      const html = this.focused.toHTML()
-      const infoPanel = document.getElementById('info-panel')
-      infoPanel.innerHTML = html
+      const mode = this.experience.currentMode
+      const selectedBuilding = this.experience.selectedBuilding
+      const eventBus = this.experience.eventBus
+
+      if (mode === 'build' && selectedBuilding) {
+        // 放置建筑
+        if (typeof this.focused.setBuilding === 'function') {
+          this.focused.setBuilding(selectedBuilding)
+          eventBus.emit('building:placed', {
+            tile: this.focused,
+            type: selectedBuilding,
+            buildingInstance: this.focused.buildingInstance, // 假设 tile 有 buildingInstance
+          })
+        }
+      }
+      else if (mode === 'demolish') {
+        if (typeof this.focused.removeBuilding === 'function') {
+          this.focused.removeBuilding()
+          eventBus.emit('building:removed', {
+            tile: this.focused,
+            type: this.focused.buildingType, // 假设 tile 有 buildingType
+          })
+        }
+      }
+      else {
+        // 显示信息面板
+        eventBus.emit('ui:panel:show', {
+          panel: 'building',
+          data: this.focused,
+        })
+      }
     }
+  }
+
+  _findTileInstance(obj) {
+    if (!obj)
+      return null
+    if (obj.userData && typeof obj.userData.setBuilding === 'function') {
+      return obj.userData
+    }
+    // 递归查找父对象
+    if (obj.parent)
+      return this._findTileInstance(obj.parent)
+    return null
   }
 
   // 清理事件

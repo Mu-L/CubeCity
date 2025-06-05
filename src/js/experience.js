@@ -4,6 +4,7 @@ import Camera from './camera.js'
 import Renderer from './renderer.js'
 import sources from './sources.js'
 import Debug from './utils/debug.js'
+import { eventBus } from './utils/event-bus.js'
 import IMouse from './utils/imouse.js'
 import Resources from './utils/resources.js'
 import Sizes from './utils/sizes.js'
@@ -27,6 +28,14 @@ export default class Experience {
     window.Experience = this
 
     this.canvas = canvas
+
+    // 事件总线
+    this.eventBus = eventBus
+
+    // 全局状态
+    this.currentMode = 'build' // 当前操作模式
+    this.selectedBuilding = null // 当前选中的建筑类型
+    this.credits = 12345 // 资源/金币
 
     // Panel
     this.debug = new Debug()

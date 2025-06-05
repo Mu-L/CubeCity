@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../../experience.js'
+import Factory from './buildings/factory.js'
 import House from './buildings/house.js'
 import SimObject from './sim-object.js'
 // 未来可引入更多建筑类型
@@ -63,7 +64,11 @@ export default class Tile extends SimObject {
     this.removeBuilding()
     let buildingInstance = null
     if (type === 'house') {
+      // 建造房屋 并将地皮改为road
       buildingInstance = new House(direction)
+    }
+    else if (type === 'factory') {
+      buildingInstance = new Factory(direction)
     }
     // 未来可扩展更多类型
     if (buildingInstance) {
