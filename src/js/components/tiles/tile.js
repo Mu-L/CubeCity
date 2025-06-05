@@ -20,9 +20,7 @@ export default class Tile extends SimObject {
     // 获取 Experience 单例
     const experience = new Experience()
     const resources = experience.resources
-    // 优先传入地皮资源给父类，若无资源则传 null
-    const tileResource = resources.items[type] && resources.items[type].scene ? resources.items[type] : null
-    super(x, y, tileResource)
+    super(x, y, null) // 父类不传 mesh，由本类自行管理
     this.experience = experience
     this.scene = experience.scene
     this.resources = resources
@@ -31,26 +29,37 @@ export default class Tile extends SimObject {
     this.name = `Tile-${x}-${y}`
     this.type = type // 草地/道路
     this.direction = direction // 建筑朝向，单位为度
-
-    // 建筑实例（Building 子类）
     this.buildingInstance = null
 
-    // 如果没有资源，使用占位 mesh
-    if (!tileResource) {
-      const geometry = new THREE.BoxGeometry(1, 0.2, 1)
-      const material = new THREE.MeshStandardMaterial({ color: '#8ec07c' })
-      this.mesh = new THREE.Mesh(geometry, material)
-      this.mesh.userData = this
-      this.mesh.name = this.name
-      this.mesh.position.set(0, 0, 0)
-      this.mesh.scale.set(0.98, 1, 0.98)
-      this.setMesh(this.mesh)
-    }
-    else {
-      // 有资源时，mesh 已由父类 setMesh
-      this.mesh.position.set(0, 0, 0)
-      this.mesh.scale.set(0.98, 1, 0.98)
-    }
+    // ========== 创建 grass mesh ==========
+    const grassResource = resources.items.grass ? resources.items.grass : null
+    this.grassMesh = grassResource
+      ? this.initMeshFromResource(grassResource)
+      : new THREE.Mesh(
+        new THREE.BoxGeometry(1, 0.2, 1),
+        new THREE.MeshStandardMaterial({ color: '#8ec07c' }),
+      )
+    this.grassMesh.position.set(0, 0, 0)
+    this.grassMesh.scale.set(0.98, 1, 0.98)
+    this.grassMesh.userData = this
+    this.grassMesh.name = `${this.name}-grass`
+
+    // ========== 创建 road mesh（上层，默认隐藏） ==========
+    const roadResource = resources.items.road ? resources.items.road : null
+    this.roadMesh = roadResource
+      ? this.initMeshFromResource(roadResource)
+      : new THREE.Mesh(
+        new THREE.BoxGeometry(1, 0.2, 1),
+        new THREE.MeshStandardMaterial({ color: '#a89984' }),
+      )
+    this.roadMesh.position.set(0, 0.01, 0) // 稍微高于 grass，避免 z-fighting
+    this.roadMesh.scale.set(0.98, 1, 0.98)
+    this.roadMesh.userData = this
+    this.roadMesh.name = `${this.name}-road`
+    this.roadMesh.visible = (type === 'road') // 初始是否显示
+
+    this.grassMesh.add(this.roadMesh)
+    this.setMesh(this.grassMesh)
 
     // 如果有建筑，加载建筑实例
     if (building) {
@@ -58,13 +67,20 @@ export default class Tile extends SimObject {
     }
   }
 
+  // 切换地皮类型（只切换 road mesh 显隐）
+  setType(type) {
+    this.type = type
+    this.roadMesh.visible = (type === 'road')
+  }
+
   // 创建并添加建筑实例
   setBuilding(type, direction = 0) {
     // 先移除原有建筑
     this.removeBuilding()
     let buildingInstance = null
+    this.setType('road')
     if (type === 'house') {
-      // 建造房屋 并将地皮改为road
+      // 建造房屋时自动将地皮变为 road
       buildingInstance = new House(direction)
     }
     else if (type === 'factory') {
@@ -73,31 +89,22 @@ export default class Tile extends SimObject {
     // 未来可扩展更多类型
     if (buildingInstance) {
       this.buildingInstance = buildingInstance
-      this.mesh.add(buildingInstance)
+      this.grassMesh.add(buildingInstance)
     }
   }
 
   // 移除原有建筑实例
   removeBuilding() {
     if (this.buildingInstance) {
-      this.mesh.remove(this.buildingInstance)
+      this.grassMesh.remove(this.buildingInstance)
       this.buildingInstance = null
     }
   }
 
-  // 设置材质颜色
+  // 设置材质颜色（只作用于 grass）
   setColor(color) {
-    if (this.mesh) {
-      if (this.mesh.material) {
-        this.mesh.material.color.set(color)
-      }
-      else if (this.mesh.children) {
-        this.mesh.traverse((child) => {
-          if (child.isMesh && child.material) {
-            child.material.color.set(color)
-          }
-        })
-      }
+    if (this.grassMesh && this.grassMesh.material) {
+      this.grassMesh.material.color.set(color)
     }
   }
 
@@ -106,7 +113,6 @@ export default class Tile extends SimObject {
     if (this.buildingInstance) {
       this.buildingInstance.update()
     }
-    // 示例：升级逻辑可交由建筑自身处理，或在此处触发
     // ...
   }
 

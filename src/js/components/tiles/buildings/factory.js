@@ -45,6 +45,7 @@ export default class Factory extends Building {
       depthWrite: false,
     })
     this.smokeMesh = new THREE.Mesh(smokeGeometry, this.smokeMaterial)
+    this.smokeMesh.raycast = () => {}
     this.add(this.smokeMesh)
   }
 

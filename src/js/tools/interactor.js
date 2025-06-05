@@ -94,6 +94,7 @@ export default class Interactor {
   _findTileInstance(obj) {
     if (!obj)
       return null
+
     if (obj.userData && typeof obj.userData.setBuilding === 'function') {
       return obj.userData
     }
