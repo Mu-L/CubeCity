@@ -1,6 +1,6 @@
 import * as THREE from 'three'
+import { SIZE } from '../../constants.js' // 导入常量
 import Experience from '../../experience.js'
-import { SIZE } from '../../utils/constant.js' // 导入常量
 
 import Tile from './tile.js'
 

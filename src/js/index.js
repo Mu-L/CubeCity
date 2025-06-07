@@ -1,4 +1,4 @@
-import { buildingData } from './constant.js'
+import { BUILDING_CATEGORIES, BUILDING_DATA } from './constants.js'
 import Experience from './experience'
 import { eventBus } from './utils/event-bus.js'
 
@@ -26,7 +26,7 @@ window.selectBuilding = function (type, cardElement) {
   experience.selectedBuilding = type
 
   eventBus.emit('building:choosed', { type })
-  const building = buildingData[type]
+  const building = BUILDING_DATA[type]
   // 更新选中状态
   if (selectedCard) {
     selectedCard.classList.remove('selected')
@@ -43,7 +43,7 @@ window.selectBuilding = function (type, cardElement) {
 
 // 显示建筑详情
 function showBuildingDetails(type) {
-  const building = buildingData[type]
+  const building = BUILDING_DATA[type]
   document.getElementById('no-selection').classList.add('hidden')
   document.getElementById('building-info').classList.remove('hidden')
   document.getElementById('detail-icon').textContent = building.icon
@@ -108,7 +108,7 @@ if (gameCanvas) {
   gameCanvas.addEventListener('click', (_e) => {
     const experience = window.experience
     if (experience.selectedBuilding && experience.currentMode === 'build') {
-      const building = buildingData[experience.selectedBuilding]
+      const building = BUILDING_DATA[experience.selectedBuilding]
       showToast(`${building.name} PLACED`, 'success')
     }
   })
@@ -116,16 +116,11 @@ if (gameCanvas) {
 
 // 渲染建筑卡片
 function renderBuildingCards() {
-  const categories = [
-    { key: 'industrial', label: 'INDUSTRIAL', color: 'bg-industrial-red' },
-    { key: 'residential', label: 'RESIDENTIAL', color: 'bg-industrial-blue' },
-    { key: 'infrastructure', label: 'INFRASTRUCTURE', color: 'bg-industrial-green' },
-  ]
   const container = document.getElementById('building-cards')
   if (!container)
     return
   container.innerHTML = ''
-  categories.forEach((cat) => {
+  BUILDING_CATEGORIES.forEach((cat) => {
     const section = document.createElement('div')
     section.innerHTML = `
       <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide flex items-center">
@@ -135,7 +130,7 @@ function renderBuildingCards() {
       <div class="grid grid-cols-2 gap-2"></div>
     `
     const grid = section.querySelector('.grid')
-    Object.entries(buildingData)
+    Object.entries(BUILDING_DATA)
       .filter(([_, b]) => b.category === cat.key)
       .forEach(([type, b]) => {
         const card = document.createElement('div')
@@ -146,6 +141,8 @@ function renderBuildingCards() {
           <div class="text-xs text-center text-industrial-yellow">⚡${b.cost}</div>
         `
         card.onclick = function () {
+          console.log(type, card)
+
           window.selectBuilding(type, card)
         }
         grid.appendChild(card)

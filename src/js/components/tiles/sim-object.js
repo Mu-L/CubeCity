@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { HIGHLIGHTED_COLOR, SELECTED_COLOR, SIMOBJECT_DEFAULT_OPACITY, SIMOBJECT_SELECTED_OPACITY } from '../../utils/constant.js'
+import { HIGHLIGHTED_COLOR, SELECTED_COLOR, SIMOBJECT_DEFAULT_OPACITY, SIMOBJECT_SELECTED_OPACITY } from '../../constants.js'
 
 // SimObject 互动基类，所有可交互对象继承自此类
 export default class SimObject extends THREE.Object3D {

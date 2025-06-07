@@ -32,16 +32,31 @@ export default [
   { name: 'grass', type: 'gltfModel', path: 'models/tile-grass.glb' },
   { name: 'road', type: 'gltfModel', path: 'models/tile-road.glb' },
   // 房屋
-  { name: 'house', type: 'gltfModel', path: 'models/house.glb' },
+  { name: 'house_level1', type: 'gltfModel', path: 'models/house_level1.glb' },
   { name: 'house_level2', type: 'gltfModel', path: 'models/house_level2.glb' },
   { name: 'house_level3', type: 'gltfModel', path: 'models/house_level3.glb' },
+  // shop
+  { name: 'shop_level1', type: 'gltfModel', path: 'models/shop_level1.glb' },
+  { name: 'shop_level2', type: 'gltfModel', path: 'models/shop_level2.glb' },
+  { name: 'shop_level3', type: 'gltfModel', path: 'models/shop_level3.glb' },
+  // office
+  { name: 'office_level1', type: 'gltfModel', path: 'models/office_level1.glb' },
+  { name: 'office_level2', type: 'gltfModel', path: 'models/office_level2.glb' },
+  { name: 'office_level3', type: 'gltfModel', path: 'models/office_level3.glb' },
+  // park
+  { name: 'park_level1', type: 'gltfModel', path: 'models/tree_level1.glb' },
+  { name: 'park_level2', type: 'gltfModel', path: 'models/tree_level2.glb' },
+  { name: 'park_level3', type: 'gltfModel', path: 'models/tree_level3.glb' },
+  // hospital
+  { name: 'hospital', type: 'gltfModel', path: 'models/hospital.glb' },
+  // police
+  { name: 'police', type: 'gltfModel', path: 'models/police.glb' },
   // factory
   {
     name: 'factory',
     type: 'gltfModel',
     path: 'models/factory.glb',
   },
-
   // smoke 用 perlin 噪声
   {
     name: 'perlinNoise',

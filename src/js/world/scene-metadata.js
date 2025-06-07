@@ -1,4 +1,4 @@
-import { SIZE } from '../utils/constant.js'
+import { SIZE } from '../constants.js'
 // 场景元数据管理类
 import { generateMetadata } from './metadata.js'
 
