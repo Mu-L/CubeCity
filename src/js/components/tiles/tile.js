@@ -1,7 +1,7 @@
 import * as THREE from 'three'
+import { BUILDING_DATA } from '../../constants.js'
 import Experience from '../../experience.js'
-import Factory from './buildings/factory.js'
-import House from './buildings/house.js'
+import { createBuilding } from './building-factory.js'
 import SimObject from './sim-object.js'
 // 未来可引入更多建筑类型
 
@@ -75,18 +75,11 @@ export default class Tile extends SimObject {
 
   // 创建并添加建筑实例
   setBuilding(type, direction = 0) {
-    // 先移除原有建筑
     this.removeBuilding()
-    let buildingInstance = null
-    this.setType('road')
-    if (type === 'house') {
-      // 建造房屋时自动将地皮变为 road
-      buildingInstance = new House(direction)
-    }
-    else if (type === 'factory') {
-      buildingInstance = new Factory(direction)
-    }
-    // 未来可扩展更多类型
+    // 传递元数据
+    const baseType = type.split('_level')[0]
+    const options = { buildingData: BUILDING_DATA[baseType] }
+    const buildingInstance = createBuilding(type, direction, options)
     if (buildingInstance) {
       this.buildingInstance = buildingInstance
       this.grassMesh.add(buildingInstance)

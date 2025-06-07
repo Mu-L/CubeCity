@@ -5,8 +5,8 @@ import Experience from '../../../Experience.js'
 import Building from '../building.js'
 // 工厂类建筑
 export default class Factory extends Building {
-  constructor(direction = 0, options = {}) {
-    super('factory', direction, options)
+  constructor(type = 'factory', direction = 0, options = {}) {
+    super(type, direction, options)
 
     this.experience = new Experience()
     this.resources = this.experience.resources
@@ -16,6 +16,13 @@ export default class Factory extends Building {
     this.time = this.experience.time
     this.camera = this.experience.camera.instance
     this.smoke()
+  }
+
+  // 不可升级
+  upgrade() { return null }
+
+  getCost() {
+    return this.options.buildingData?.cost || 0
   }
 
   // 工厂提供电力
