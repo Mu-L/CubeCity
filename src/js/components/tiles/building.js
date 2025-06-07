@@ -30,6 +30,8 @@ export default class Building extends SimObject {
       // 设置朝向
       const angle = (this.direction % 4) * 90
       mesh.rotation.y = THREE.MathUtils.degToRad(angle)
+      // 禁止建筑被选中
+      mesh.raycast = () => {}
       this.setMesh(mesh)
     }
     else {

@@ -74,11 +74,16 @@ export default class Interactor {
       }
       else if (mode === 'demolish') {
         if (typeof this.focused.removeBuilding === 'function') {
-          this.focused.removeBuilding()
-          eventBus.emit('building:removed', {
-            tile: this.focused,
-            type: this.focused.buildingType, // 假设 tile 有 buildingType
-          })
+          if (this.focused.buildingInstance) {
+            this.focused.removeBuilding()
+            eventBus.emit('building:removed', {
+              tile: this.focused,
+              type: this.focused.buildingType, // 假设 tile 有 buildingType
+            })
+          }
+          else {
+            this.focused.setType('grass')
+          }
         }
       }
       else {
