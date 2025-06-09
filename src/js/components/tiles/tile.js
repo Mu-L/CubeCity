@@ -33,11 +33,15 @@ export default class Tile extends SimObject {
 
     // ========== 创建 grass mesh ==========
     const grassResource = resources.items.grass ? resources.items.grass : null
+    const grassMesh = this.initMeshFromResource(grassResource)
+    grassMesh.children[0].material.metalness = Math.random() * 0.5
+    grassMesh.children[0].material.roughness = Math.random() * 0.5
+
     this.grassMesh = grassResource
-      ? this.initMeshFromResource(grassResource)
+      ? grassMesh
       : new THREE.Mesh(
-        new THREE.BoxGeometry(1, 0.2, 1),
-        new THREE.MeshStandardMaterial({ color: '#8ec07c' }),
+        new THREE.BoxGeometry(0.98, 0.2, 0.98),
+        new THREE.MeshStandardMaterial({ color: '#579649' }),
       )
     this.grassMesh.position.set(0, 0, 0)
     this.grassMesh.scale.set(0.98, 1, 0.98)
@@ -84,6 +88,17 @@ export default class Tile extends SimObject {
       this.buildingInstance = buildingInstance
       this.grassMesh.add(buildingInstance)
     }
+  }
+
+  // 随机生成绿色颜色
+  _randomGreenColor() {
+    // H: 0.25~0.45 (90~160°), S: 0.4~0.8, L: 0.3~0.6
+    const h = Math.random() * (0.45 - 0.25) + 0.25
+    const s = Math.random() * (0.8 - 0.4) + 0.4
+    const l = Math.random() * (0.6 - 0.3) + 0.3
+    const color = new THREE.Color()
+    color.setHSL(h, s, l)
+    return color
   }
 
   // 移除原有建筑实例

@@ -14,12 +14,13 @@ export default class Environment {
     this.setSunLight()
     this.setAmbientLight()
     this.setEnvironmentMap()
+    this.setHemisphereLight()
     this.debuggerInit()
   }
 
   setSunLight() {
     this.sunLightColor = '#ffffff'
-    this.sunLightIntensity = 2.5
+    this.sunLightIntensity = 1
     this.sunLight = new THREE.DirectionalLight(
       this.sunLightColor,
       this.sunLightIntensity,
@@ -51,6 +52,27 @@ export default class Environment {
     this.sunLightHelper = new THREE.DirectionalLightHelper(this.sunLight, 5)
     this.sunLightHelper.visible = false
     this.scene.add(this.sunLightHelper)
+  }
+
+  // 添加半球光
+  setHemisphereLight() {
+    // 创建半球光 - 天空颜色为浅蓝色,地面颜色为暖色
+    this.hemisphereLight = new THREE.HemisphereLight(
+      '#fff', // 天空颜色
+      '#579749', // 地面颜色
+      0.7, // 光照强度
+    )
+
+    // 设置光源位置
+    this.hemisphereLight.position.set(0, 20, 0)
+
+    // 添加到场景
+    this.scene.add(this.hemisphereLight)
+
+    // 添加辅助显示器(默认隐藏)
+    this.hemisphereLightHelper = new THREE.HemisphereLightHelper(this.hemisphereLight, 5)
+    this.hemisphereLightHelper.visible = true
+    this.scene.add(this.hemisphereLightHelper)
   }
 
   setAmbientLight() {
@@ -184,6 +206,36 @@ export default class Environment {
           label: 'Axes',
         })
       }
+
+      // ===== Hemisphere Light 控制面板 =====
+      const hemisphereLightFolder = this.debug.addFolder({
+        title: 'Hemisphere Light',
+        expanded: false,
+      })
+      // 天空颜色
+      hemisphereLightFolder.addBinding(this.hemisphereLight, 'color', {
+        label: 'Sky Color',
+        color: { type: 'float' },
+        view: 'color',
+      }).on('change', () => {
+        // 颜色变更后自动更新
+        this.hemisphereLight.color.set(this.hemisphereLight.color)
+      })
+      // 地面颜色
+      hemisphereLightFolder.addBinding(this.hemisphereLight, 'groundColor', {
+        label: 'Ground Color',
+        color: { type: 'float' },
+        view: 'color',
+      }).on('change', () => {
+        this.hemisphereLight.groundColor.set(this.hemisphereLight.groundColor)
+      })
+      // 光照强度
+      hemisphereLightFolder.addBinding(this.hemisphereLight, 'intensity', {
+        label: 'Intensity',
+        min: 0,
+        max: 5,
+        step: 0.01,
+      })
     }
   }
 }
