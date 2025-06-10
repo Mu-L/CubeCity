@@ -1,50 +1,73 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { BUILDING_CATEGORIES, BUILDING_DATA, BUILDING_MODES } from '../constants/constants'
 import { useGameState } from '../stores/useGameState'
-// 假数据，后续可从 constants.js 动态导入
-const buildingCategories = ref([
-  { key: 'industry', label: 'Industry', color: 'bg-industrial-yellow' },
-  { key: 'residence', label: 'Residence', color: 'bg-industrial-blue' },
-  { key: 'service', label: 'Service', color: 'bg-industrial-green' },
-])
-const buildingData = ref([
-  { type: 'factory', name: 'Factory Unit', icon: '🏭', cost: 100, category: 'industry' },
-  { type: 'warehouse', name: 'Warehouse', icon: '🏬', cost: 80, category: 'industry' },
-  { type: 'apartment', name: 'Apartment', icon: '🏢', cost: 120, category: 'residence' },
-  { type: 'house', name: 'House', icon: '🏠', cost: 60, category: 'residence' },
-  { type: 'clinic', name: 'Clinic', icon: '🏥', cost: 90, category: 'service' },
-  { type: 'shop', name: 'Shop', icon: '🏪', cost: 70, category: 'service' },
-])
-const modes = ref([
-  { key: 'build', label: 'BUILD', icon: '🔧' },
-  { key: 'relocate', label: 'RELOCATE', icon: '📦' },
-  { key: 'demolish', label: 'DEMOLISH', icon: '💥' },
-])
+
+// 建筑分类
+const buildingCategories = computed(() => BUILDING_CATEGORIES)
+// 建筑数据（数组结构，type为唯一标识）
+const buildingData = computed(() => BUILDING_DATA)
+// 操作模式
+const modes = computed(() => BUILDING_MODES)
+
 const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
 const currentMode = computed(() => gameState.currentMode)
+
+// 按分类筛选建筑
 function buildingsByCategory(catKey) {
-  return buildingData.value.filter(b => b.category === catKey)
+  // 只返回分类匹配且 visible !== false 的建筑
+  return buildingData.value.filter(b => b.category === catKey && b.visible !== false)
 }
-function selectBuilding(type) {
+// 选中建筑时，pinia 存储 buildingType（type 字段）
+function selectBuilding({ type, name }) {
+  // 重复选中同一建筑时，不重复添加 toast
+  if (selectedBuilding.value === type)
+    return
   gameState.selectBuilding(type)
-  gameState.addToast(`选中建筑: ${type}`, 'success')
+  gameState.addToast(`选中建筑: ${name}`, 'info')
 }
 function setMode(mode) {
+  if (currentMode.value === mode)
+    return
   gameState.setMode(mode)
+  gameState.selectBuilding(null)
   gameState.addToast(`切换模式: ${mode.toUpperCase()}`, 'info')
 }
+
+// 键盘快捷键映射
+const modeKeyMap = {
+  d: 'demolish',
+  r: 'relocate',
+  b: 'build',
+  s: 'select',
+}
+
+function handleKeydown(e) {
+  const key = e.key.toLowerCase()
+  if (modeKeyMap[key]) {
+    setMode(modeKeyMap[key])
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
-  <aside class="w-72 industrial-panel shadow-industrial overflow-y-auto relative z-[10]">
+  <aside class="w-72 industrial-panel shadow-industrial overflow-y-auto relative z-[10] custom-scrollbar">
     <div class="p-4">
       <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
         <span class="neon-text">CONSTRUCTION UNITS</span>
       </h2>
       <!-- 建筑分类与卡片 -->
       <div v-for="cat in buildingCategories" :key="cat.key" class="mb-6">
-        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide flex items-center">
+        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase flex items-center tracking-[0.3rem]">
           <span class="w-2 h-2 rounded-full mr-2" :class="[cat.color]" />
           {{ cat.label }}
         </h3>
@@ -52,16 +75,17 @@ function setMode(mode) {
           <div
             v-for="b in buildingsByCategory(cat.key)" :key="b.type"
             class="building-card-industrial rounded-lg p-3 cursor-pointer" :class="[selectedBuilding === b.type ? 'ring-2 ring-industrial-accent' : '']"
-            @click="selectBuilding(b.type)"
+            @click="selectBuilding(b)"
           >
             <div class="text-2xl text-center mb-1">
               {{ b.icon }}
             </div>
-            <div class="text-xs text-center font-bold text-gray-300">
+            <div class="text-xs text-center font-bold  text-gray-300 tracking-[0.3rem]">
               {{ b.name.split(' ')[0] }}
             </div>
             <div class="text-xs text-center text-industrial-yellow">
-              ⚡{{ b.cost }}
+              <span class="text-xs">⚡</span>
+              <span class="tracking-widest">{{ b.cost }}</span>
             </div>
           </div>
         </div>
@@ -85,3 +109,26 @@ function setMode(mode) {
     </div>
   </aside>
 </template>
+
+<style scoped>
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3b3b3b #18181b;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #18181b;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b3b3b 60%, #ffb800 100%);
+  border-radius: 8px;
+  min-height: 24px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ffb800 60%, #3b3b3b 100%);
+}
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: #18181b;
+}
+</style>

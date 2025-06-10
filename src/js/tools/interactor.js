@@ -1,3 +1,4 @@
+import { BUILDING_DATA } from '@/constants/constants.js'
 import * as THREE from 'three'
 import Experience from '../experience.js'
 
@@ -57,28 +58,41 @@ export default class Interactor {
   _onClick(_event) {
     // 拆除建筑
     if (this.focused) {
-      const mode = this.experience.currentMode
-      const selectedBuilding = this.experience.selectedBuilding
+      const mode = this.experience.gameState.currentMode
+      const selectedBuilding = this.experience.gameState.selectedBuilding
       const eventBus = this.experience.eventBus
 
       if (mode === 'build' && selectedBuilding) {
         // 放置建筑
         if (typeof this.focused.setBuilding === 'function') {
           this.focused.setBuilding(selectedBuilding)
-          eventBus.emit('building:placed', {
-            tile: this.focused,
-            type: selectedBuilding,
-            buildingInstance: this.focused.buildingInstance, // 假设 tile 有 buildingInstance
+          // 解析地皮编号
+          const tileName = this.focused.name || ''
+          const tilePos = tileName.replace('Tile-', '')
+          // 构造 toast 消息
+          // 获取建筑名称
+          const buildingName = BUILDING_DATA.find(b => b.type === selectedBuilding)?.name || '建筑'
+          const toastMsg = `${buildingName} 成功放置在地皮 ${tilePos} 位置`
+          eventBus.emit('toast:add', {
+            message: toastMsg,
+            type: 'success',
           })
         }
       }
       else if (mode === 'demolish') {
         if (typeof this.focused.removeBuilding === 'function') {
           if (this.focused.buildingInstance) {
+            // 解析地皮编号
+            const tileName = this.focused.name || ''
+            const tilePos = tileName.replace('Tile-', '')
+            // 构造 toast 消息
+            const buildingName = BUILDING_DATA.find(b => b.type === this.focused.buildingInstance.type)?.name || '建筑'
+            const toastMsg = `地皮 ${tilePos} 位置上的 ${buildingName} 已被移除`
             this.focused.removeBuilding()
-            eventBus.emit('building:removed', {
-              tile: this.focused,
-              type: this.focused.buildingType, // 假设 tile 有 buildingType
+
+            eventBus.emit('toast:add', {
+              message: toastMsg,
+              type: 'error',
             })
           }
           else {

@@ -1,19 +1,13 @@
 <script setup>
 import { computed } from 'vue'
+import { BUILDING_DATA } from '../constants/constants'
 import { useGameState } from '../stores/useGameState'
 
 const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
-// 假数据，后续可从 constants.js 动态导入
-const buildingData = [
-  { type: 'factory', name: 'Factory Unit', icon: '🏭', category: 'industry' },
-  { type: 'warehouse', name: 'Warehouse', icon: '🏬', category: 'industry' },
-  { type: 'apartment', name: 'Apartment', icon: '🏢', category: 'residence' },
-  { type: 'house', name: 'House', icon: '🏠', category: 'residence' },
-  { type: 'clinic', name: 'Clinic', icon: '🏥', category: 'service' },
-  { type: 'shop', name: 'Shop', icon: '🏪', category: 'service' },
-]
-const building = computed(() => buildingData.find(b => b.type === selectedBuilding.value) || {})
+const currentMode = computed(() => gameState.currentMode)
+// 使用 BUILDING_DATA 替换本地 buildingData
+const building = computed(() => BUILDING_DATA.find(b => b.type === selectedBuilding.value) || {})
 function upgradeBuilding() {
   gameState.addToast('UPGRADE INITIATED', 'success')
 }
@@ -77,7 +71,7 @@ function demolishBuilding() {
               </div>
               <div class="flex justify-between">
                 <span class="text-sm text-gray-300">Output/Hour:</span>
-                <span class="text-sm font-bold text-industrial-green">+150 ⚡</span>
+                <span class="text-sm font-bold text-industrial-yellow">+150 ⚡</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-sm text-gray-300">Workers:</span>
@@ -98,7 +92,7 @@ function demolishBuilding() {
               </div>
             </div>
           </div>
-          <div class="mt-6 space-y-2">
+          <div v-if="currentMode === 'select'" class="mt-6 space-y-2">
             <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide" @click="upgradeBuilding">
               ⬆️ UPGRADE UNIT
             </button>

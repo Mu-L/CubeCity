@@ -1,5 +1,6 @@
-import * as THREE from 'three'
+import { useGameState } from '@/stores/useGameState.js'
 
+import * as THREE from 'three'
 import Camera from './camera.js'
 import Renderer from './renderer.js'
 import sources from './sources.js'
@@ -33,9 +34,11 @@ export default class Experience {
     this.eventBus = eventBus
 
     // 全局状态
-    this.currentMode = 'build' // 当前操作模式
-    this.selectedBuilding = null // 当前选中的建筑类型
-    this.credits = 12345 // 资源/金币
+    this.gameState = useGameState()
+
+    // this.credits = this.gameState.credits // 资源/金币
+    // this.currentMode = this.gameState.currentMode // 当前操作模式
+    // this.selectedBuilding = this.gameState.selectedBuilding // 当前选中的建筑类型
 
     // Panel
     this.debug = new Debug()
