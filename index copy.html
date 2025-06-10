@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <!-- ESSENTIAL -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工业城市模拟器 - 控制面板</title>
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="application-name" content="Vite ThreeJS — Template" />
+  <meta name="description"
+    content="Boilerplate template designed to quickly bootstrapping a 3D Web App, SPA, website or landing page with Three.JS, GLSL, Vite, TailwindCSS, ESLint, Husky and much more in just 30 seconds." />
+  <meta name="keywords"
+    content="three, three js, threejs, three.js, three-js, three template, three js template, threejs template, three.js template, three-js template, three vite, three js vite, threejs vite, three.js vite, three-js vite, three vite template, three js vite templante, threejs vite templante, three.js vite templante, three-js vite templante, webgl, 3D, GLSL, GLSL shaders, shaders, web3D, javascript, js, vanilla-javascript, vanilla-js, development, template, boilerplate, template-boilerplate, boilerplate-frontend, starter-kit, vite, vite template, swc, husky, eslint, commitlint, prettier, postcss, tailwind, tailwindcss, sass, scss, css, github, web app, web-app, webapp, spa" />
+  <link rel="manifest" href="/app.webmanifest" />
+  <link rel="icon" sizes="192x192" href="/favicon/favicon-192.webp" />
+  <link rel="icon" sizes="512x512" href="/favicon/favicon-512.webp" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body style="background: radial-gradient(ellipse at center, #6990b8 0%, #3b5279 100%);">
+  <!-- Loading 全屏 进度 -->
+  <div id="loading-screen" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gray-900">
+    <div class="w-64 space-y-4">
+      <div class="text-center">
+        <h2 class="text-xl font-semibold text-white mb-2">Loading City Resources</h2>
+        <p id="loading-percentage" class="text-gray-400">0%</p>
+      </div>
+      <div class="relative h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div id="loading-bar" class="absolute left-0 top-0 h-full w-0 bg-blue-500 transition-all duration-300 ease-out">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 顶部信息栏 -->
+  <header class="industrial-panel p-4 m-2 shadow-industrial z-[10] relative">
+    <div class="flex justify-between items-center">
+      <!-- 左侧资源信息 -->
+      <div class="flex items-center space-x-6">
+        <!-- 金币 -->
+        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3">
+          <div class="status-indicator status-online"></div>
+          <div class="flex items-center space-x-2">
+            <span class="text-industrial-yellow text-xl">⚡</span>
+            <div>
+              <div class="text-xs text-gray-400 uppercase tracking-wide">CREDITS</div>
+              <div class="text-lg font-bold text-industrial-yellow neon-text">12,345</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 人口 -->
+        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3">
+          <div class="status-indicator status-online"></div>
+          <div class="flex items-center space-x-2">
+            <span class="text-industrial-blue text-xl">👥</span>
+            <div>
+              <div class="text-xs text-gray-400 uppercase tracking-wide">POPULATION</div>
+              <div class="text-lg font-bold text-industrial-blue neon-text">200/300</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 地皮 -->
+        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3">
+          <div class="status-indicator status-warning"></div>
+          <div class="flex items-center space-x-2">
+            <span class="text-industrial-green text-xl">🏭</span>
+            <div>
+              <div class="text-xs text-gray-400 uppercase tracking-wide">TERRITORY</div>
+              <div class="text-lg font-bold text-industrial-green neon-text">16×16</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧城市信息 -->
+      <div class="text-right">
+        <h1 class="text-2xl font-black text-industrial-accent neon-text uppercase tracking-wider">INDUSTRIAL CITY</h1>
+        <div class="flex items-center justify-end space-x-2 mt-1">
+          <div class="status-indicator status-online"></div>
+          <span class="text-sm text-gray-400 uppercase tracking-wide">LEVEL 5 • ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 - 厂字布局 -->
+  <div class="flex gap-2 px-2 h-[calc(100vh-200px)]">
+    <!-- 左侧建筑选择区 -->
+    <aside class="w-72 industrial-panel shadow-industrial overflow-y-auto relative z-[10]">
+      <div class="p-4">
+        <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
+          <span class="neon-text">CONSTRUCTION UNITS</span>
+        </h2>
+
+      <!-- 建筑分类 -->
+      <div id="building-cards"></div>
+
+        <!-- 操作模式 -->
+        <div class="mt-6 pt-4 border-t border-gray-600">
+          <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">OPERATION MODE</h3>
+          <div class="space-y-2">
+            <button class="industrial-button w-full text-white font-bold py-2 px-3 text-sm uppercase tracking-wide"
+              onclick="setMode('build')">
+              🔧 BUILD
+            </button>
+            <button class="industrial-button w-full text-white font-bold py-2 px-3 text-sm uppercase tracking-wide"
+              onclick="setMode('relocate')">
+              📦 RELOCATE
+            </button>
+            <button class="industrial-button w-full text-white font-bold py-2 px-3 text-sm uppercase tracking-wide"
+              onclick="setMode('demolish')">
+              💥 DEMOLISH
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 中央游戏视图区域 -->
+    <main class="flex-1 industrial-panel shadow-industrial relative overflow-hidden industrial-grid">
+      <!-- Three.js 渲染区域 -->
+      <div class="flex h-full text-color"
+        style="background: radial-gradient(ellipse at center, #6990b8 0%, #3b5279 100%);">
+        <canvas id="canvas" class="z-[0] h-full w-full fixed top-0 left-0"></canvas>
+        <div id="info-panel" class="absolute z-40 top-4 right-4 p-4 bg-white rounded-lg shadow-lg"></div>
+      </div>
+
+      <!-- 当前模式指示器 -->
+      <div class="absolute top-4 left-4 resource-display rounded px-3 py-1">
+        <span class="text-xs text-gray-400 uppercase tracking-wide">MODE:</span>
+        <span id="current-mode" class="text-sm font-bold text-industrial-accent ml-2">BUILD</span>
+      </div>
+
+      <!-- 选中建筑指示器 -->
+      <div id="selected-indicator" class="absolute top-4 right-4 resource-display rounded px-3 py-1 hidden">
+        <span class="text-xs text-gray-400 uppercase tracking-wide">SELECTED:</span>
+        <span id="selected-building-name" class="text-sm font-bold text-industrial-blue ml-2">NONE</span>
+      </div>
+      <!-- 右侧建筑详情面板 -->
+      <aside class="w-80 industrial-panel shadow-industrial z-40 absolute right-2 top-2 bottom-2">
+        <div class="p-4 h-full flex flex-col">
+          <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
+            <span class="neon-text">UNIT DETAILS</span>
+          </h2>
+  
+          <!-- 建筑详情内容 -->
+          <div id="building-details" class="flex-1">
+            <!-- 默认状态 -->
+            <div id="no-selection" class="h-full flex items-center justify-center">
+              <div class="text-center text-gray-500">
+                <div class="text-4xl mb-4">📋</div>
+                <p class="text-sm uppercase tracking-wide">SELECT A BUILDING</p>
+                <p class="text-xs mt-2">Click on any structure to view details</p>
+              </div>
+            </div>
+  
+            <!-- 建筑详情显示 -->
+            <div id="building-info">
+              <!-- 建筑图标和名称 -->
+              <div class="text-center mb-6">
+                <div id="detail-icon" class="text-6xl mb-3">🏭</div>
+                <h3 id="detail-name" class="text-xl font-bold text-industrial-accent uppercase tracking-wide neon-text">
+                  FACTORY UNIT</h3>
+                <p id="detail-type" class="text-sm text-gray-400 uppercase tracking-wide">INDUSTRIAL BUILDING</p>
+              </div>
+  
+              <!-- 状态信息 -->
+              <div class="space-y-4">
+                <div class="resource-display rounded p-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">STATUS</span>
+                    <div class="flex items-center space-x-2">
+                      <div class="status-indicator status-online"></div>
+                      <span class="text-xs text-industrial-green uppercase">OPERATIONAL</span>
+                    </div>
+                  </div>
+                  <div class="text-lg font-bold text-white">98% EFFICIENCY</div>
+                </div>
+  
+                <div class="resource-display rounded p-3">
+                  <div class="text-xs text-gray-400 uppercase tracking-wide mb-2">PRODUCTION</div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-300">Output/Hour:</span>
+                    <span class="text-sm font-bold text-industrial-green">+150 ⚡</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-300">Workers:</span>
+                    <span class="text-sm font-bold text-industrial-blue">25/30</span>
+                  </div>
+                </div>
+  
+                <div class="resource-display rounded p-3">
+                  <div class="text-xs text-gray-400 uppercase tracking-wide mb-2">MAINTENANCE</div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-300">Condition:</span>
+                    <span class="text-sm font-bold text-industrial-yellow">85%</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-300">Next Service:</span>
+                    <span class="text-sm font-bold text-gray-300">12h</span>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- 操作按钮 -->
+              <div class="mt-6 space-y-2">
+                <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide"
+                  onclick="upgradeBuilding()">
+                  ⬆️ UPGRADE UNIT
+                </button>
+                <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide"
+                  onclick="repairBuilding()">
+                  🔧 MAINTENANCE
+                </button>
+                <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide"
+                  onclick="demolishBuilding()">
+                  💥 DEMOLISH
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+  </div>
+
+  <!-- 底部仪表板 -->
+  <footer class="p-2">
+    <div class="grid grid-cols-3 gap-2">
+      <!-- 左侧统计 -->
+      <div class="dashboard-card rounded-lg p-4">
+        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">CITY METRICS</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-industrial-green neon-text">25</div>
+            <div class="text-xs text-gray-400 uppercase">BUILDINGS</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-industrial-blue neon-text">+1.2K</div>
+            <div class="text-xs text-gray-400 uppercase">DAILY INCOME</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-industrial-yellow neon-text">85%</div>
+            <div class="text-xs text-gray-400 uppercase">EFFICIENCY</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-industrial-green neon-text">92%</div>
+            <div class="text-xs text-gray-400 uppercase">STABILITY</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间成就系统 -->
+      <div class="dashboard-card rounded-lg p-4">
+        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 text-center neon-text">
+          ACHIEVEMENTS</h3>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
+            <div class="flex items-center space-x-2">
+              <span class="text-industrial-yellow">🏆</span>
+              <span class="text-xs text-gray-300 uppercase">FIRST FACTORY</span>
+            </div>
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-500">🏆</span>
+              <span class="text-xs text-gray-500 uppercase">INDUSTRIAL TYCOON</span>
+            </div>
+            <div class="text-xs text-gray-500">75%</div>
+          </div>
+          <button class="industrial-button w-full text-white font-bold py-2 px-4 text-xs uppercase tracking-wide"
+            onclick="showAchievements()">
+            VIEW ALL ACHIEVEMENTS
+          </button>
+        </div>
+      </div>
+
+      <!-- 右侧系统状态 -->
+      <div class="dashboard-card rounded-lg p-4">
+        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">SYSTEM STATUS</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-400 uppercase">POWER GRID</span>
+            <div class="flex items-center space-x-2">
+              <div class="status-indicator status-online"></div>
+              <span class="text-xs text-industrial-green uppercase">ONLINE</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-400 uppercase">TRANSPORT</span>
+            <div class="flex items-center space-x-2">
+              <div class="status-indicator status-warning"></div>
+              <span class="text-xs text-industrial-yellow uppercase">LIMITED</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-400 uppercase">SECURITY</span>
+            <div class="flex items-center space-x-2">
+              <div class="status-indicator status-online"></div>
+              <span class="text-xs text-industrial-green uppercase">SECURE</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-400 uppercase">ENVIRONMENT</span>
+            <div class="flex items-center space-x-2">
+              <div class="status-indicator status-warning"></div>
+              <span class="text-xs text-industrial-yellow uppercase">MODERATE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 提示消息容器 -->
+  <div id="toast-container" class="fixed top-20 right-4 space-y-2 z-50"></div>
+  <script type="module" src="src/js/index.js"></script>
+</body>
+
+</html>

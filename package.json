@@ -26,11 +26,14 @@
   },
   "dependencies": {
     "@vitejs/plugin-legacy": "^5.4.1",
+    "@vitejs/plugin-vue": "^5.2.4",
     "cannon": "^0.6.2",
     "gsap": "^3.12.5",
     "mitt": "^3.0.1",
+    "pinia": "^3.0.3",
     "postcss-import": "^16.1.0",
-    "three": "^0.172.0"
+    "three": "^0.172.0",
+    "vue": "3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.10.1",
