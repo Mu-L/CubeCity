@@ -1,7 +1,7 @@
 // 初始场景元数据
 // 每个元素: { type: 'grass' | 'road', building: null | 'house' | 'house-2' }
 // direction: 0/1/2/3 分别代表 右/下/左/上 四个方向
-import { SIZE } from '../constants.js'
+import { SIZE } from '@/constants/constants.js'
 // 生成指定 size 的场景元数据
 export function generateMetadata(size = SIZE) {
   function randomDirection() {

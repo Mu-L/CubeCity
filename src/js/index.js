@@ -1,4 +1,4 @@
-import { BUILDING_CATEGORIES, BUILDING_DATA } from './constants.js'
+import { BUILDING_CATEGORIES, BUILDING_DATA } from '@/constants/constants.js'
 import Experience from './experience'
 import { eventBus } from './utils/event-bus.js'
 

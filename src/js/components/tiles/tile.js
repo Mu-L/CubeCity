@@ -1,5 +1,5 @@
+import { BUILDING_DATA } from '@/constants/constants.js'
 import * as THREE from 'three'
-import { BUILDING_DATA } from '../../constants.js'
 import Experience from '../../experience.js'
 import { createBuilding } from './building-factory.js'
 import SimObject from './sim-object.js'
