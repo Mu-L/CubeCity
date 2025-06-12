@@ -1,0 +1,67 @@
+{
+  "topbar": {
+    "credits": "Credits",
+    "population": "Population",
+    "territory": "Territory",
+    "level": "Level",
+    "online": "Online",
+    "city": "City"
+  },
+  "buildingSidebar": {
+    "constructionUnits": "Construction Units",
+    "operationMode": "Operation Mode",
+    "select": "Select",
+    "build": "Build",
+    "relocate": "Relocate",
+    "demolish": "Demolish"
+  },
+  "dashboardFooter": {
+    "cityMetrics": "City Metrics",
+    "buildings": "Buildings",
+    "dailyIncome": "Daily Income",
+    "efficiency": "Efficiency",
+    "stability": "Stability",
+    "achievements": "Achievements",
+    "firstFactory": "First Factory",
+    "industrialTycoon": "Industrial Tycoon",
+    "viewAllAchievements": "View All Achievements",
+    "achievementLoading": "Achievement system loading...",
+    "systemStatus": "System Status",
+    "powerGrid": "Power Grid",
+    "transport": "Transport",
+    "security": "Security",
+    "environment": "Environment",
+    "limited": "Limited",
+    "secure": "Secure",
+    "moderate": "Moderate",
+    "online": "Online"
+  },
+  "modeIndicator": {
+    "mode": "Mode"
+  },
+  "selectedIndicator": {
+    "selected": "Selected"
+  },
+  "toastContainer": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "buildingDetails": {
+    "unitDetails": "Unit Details",
+    "selectABuilding": "Select a building",
+    "clickToView": "Click on any structure to view details",
+    "status": "Status",
+    "operational": "Operational",
+    "production": "Production",
+    "outputPerHour": "Output/Hour",
+    "workers": "Workers",
+    "maintenance": "Maintenance",
+    "condition": "Condition",
+    "nextService": "Next Service",
+    "upgradeUnit": "Upgrade Unit",
+    "maintenanceBtn": "Maintenance",
+    "demolish": "Demolish"
+  }
+}

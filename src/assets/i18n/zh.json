@@ -1,0 +1,67 @@
+{
+  "topbar": {
+    "credits": "金币",
+    "population": "人口",
+    "territory": "地皮",
+    "level": "等级",
+    "online": "在线",
+    "city": "城市"
+  },
+  "buildingSidebar": {
+    "constructionUnits": "建造单位",
+    "operationMode": "操作模式",
+    "select": "选择",
+    "build": "建造",
+    "relocate": "搬迁",
+    "demolish": "拆除"
+  },
+  "dashboardFooter": {
+    "cityMetrics": "城市指标",
+    "buildings": "建筑数",
+    "dailyIncome": "每日收入",
+    "efficiency": "效率",
+    "stability": "稳定性",
+    "achievements": "成就",
+    "firstFactory": "第一座工厂",
+    "industrialTycoon": "工业大亨",
+    "viewAllAchievements": "查看全部成就",
+    "achievementLoading": "成就系统加载中……",
+    "systemStatus": "系统状态",
+    "powerGrid": "电网",
+    "transport": "交通",
+    "security": "安全",
+    "environment": "环境",
+    "limited": "受限",
+    "secure": "安全",
+    "moderate": "适中",
+    "online": "在线"
+  },
+  "modeIndicator": {
+    "mode": "模式"
+  },
+  "selectedIndicator": {
+    "selected": "已选中"
+  },
+  "toastContainer": {
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "buildingDetails": {
+    "unitDetails": "单位详情",
+    "selectABuilding": "请选择一个建筑",
+    "clickToView": "点击任意建筑查看详情",
+    "status": "状态",
+    "operational": "运行中",
+    "production": "产出",
+    "outputPerHour": "每小时产出",
+    "workers": "工人",
+    "maintenance": "维护",
+    "condition": "状况",
+    "nextService": "下次维护",
+    "upgradeUnit": "升级单位",
+    "maintenanceBtn": "维护",
+    "demolish": "拆除"
+  }
+}

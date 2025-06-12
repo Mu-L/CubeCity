@@ -1,4 +1,5 @@
 import { BUILDING_DATA } from '@/constants/constants.js'
+import { useGameState } from '@/stores/useGameState.js'
 import * as THREE from 'three'
 import Experience from '../experience.js'
 
@@ -18,6 +19,8 @@ export default class Interactor {
     this.focused = null
     // 城市资产集合
     this.cityGroup = cityGroup
+
+    this.gameState = useGameState() // 获取 pinia 实例
 
     // 绑定事件
     this._onMouseMove = this._onMouseMove.bind(this)
@@ -70,9 +73,10 @@ export default class Interactor {
           const tileName = this.focused.name || ''
           const tilePos = tileName.replace('Tile-', '')
           // 构造 toast 消息
-          // 获取建筑名称
-          const buildingName = BUILDING_DATA.find(b => b.type === selectedBuilding)?.name || '建筑'
-          const toastMsg = `${buildingName} 成功放置在地皮 ${tilePos} 位置`
+          const lang = this.gameState.language // 动态获取当前语言
+          const building = BUILDING_DATA.find(b => b.type === selectedBuilding)
+          const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
+          const toastMsg = lang === 'zh' ? `建筑 ${buildingName} 成功放置在地皮 ${tilePos} 位置` : `Building ${buildingName} placed successfully on tile ${tilePos}`
           eventBus.emit('toast:add', {
             message: toastMsg,
             type: 'success',
@@ -86,8 +90,10 @@ export default class Interactor {
             const tileName = this.focused.name || ''
             const tilePos = tileName.replace('Tile-', '')
             // 构造 toast 消息
-            const buildingName = BUILDING_DATA.find(b => b.type === this.focused.buildingInstance.type)?.name || '建筑'
-            const toastMsg = `地皮 ${tilePos} 位置上的 ${buildingName} 已被移除`
+            const lang = this.gameState.language
+            const building = BUILDING_DATA.find(b => b.type === this.focused.buildingInstance.type)
+            const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
+            const toastMsg = lang === 'zh' ? `地皮 ${tilePos} 位置上的 ${buildingName} 已被移除` : `Building ${buildingName} removed from tile ${tilePos}`
             this.focused.removeBuilding()
 
             eventBus.emit('toast:add', {

@@ -13,6 +13,7 @@ export const useGameState = defineStore('gameState', {
     cityLevel: 5, // 城市等级
     cityName: 'HeXian City', // 城市名称
     citySize: 16, // 城市大小
+    language: 'zh', // 默认中文
   }),
   actions: {
     setMode(mode) {
@@ -46,6 +47,9 @@ export const useGameState = defineStore('gameState', {
       if (this.toastQueue.length > 2) {
         this.toastQueue.shift()
       }
+    },
+    setLanguage(lang) {
+      this.language = lang
     },
     removeToast(id) {
       this.toastQueue = this.toastQueue.filter(t => t.id !== id)

@@ -14,6 +14,7 @@ const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
 const currentMode = computed(() => gameState.currentMode)
 
+const language = computed(() => gameState.language)
 // 按分类筛选建筑
 function buildingsByCategory(catKey) {
   // 只返回分类匹配且 visible !== false 的建筑
@@ -25,7 +26,7 @@ function selectBuilding({ type, name }) {
   if (selectedBuilding.value === type)
     return
   gameState.selectBuilding(type)
-  gameState.addToast(`选中建筑: ${name}`, 'info')
+  gameState.addToast(`选中建筑: ${name[language.value]}`, 'info')
 }
 function setMode(mode) {
   if (currentMode.value === mode)
@@ -63,13 +64,13 @@ onUnmounted(() => {
   <aside class="w-72 industrial-panel shadow-industrial overflow-y-auto relative z-[10] custom-scrollbar">
     <div class="p-4">
       <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
-        <span class="neon-text">CONSTRUCTION UNITS</span>
+        <span class="neon-text">{{ $t('buildingSidebar.constructionUnits') }}</span>
       </h2>
       <!-- 建筑分类与卡片 -->
       <div v-for="cat in buildingCategories" :key="cat.key" class="mb-6">
-        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase flex items-center tracking-[0.3rem]">
+        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase flex items-center" :class="language === 'zh' ? 'tracking-[0.3rem]' : ''">
           <span class="w-2 h-2 rounded-full mr-2" :class="[cat.color]" />
-          {{ cat.label }}
+          {{ cat.label[language] }}
         </h3>
         <div class="grid grid-cols-2 gap-2">
           <div
@@ -80,8 +81,8 @@ onUnmounted(() => {
             <div class="text-2xl text-center mb-1">
               {{ b.icon }}
             </div>
-            <div class="text-xs text-center font-bold  text-gray-300 tracking-[0.3rem]">
-              {{ b.name.split(' ')[0] }}
+            <div class="text-xs text-center font-bold  text-gray-300" :class="language === 'zh' ? 'tracking-[0.3rem]' : ''">
+              {{ b.name[language] }}
             </div>
             <div class="text-xs text-center text-industrial-yellow">
               <span class="text-xs">⚡</span>
@@ -92,17 +93,20 @@ onUnmounted(() => {
       </div>
       <!-- 操作模式 -->
       <div class="mt-6 pt-4 border-t border-gray-600">
-        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wide">
-          OPERATION MODE
+        <h3 class="text-sm font-bold text-gray-300 mb-3 uppercase" :class="language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
+          {{ $t('buildingSidebar.operationMode') }}
         </h3>
         <div class="space-y-2">
           <button
             v-for="mode in modes" :key="mode.key"
-            class="industrial-button w-full text-white font-bold py-2 px-3 text-sm uppercase tracking-wide"
-            :class="currentMode === mode.key ? 'bg-industrial-accent' : ''"
+            class="industrial-button w-full text-white font-bold py-2 px-3 text-sm uppercase"
+            :class="[
+              language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide',
+              currentMode === mode.key ? 'bg-industrial-accent' : '',
+            ]"
             @click="setMode(mode.key)"
           >
-            <span v-html="mode.icon" /> {{ mode.label }}
+            <span v-html="mode.icon" /> {{ mode.label[language] }}
           </button>
         </div>
       </div>

@@ -71,6 +71,14 @@ export default class SimObject extends THREE.Object3D {
   setMesh(value) {
     // 移除旧 mesh
     if (this.#mesh) {
+      // 彻底清除所有资源
+      this.#mesh.traverse((obj) => {
+        if (obj.material) {
+          obj.material?.dispose()
+        }
+      })
+      this.#mesh.geometry?.dispose()
+      this.#mesh.texture?.dispose()
       this.dispose()
       this.remove(this.#mesh)
     }
