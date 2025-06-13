@@ -46,7 +46,7 @@ const systemStatusList = computed(() => [
   <footer class="p-2">
     <div class="grid grid-cols-3 gap-2">
       <!-- 左侧统计 -->
-      <div class="dashboard-card rounded-lg p-4">
+      <div class="dashboard-card rounded-lg p-4 z-10">
         <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
           {{ t('dashboardFooter.cityMetrics') }}
         </h3>
@@ -86,7 +86,7 @@ const systemStatusList = computed(() => [
         </div>
       </div>
       <!-- 中间成就系统 -->
-      <div class="dashboard-card rounded-lg p-4">
+      <div class="dashboard-card rounded-lg p-4 z-10">
         <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 text-center neon-text">
           {{ t('dashboardFooter.achievements') }}
         </h3>
@@ -116,7 +116,7 @@ const systemStatusList = computed(() => [
         </div>
       </div>
       <!-- 右侧系统状态 -->
-      <div class="dashboard-card rounded-lg p-4">
+      <div class="dashboard-card rounded-lg p-4 z-10">
         <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
           {{ t('dashboardFooter.systemStatus') }}
         </h3>

@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { BUILDING_CATEGORIES, BUILDING_DATA, BUILDING_MODES } from '../constants/constants'
 import { useGameState } from '../stores/useGameState'
-
+// i18n
+const { t } = useI18n()
 // 建筑分类
 const buildingCategories = computed(() => BUILDING_CATEGORIES)
 // 建筑数据（数组结构，type为唯一标识）
@@ -26,14 +28,14 @@ function selectBuilding({ type, name }) {
   if (selectedBuilding.value === type)
     return
   gameState.selectBuilding(type)
-  gameState.addToast(`选中建筑: ${name[language.value]}`, 'info')
+  gameState.addToast(`${t('selectedIndicator.selected')}: ${name[language.value]}`, 'info')
 }
 function setMode(mode) {
   if (currentMode.value === mode)
     return
   gameState.setMode(mode)
   gameState.selectBuilding(null)
-  gameState.addToast(`切换模式: ${mode.toUpperCase()}`, 'info')
+  gameState.addToast(`MODE : ${mode.toUpperCase()} CHANGE`, 'info')
 }
 
 // 键盘快捷键映射

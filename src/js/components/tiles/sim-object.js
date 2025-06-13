@@ -1,4 +1,4 @@
-import { HIGHLIGHTED_COLOR, SELECTED_COLOR, SIMOBJECT_DEFAULT_OPACITY, SIMOBJECT_SELECTED_OPACITY } from '@/constants/constants.js'
+import { BUILD_COLOR, BUILD_COLOR_OPACITY, DEMOLISH_COLOR, DEMOLISH_COLOR_OPACITY, HIGHLIGHTED_COLOR, RELOCATE_COLOR, RELOCATE_COLOR_OPACITY, SELECTED_COLOR, SELECTED_COLOR_OPACITY, SIMOBJECT_DEFAULT_OPACITY, SIMOBJECT_SELECTED_OPACITY } from '@/constants/constants.js'
 import * as THREE from 'three'
 
 // SimObject 互动基类，所有可交互对象继承自此类
@@ -103,14 +103,46 @@ export default class SimObject extends THREE.Object3D {
     }
   }
 
-  setFocused(value) {
+  /**
+   * 设置聚焦高亮，根据当前操作模式调整颜色和透明度
+   * @param {boolean} value 是否聚焦
+   * @param {string} mode 操作模式，可选：'select' | 'build' | 'relocate' | 'demolish'，默认为 'select'
+   */
+  setFocused(value, mode = 'select') {
+    // mode 到颜色和透明度的映射
+    let emissionColor = HIGHLIGHTED_COLOR
+    let opacity = SIMOBJECT_SELECTED_OPACITY
+    switch (mode) {
+      case 'select':
+        emissionColor = SELECTED_COLOR
+        opacity = SELECTED_COLOR_OPACITY
+        break
+      case 'build':
+        emissionColor = BUILD_COLOR
+        opacity = BUILD_COLOR_OPACITY
+        break
+      case 'relocate':
+        emissionColor = RELOCATE_COLOR
+        opacity = RELOCATE_COLOR_OPACITY
+        break
+      case 'demolish':
+        emissionColor = DEMOLISH_COLOR
+        opacity = DEMOLISH_COLOR_OPACITY
+        break
+      default:
+        emissionColor = HIGHLIGHTED_COLOR
+        opacity = SIMOBJECT_SELECTED_OPACITY
+    }
     if (value) {
-      this.#setMeshEmission(HIGHLIGHTED_COLOR)
-      this.#setMeshOpacity(SIMOBJECT_SELECTED_OPACITY)
+      this.#setMeshEmission(emissionColor)
+      this.#setMeshOpacity(opacity)
+      this.mesh.position.y += 0.1
     }
     else {
+      // 取消聚焦，恢复默认
       this.#setMeshEmission(0)
       this.#setMeshOpacity(SIMOBJECT_DEFAULT_OPACITY)
+      this.mesh.position.y -= 0.1
     }
   }
 

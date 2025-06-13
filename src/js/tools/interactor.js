@@ -17,6 +17,8 @@ export default class Interactor {
     this.raycaster = new THREE.Raycaster()
     // 当前聚焦对象
     this.focused = null
+    // 当前选择对象
+    this.selected = null
     // 城市资产集合
     this.cityGroup = cityGroup
 
@@ -26,10 +28,15 @@ export default class Interactor {
     this._onMouseMove = this._onMouseMove.bind(this)
     this.canvas.addEventListener('mousemove', this._onMouseMove.bind(this))
     this.canvas.addEventListener('click', this._onClick.bind(this))
+    // 右键取消选择
+    this._onRightClick = this._onRightClick.bind(this)
+    this.canvas.addEventListener('contextmenu', this._onRightClick.bind(this))
   }
 
   // 鼠标移动事件处理
   _onMouseMove(_event) {
+    if (this.experience.gameState.currentMode === 'select' && this.selected)
+      return
     // 获取 NDC 坐标（已由 iMouse 处理）
     const mouse = this.iMouse.normalizedMouse
     // 设置射线
@@ -44,16 +51,16 @@ export default class Interactor {
       newFocused = this._findTileInstance(intersections[0].object)
     }
     else {
-      this.focused && this.focused.setFocused(false)
+      this.focused && this.focused.setFocused(false, this.experience.gameState.currentMode)
       this.focused = null
     }
 
     // 切换高亮
     if (newFocused && this.focused !== newFocused) {
-      if (this.focused)
-        this.focused.setFocused(false)
+      if (this.focused && this.selected !== this.focused)
+        this.focused.setFocused(false, this.experience.gameState.currentMode)
       if (newFocused)
-        newFocused.setFocused(true)
+        newFocused.setFocused(true, this.experience.gameState.currentMode)
       this.focused = newFocused
     }
   }
@@ -65,6 +72,10 @@ export default class Interactor {
       const selectedBuilding = this.experience.gameState.selectedBuilding
       const eventBus = this.experience.eventBus
 
+      if (mode === 'select' && this.focused.buildingInstance) {
+        this.selected = this.focused
+        this.focused.buildingInstance.setClicked()
+      }
       if (mode === 'build' && selectedBuilding) {
         // 放置建筑
         if (typeof this.focused.setBuilding === 'function') {
@@ -114,6 +125,10 @@ export default class Interactor {
         })
       }
     }
+  }
+
+  _onRightClick(_event) {
+    this.selected = null
   }
 
   _findTileInstance(obj) {

@@ -1,7 +1,7 @@
+import Experience from '@/js/experience.js'
+import smokeFragmentShader from '@/shaders/smoke/fragment.glsl'
+import smokeVertexShader from '@/shaders/smoke/vertex.glsl'
 import * as THREE from 'three'
-import smokeFragmentShader from '../../../../shaders/smoke/fragment.glsl'
-import smokeVertexShader from '../../../../shaders/smoke/vertex.glsl'
-import Experience from '../../../Experience.js'
 import Building from '../building.js'
 // 工厂类建筑
 export default class Factory extends Building {

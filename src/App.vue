@@ -15,7 +15,6 @@ import TopBar from './components/TopBar.vue'
     <div class="flex gap-2 px-2 h-[calc(100vh-200px)]">
       <BuildingSidebar />
       <main class="flex-1 industrial-panel shadow-industrial relative overflow-hidden industrial-grid">
-        <GameCanvas />
         <ModeIndicator />
         <SelectedIndicator />
         <BuildingDetails />
@@ -24,4 +23,5 @@ import TopBar from './components/TopBar.vue'
     <DashboardFooter />
     <ToastContainer />
   </div>
+  <GameCanvas />
 </template>

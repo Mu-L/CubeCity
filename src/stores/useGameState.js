@@ -13,7 +13,7 @@ export const useGameState = defineStore('gameState', {
     cityLevel: 5, // 城市等级
     cityName: 'HeXian City', // 城市名称
     citySize: 16, // 城市大小
-    language: 'zh', // 默认中文
+    language: 'en', // 默认英文
   }),
   actions: {
     setMode(mode) {
