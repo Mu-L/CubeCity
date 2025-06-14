@@ -63,5 +63,11 @@
     "upgradeUnit": "升级单位",
     "maintenanceBtn": "维护",
     "demolish": "拆除"
+  },
+  "confirmDialog": {
+    "title": "确认操作",
+    "message": "确定要拆除这个建筑吗？此操作不可撤销！",
+    "confirm": "确认拆除",
+    "cancel": "取消"
   }
 }

@@ -63,5 +63,11 @@
     "upgradeUnit": "Upgrade Unit",
     "maintenanceBtn": "Maintenance",
     "demolish": "Demolish"
+  },
+  "confirmDialog": {
+    "title": "Confirm",
+    "message": "Are you sure you want to demolish this building?",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   }
 }
