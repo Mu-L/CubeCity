@@ -33,12 +33,12 @@ export default class Experience {
     // 事件总线
     this.eventBus = eventBus
 
-    // 全局状态
-    this.gameState = useGameState()
+    // // 全局状态
+    // this.gameState = useGameState()
 
-    // this.credits = this.gameState.credits // 资源/金币
-    // this.currentMode = this.gameState.currentMode // 当前操作模式
-    // this.selectedBuilding = this.gameState.selectedBuilding // 当前选中的建筑类型
+    // // this.credits = this.gameState.credits // 资源/金币
+    // // this.currentMode = this.gameState.currentMode // 当前操作模式
+    // // this.selectedBuilding = this.gameState.selectedBuilding // 当前选中的建筑类型
 
     // Panel
     this.debug = new Debug()

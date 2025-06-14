@@ -1,4 +1,5 @@
 import { BUILD_COLOR, BUILD_COLOR_OPACITY, DEMOLISH_COLOR, DEMOLISH_COLOR_OPACITY, HIGHLIGHTED_COLOR, RELOCATE_COLOR, RELOCATE_COLOR_OPACITY, SELECTED_COLOR, SELECTED_COLOR_OPACITY, SIMOBJECT_DEFAULT_OPACITY, SIMOBJECT_SELECTED_OPACITY } from '@/constants/constants.js'
+import gsap from 'gsap'
 import * as THREE from 'three'
 
 // SimObject 互动基类，所有可交互对象继承自此类
@@ -136,13 +137,29 @@ export default class SimObject extends THREE.Object3D {
     if (value) {
       this.#setMeshEmission(emissionColor)
       this.#setMeshOpacity(opacity)
-      this.mesh.position.y += 0.1
+      // 使用gsap实现y轴yoyo动画
+      if (this.mesh) {
+        // 先停止可能已有动画
+        gsap.killTweensOf(this.mesh.position)
+        gsap.to(this.mesh.position, {
+          y: 0.1,
+          duration: 0.41,
+          yoyo: true,
+          repeat: -1,
+          ease: 'sine.inOut',
+        })
+      }
     }
     else {
       // 取消聚焦，恢复默认
       this.#setMeshEmission(0)
       this.#setMeshOpacity(SIMOBJECT_DEFAULT_OPACITY)
-      this.mesh.position.y -= 0.1
+      if (this.mesh) {
+        // 停止动画并复位y轴
+        gsap.killTweensOf(this.mesh.position)
+        // 直接回到初始y（假设聚焦只加了0.1）
+        gsap.to(this.mesh.position, { y: 0, duration: 0.2, overwrite: true })
+      }
     }
   }
 

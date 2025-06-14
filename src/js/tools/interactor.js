@@ -1,4 +1,5 @@
 import { BUILDING_DATA } from '@/constants/constants.js'
+import { eventBus } from '@/js/utils/event-bus.js'
 import { useGameState } from '@/stores/useGameState.js'
 import * as THREE from 'three'
 import Experience from '../experience.js'
@@ -31,12 +32,12 @@ export default class Interactor {
     // 右键取消选择
     this._onRightClick = this._onRightClick.bind(this)
     this.canvas.addEventListener('contextmenu', this._onRightClick.bind(this))
+
+    eventBus.on('ui:demolish-confirmed', this._onDemolishConfirmed.bind(this))
   }
 
   // 鼠标移动事件处理
   _onMouseMove(_event) {
-    if (this.experience.gameState.currentMode === 'select' && this.selected)
-      return
     // 获取 NDC 坐标（已由 iMouse 处理）
     const mouse = this.iMouse.normalizedMouse
     // 设置射线
@@ -51,84 +52,186 @@ export default class Interactor {
       newFocused = this._findTileInstance(intersections[0].object)
     }
     else {
-      this.focused && this.focused.setFocused(false, this.experience.gameState.currentMode)
+      // 在 SELECT 模式下，不要取消已选中对象的高亮
+      if (this.gameState.currentMode === 'select' && this.selected) {
+        // 只取消 focused 对象的高亮，但保持 selected 对象的高亮
+        if (this.focused && this.focused !== this.selected) {
+          this.focused.setFocused(false, this.gameState.currentMode)
+        }
+      }
+      else {
+        this.focused && this.focused.setFocused(false, this.gameState.currentMode)
+      }
       this.focused = null
+      return
     }
 
     // 切换高亮
     if (newFocused && this.focused !== newFocused) {
-      if (this.focused && this.selected !== this.focused)
-        this.focused.setFocused(false, this.experience.gameState.currentMode)
-      if (newFocused)
-        newFocused.setFocused(true, this.experience.gameState.currentMode)
+      // 在 SELECT 模式下，不要取消已选中对象的高亮
+      if (this.gameState.currentMode === 'select' && this.selected) {
+        // 只有当前 focused 不是 selected 时才取消其高亮
+        if (this.focused && this.focused !== this.selected) {
+          this.focused.setFocused(false, this.gameState.currentMode)
+        }
+        // 只有当新 focused 不是 selected 时才设置其高亮
+        if (newFocused && newFocused !== this.selected) {
+          newFocused.setFocused(true, this.gameState.currentMode)
+        }
+      }
+      else {
+        // 非 SELECT 模式下的正常高亮切换
+        if (this.focused)
+          this.focused.setFocused(false, this.gameState.currentMode)
+        if (newFocused)
+          newFocused.setFocused(true, this.gameState.currentMode)
+      }
       this.focused = newFocused
     }
   }
 
   _onClick(_event) {
-    // 拆除建筑
-    if (this.focused) {
-      const mode = this.experience.gameState.currentMode
-      const selectedBuilding = this.experience.gameState.selectedBuilding
-      const eventBus = this.experience.eventBus
+    if (!this.focused)
+      return
 
-      if (mode === 'select' && this.focused.buildingInstance) {
-        this.selected = this.focused
-        this.focused.buildingInstance.setClicked()
-      }
-      if (mode === 'build' && selectedBuilding) {
-        // 放置建筑
-        if (typeof this.focused.setBuilding === 'function') {
-          this.focused.setBuilding(selectedBuilding)
-          // 解析地皮编号
-          const tileName = this.focused.name || ''
-          const tilePos = tileName.replace('Tile-', '')
-          // 构造 toast 消息
-          const lang = this.gameState.language // 动态获取当前语言
-          const building = BUILDING_DATA.find(b => b.type === selectedBuilding)
-          const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
-          const toastMsg = lang === 'zh' ? `建筑 ${buildingName} 成功放置在地皮 ${tilePos} 位置` : `Building ${buildingName} placed successfully on tile ${tilePos}`
-          eventBus.emit('toast:add', {
-            message: toastMsg,
-            type: 'success',
-          })
-        }
-      }
-      else if (mode === 'demolish') {
-        if (typeof this.focused.removeBuilding === 'function') {
-          if (this.focused.buildingInstance) {
-            // 解析地皮编号
-            const tileName = this.focused.name || ''
-            const tilePos = tileName.replace('Tile-', '')
-            // 构造 toast 消息
-            const lang = this.gameState.language
-            const building = BUILDING_DATA.find(b => b.type === this.focused.buildingInstance.type)
-            const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
-            const toastMsg = lang === 'zh' ? `地皮 ${tilePos} 位置上的 ${buildingName} 已被移除` : `Building ${buildingName} removed from tile ${tilePos}`
-            this.focused.removeBuilding()
+    const mode = this.gameState.currentMode
 
-            eventBus.emit('toast:add', {
-              message: toastMsg,
-              type: 'error',
-            })
-          }
-          else {
-            this.focused.setType('grass')
-          }
-        }
-      }
-      else {
-        // 显示信息面板
-        eventBus.emit('ui:panel:show', {
-          panel: 'building',
-          data: this.focused,
-        })
-      }
+    // 根据当前模式执行相应的点击逻辑
+    switch (mode) {
+      case 'select':
+        this._handleSelectMode()
+        break
+      case 'build':
+        this._handleBuildMode()
+        break
+      case 'demolish':
+        this._handleDemolishMode()
+        break
+      case 'relocate':
+        this._handleRelocateMode()
+        break
+      default:
+        this._handleDefaultMode()
+        break
     }
   }
 
+  // SELECT 模式：选择建筑
+  _handleSelectMode() {
+    if (!this.focused.buildingInstance)
+      return
+
+    // 取消之前选中对象的状态
+    if (this.selected && this.selected !== this.focused) {
+      this.selected.setFocused(false, 'select')
+    }
+
+    // 设置新的选中对象
+    this.selected = this.focused
+    // 当前选中建筑类型
+    console.log('selected', this.selected.buildingInstance.type)
+    // 当前地皮所在位置
+    console.log('selected', this.selected.name)
+
+    const buildingInstance = {
+      type: this.selected.buildingInstance.type,
+      name: this.selected.name,
+      position: this.selected.position,
+      rotation: this.selected.rotation,
+    }
+    this.gameState.selectBuildingInstance(buildingInstance)
+    // 确保选中对象保持高亮
+    this.selected.setFocused(true, 'select')
+  }
+
+  // BUILD 模式：放置建筑
+  _handleBuildMode() {
+    const selectedBuilding = this.gameState.selectedBuilding
+    if (!selectedBuilding || typeof this.focused.setBuilding !== 'function')
+      return
+
+    this.focused.setBuilding(selectedBuilding)
+
+    // 显示成功提示
+    this._showBuildingPlacedToast(selectedBuilding)
+  }
+
+  // DEMOLISH 模式：拆除建筑
+  _handleDemolishMode() {
+    if (typeof this.focused.removeBuilding !== 'function')
+      return
+
+    if (this.focused.buildingInstance) {
+      // 发送 mitt 事件，等待 UI 层确认
+      eventBus.emit('ui:confirm-demolish', {
+        tileId: this.focused.id, // 假设有 id，没有可用 name
+        tileName: this.focused.name || '',
+        buildingType: this.focused.buildingInstance.type,
+      })
+      // 暂停后续逻辑，等 UI 层反馈
+    }
+    else {
+      // 如果没有建筑，将地皮设置为草地
+      this.focused.setType('grass')
+    }
+  }
+
+  // RELOCATE 模式：重新定位建筑（如果有这个功能的话）
+  _handleRelocateMode() {
+    // TODO: 实现重新定位逻辑
+    console.warn('重新定位模式尚未实现')
+  }
+
+  // 默认模式：显示信息面板
+  _handleDefaultMode() {
+    eventBus.emit('ui:panel:show', {
+      panel: 'building',
+      data: this.focused,
+    })
+  }
+
+  // 显示建筑放置成功提示
+  _showBuildingPlacedToast(buildingType) {
+    const tileName = this.focused.name || ''
+    const tilePos = tileName.replace('Tile-', '')
+    const lang = this.gameState.language
+    const building = BUILDING_DATA.find(b => b.type === buildingType)
+    const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
+    const toastMsg = lang === 'zh'
+      ? `建筑 ${buildingName} 成功放置在地皮 ${tilePos} 位置`
+      : `Building ${buildingName} placed successfully on tile ${tilePos}`
+
+    eventBus.emit('toast:add', {
+      message: toastMsg,
+      type: 'success',
+    })
+  }
+
+  // 显示建筑拆除提示
+  _showBuildingRemovedToast(buildingType) {
+    const tileName = this.focused.name || ''
+    const tilePos = tileName.replace('Tile-', '')
+    const lang = this.gameState.language
+    const building = BUILDING_DATA.find(b => b.type === buildingType)
+    const buildingName = building?.name?.[lang] || building?.name?.zh || '建筑'
+    const toastMsg = lang === 'zh'
+      ? `地皮 ${tilePos} 位置上的 ${buildingName} 已被移除`
+      : `Building ${buildingName} removed from tile ${tilePos}`
+
+    eventBus.emit('toast:add', {
+      message: toastMsg,
+      type: 'error',
+    })
+  }
+
   _onRightClick(_event) {
-    this.selected = null
+    _event.preventDefault() // 阻止右键菜单
+
+    // 取消之前选中对象的状态
+    if (this.selected) {
+      this.selected.setFocused(false, this.gameState.currentMode)
+      this.selected = null
+    }
   }
 
   _findTileInstance(obj) {
@@ -142,6 +245,16 @@ export default class Interactor {
     if (obj.parent)
       return this._findTileInstance(obj.parent)
     return null
+  }
+
+  _onDemolishConfirmed(_data) {
+    // data 里应包含 tileId 或 tileName
+    // 这里假设 this.focused 就是要操作的 tile（如需更严谨可通过 id 查找）
+    if (this.focused && this.focused.buildingInstance) {
+      const buildingType = this.focused.buildingInstance.type
+      this.focused.removeBuilding()
+      this._showBuildingRemovedToast(buildingType)
+    }
   }
 
   // 清理事件

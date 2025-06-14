@@ -53,13 +53,6 @@ export default class Building extends SimObject {
   getPower() { return 0 }
   getEconomy() { return 0 }
 
-  // 可重写：建筑被点击时调用
-  setClicked() {
-    console.log(123)
-
-    this.setFocused(true, 'select')
-  }
-
   // 可重写：返回建筑信息
   toHTML() {
     const dirMap = ['右', '下', '左', '上']
