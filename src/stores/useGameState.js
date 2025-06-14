@@ -4,6 +4,7 @@ export const useGameState = defineStore('gameState', {
   state: () => ({
     currentMode: 'build', // 当前操作模式
     selectedBuilding: null, // 当前选中建筑类型
+    selectedBuildingInstance: null, // 当前选中的建筑实例（包含位置、等级等详细信息）
     toastQueue: [], // Toast 消息队列
     // 其他全局状态可在此扩展
     credits: 12345, // 金币
@@ -21,6 +22,19 @@ export const useGameState = defineStore('gameState', {
     },
     selectBuilding(type) {
       this.selectedBuilding = type
+    },
+    // 选中建筑实例（用于 SELECT 模式）
+    selectBuildingInstance(buildingInstance) {
+      this.selectedBuildingInstance = buildingInstance
+      // 同时更新 selectedBuilding 以保持兼容性
+      if (buildingInstance) {
+        this.selectedBuilding = buildingInstance.type
+      }
+    },
+    // 清除选中的建筑实例
+    clearSelectedBuildingInstance() {
+      this.selectedBuildingInstance = null
+      this.selectedBuilding = null
     },
     setCredits(credits) {
       this.credits = credits

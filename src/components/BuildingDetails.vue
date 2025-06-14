@@ -8,6 +8,7 @@ const { t, locale } = useI18n()
 const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
 const currentMode = computed(() => gameState.currentMode)
+const selectedBuildingInstance = computed(() => gameState.selectedBuildingInstance)
 const building = computed(() => BUILDING_DATA.find(b => b.type === selectedBuilding.value) || {})
 function upgradeBuilding() {
   gameState.addToast(t('buildingDetails.upgradeUnit'), 'success')
@@ -93,7 +94,23 @@ function demolishBuilding() {
                 <span class="text-sm font-bold text-gray-300">12h</span>
               </div>
             </div>
+            <!-- 显示建筑实例信息 -->
+            <!-- 建筑所在 Tile 位置 -->
+            <div class="resource-display rounded p-3">
+              <div class="text-sm text-gray-400 uppercase tracking-wide mb-2">
+                {{ t('buildingDetails.tile') }}
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm font-bold text-industrial-blue">
+                  {{ selectedBuildingInstance.position.x }}, {{ selectedBuildingInstance.position.z }}
+                </span>
+                <span class="text-sm font-bold text-industrial-blue">
+                  {{ selectedBuildingInstance.name }}
+                </span>
+              </div>
+            </div>
           </div>
+
           <div v-if="currentMode === 'select'" class="mt-6 space-y-2">
             <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide" @click="upgradeBuilding">
               ⬆️ {{ t('buildingDetails.upgradeUnit') }}

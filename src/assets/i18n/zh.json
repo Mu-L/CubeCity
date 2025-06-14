@@ -62,7 +62,8 @@
     "nextService": "下次维护",
     "upgradeUnit": "升级单位",
     "maintenanceBtn": "维护",
-    "demolish": "拆除"
+    "demolish": "拆除",
+    "tile": "地皮位置"
   },
   "confirmDialog": {
     "title": "确认操作",

@@ -62,7 +62,8 @@
     "nextService": "Next Service",
     "upgradeUnit": "Upgrade Unit",
     "maintenanceBtn": "Maintenance",
-    "demolish": "Demolish"
+    "demolish": "Demolish",
+    "tile": "Tile Position"
   },
   "confirmDialog": {
     "title": "Confirm",
