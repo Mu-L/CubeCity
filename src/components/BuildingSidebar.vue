@@ -24,7 +24,9 @@ function buildingsByCategory(catKey) {
 }
 // 选中建筑时，pinia 存储 buildingType（type 字段）
 function selectBuilding({ type, name }) {
-  // 重复选中同一建筑时，不重复添加 toast
+  // 仅在 BUILD 模式下允许选中
+  if (currentMode.value !== 'build')
+    return
   if (selectedBuilding.value === type)
     return
   gameState.selectBuilding(type)
@@ -77,7 +79,12 @@ onUnmounted(() => {
         <div class="grid grid-cols-2 gap-2">
           <div
             v-for="b in buildingsByCategory(cat.key)" :key="b.type"
-            class="building-card-industrial rounded-lg p-3 cursor-pointer" :class="[selectedBuilding === b.type ? 'ring-2 ring-industrial-accent' : '']"
+            class="building-card-industrial rounded-lg p-3 cursor-pointer"
+            :class="[
+              selectedBuilding === b.type ? 'ring-2 ring-industrial-accent' : '',
+              currentMode !== 'build' && selectedBuilding !== b.type ? 'pointer-events-none opacity-50 grayscale' : '',
+            ]"
+            :title="currentMode !== 'build' ? $t('buildingSidebar.switchToBuildMode') : ''"
             @click="selectBuilding(b)"
           >
             <div class="text-2xl text-center mb-1">

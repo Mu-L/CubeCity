@@ -13,7 +13,8 @@
     "select": "选择",
     "build": "建造",
     "relocate": "搬迁",
-    "demolish": "拆除"
+    "demolish": "拆除",
+    "switchToBuildMode": "请切换到建造模式"
   },
   "dashboardFooter": {
     "cityMetrics": "城市指标",
@@ -70,5 +71,20 @@
     "message": "确定要拆除这个建筑吗？此操作不可撤销！",
     "confirm": "确认拆除",
     "cancel": "取消"
+  },
+  "common": {
+    "cancel": "取消"
+  },
+  "dialog": {
+    "selectTitle": "升级建筑",
+    "selectMessage": "确定要升级 <span class=\"text-[#ff4402] font-bold\"> {building} </span>? 升级将花费 {cost} 金币。",
+    "selectConfirm": "确认升级",
+    "relocateTitle": "搬迁建筑",
+    "relocateMessage": "确定要搬迁 <span class=\"text-[#ff4402] font-bold\"> {building} </span>?",
+    "relocateConfirm": "确认搬迁",
+    "demolishTitle": "拆除建筑",
+    "demolishMessage": "确定要拆除 <span class=\"text-[#ff4402] font-bold\"> {building} </span>? 拆除后将获得 {refund} 金币。",
+    "demolishConfirm": "确认拆除",
+    "building": "建筑"
   }
 }

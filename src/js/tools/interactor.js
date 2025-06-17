@@ -30,10 +30,9 @@ export default class Interactor {
     this.canvas.addEventListener('mousemove', this._onMouseMove.bind(this))
     this.canvas.addEventListener('click', this._onClick.bind(this))
     // 右键取消选择
-    this._onRightClick = this._onRightClick.bind(this)
     this.canvas.addEventListener('contextmenu', this._onRightClick.bind(this))
 
-    eventBus.on('ui:demolish-confirmed', this._onDemolishConfirmed.bind(this))
+    eventBus.on('ui:action-confirmed', this._onActionConfirmed.bind(this))
   }
 
   // 鼠标移动事件处理
@@ -96,6 +95,15 @@ export default class Interactor {
 
     const mode = this.gameState.currentMode
 
+    // 只要是 select/relocate/demolish 模式，点击 tile 时立即将 selected = focused
+    if (['select', 'relocate', 'demolish'].includes(mode)) {
+      // 取消之前选中对象的状态
+      if (this.selected && this.selected !== this.focused) {
+        this.selected.setFocused(false, mode)
+      }
+      this.selected = this.focused
+    }
+
     // 根据当前模式执行相应的点击逻辑
     switch (mode) {
       case 'select':
@@ -128,18 +136,13 @@ export default class Interactor {
 
     // 设置新的选中对象
     this.selected = this.focused
-    // 当前选中建筑类型
-    console.log('selected', this.selected.buildingInstance.type)
-    // 当前地皮所在位置
-    console.log('selected', this.selected.name)
 
     const buildingInstance = {
       type: this.selected.buildingInstance.type,
-      name: this.selected.name,
       position: this.selected.position,
-      rotation: this.selected.rotation,
     }
-    this.gameState.selectBuildingInstance(buildingInstance)
+    this.gameState.selectBuilding(buildingInstance.type)
+    this.gameState.selectPosition(buildingInstance.position)
     // 确保选中对象保持高亮
     this.selected.setFocused(true, 'select')
   }
@@ -158,28 +161,40 @@ export default class Interactor {
 
   // DEMOLISH 模式：拆除建筑
   _handleDemolishMode() {
-    if (typeof this.focused.removeBuilding !== 'function')
+    if (typeof this.selected.removeBuilding !== 'function')
       return
 
-    if (this.focused.buildingInstance) {
+    if (this.selected.buildingInstance) {
       // 发送 mitt 事件，等待 UI 层确认
-      eventBus.emit('ui:confirm-demolish', {
-        tileId: this.focused.id, // 假设有 id，没有可用 name
-        tileName: this.focused.name || '',
-        buildingType: this.focused.buildingInstance.type,
+      eventBus.emit('ui:confirm-action', {
+        action: 'demolish',
+        tileId: this.selected.id, // 假设有 id，没有可用 name
+        tileName: this.selected.name || '',
+        buildingType: this.selected.buildingInstance.type,
       })
       // 暂停后续逻辑，等 UI 层反馈
     }
     else {
       // 如果没有建筑，将地皮设置为草地
-      this.focused.setType('grass')
+      this.selected.setType('grass')
     }
   }
 
-  // RELOCATE 模式：重新定位建筑（如果有这个功能的话）
+  // RELOCATE 模式：重新定位建筑
   _handleRelocateMode() {
-    // TODO: 实现重新定位逻辑
-    console.warn('重新定位模式尚未实现')
+    if (this.selected.buildingInstance) {
+      eventBus.emit('ui:confirm-action', {
+        action: 'relocate',
+        tileId: this.selected.id,
+        tileName: this.selected.name || '',
+        buildingType: this.selected.buildingInstance.type,
+      })
+      // 暂停后续逻辑，等 UI 层反馈
+    }
+    else {
+      // 没有建筑不能 relocate
+      // 可选：弹出提示
+    }
   }
 
   // 默认模式：显示信息面板
@@ -209,7 +224,7 @@ export default class Interactor {
 
   // 显示建筑拆除提示
   _showBuildingRemovedToast(buildingType) {
-    const tileName = this.focused.name || ''
+    const tileName = this.selected.name || ''
     const tilePos = tileName.replace('Tile-', '')
     const lang = this.gameState.language
     const building = BUILDING_DATA.find(b => b.type === buildingType)
@@ -234,6 +249,50 @@ export default class Interactor {
     }
   }
 
+  _onActionConfirmed(action) {
+    if (!action)
+      return
+
+    switch (action) {
+      case 'upgrade':
+        // 升级建筑
+        if (this.selected && this.selected.buildingInstance && typeof this.selected.buildingInstance.upgrade === 'function') {
+          const newBuilding = this.selected.buildingInstance.upgrade()
+          if (newBuilding) {
+            this.selected.setBuilding(newBuilding.type, newBuilding.direction, newBuilding.options)
+          }
+          else {
+            eventBus.emit('toast:add', {
+              message: 'Building is already at the highest level, cannot be upgraded',
+              type: 'error',
+            })
+          }
+        }
+        break
+      case 'demolish':
+        // 拆除建筑
+        if (this.selected && typeof this.selected.removeBuilding === 'function' && this.selected.buildingInstance) {
+          const buildingType = this.selected.buildingInstance.type
+          this.selected.removeBuilding()
+          this._showBuildingRemovedToast(buildingType)
+        }
+        break
+      case 'relocate':
+        // 重新定位建筑（示例：这里只做提示，具体逻辑可扩展）
+        if (this.selected && this.selected.buildingInstance) {
+          // TODO: 实现具体的 relocate 逻辑
+          eventBus.emit('toast:add', {
+            message: 'Relocate confirmed!（请实现具体逻辑）',
+            type: 'info',
+          })
+        }
+        break
+      // 可扩展更多 action
+      default:
+        break
+    }
+  }
+
   _findTileInstance(obj) {
     if (!obj)
       return null
@@ -247,18 +306,17 @@ export default class Interactor {
     return null
   }
 
-  _onDemolishConfirmed(_data) {
-    // data 里应包含 tileId 或 tileName
-    // 这里假设 this.focused 就是要操作的 tile（如需更严谨可通过 id 查找）
-    if (this.focused && this.focused.buildingInstance) {
-      const buildingType = this.focused.buildingInstance.type
-      this.focused.removeBuilding()
-      this._showBuildingRemovedToast(buildingType)
+  _onKeyDown(event) {
+    if (event.key === 'Escape') {
+      this._onRightClick()
     }
   }
 
   // 清理事件
   dispose() {
     this.canvas.removeEventListener('mousemove', this._onMouseMove)
+    this.canvas.removeEventListener('click', this._onClick)
+    this.canvas.removeEventListener('contextmenu', this._onRightClick)
+    eventBus.off('ui:action-confirmed', this._onActionConfirmed.bind(this))
   }
 }

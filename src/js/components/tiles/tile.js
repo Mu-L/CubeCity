@@ -90,17 +90,6 @@ export default class Tile extends SimObject {
     }
   }
 
-  // 随机生成绿色颜色
-  _randomGreenColor() {
-    // H: 0.25~0.45 (90~160°), S: 0.4~0.8, L: 0.3~0.6
-    const h = Math.random() * (0.45 - 0.25) + 0.25
-    const s = Math.random() * (0.8 - 0.4) + 0.4
-    const l = Math.random() * (0.6 - 0.3) + 0.3
-    const color = new THREE.Color()
-    color.setHSL(h, s, l)
-    return color
-  }
-
   // 移除原有建筑实例
   removeBuilding() {
     if (this.buildingInstance) {

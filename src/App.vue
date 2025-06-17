@@ -10,30 +10,28 @@ import ModeIndicator from './components/ModeIndicator.vue'
 import SelectedIndicator from './components/SelectedIndicator.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import TopBar from './components/TopBar.vue'
+import { useBuilding } from './hooks/useBuilding.js'
 
 const showDialog = ref(false)
 const dialogData = ref({})
+const { getDialogConfig, handleBuildingTransaction } = useBuilding()
 
 // 监听 mitt 事件
 // 只监听一次即可
 if (!window.__confirmDialogListenerAdded) {
-  eventBus.on('ui:confirm-demolish', (data) => {
-    dialogData.value = {
-      ...data,
-      title: 'Confirm Demolish',
-      message: `Are you sure you want to demolish <span class=\"text-[#ff4402] font-bold\"> ${data.buildingType || 'building'} </span>? This action cannot be undone!`,
-      confirmText: 'CONFIRM',
-      cancelText: 'CANCEL',
-    }
+  eventBus.on('ui:confirm-action', (data) => {
+    dialogData.value = getDialogConfig(data.action, data.buildingType)
     showDialog.value = true
   })
   window.__confirmDialogListenerAdded = true
 }
 
 function handleConfirm() {
-  eventBus.emit('ui:demolish-confirmed', dialogData.value)
+  handleBuildingTransaction(dialogData.value.action, dialogData.value.buildingType)
+  eventBus.emit('ui:action-confirmed', dialogData.value.action)
   showDialog.value = false
 }
+
 function handleCancel() {
   showDialog.value = false
 }
@@ -58,6 +56,7 @@ function handleCancel() {
       :message="dialogData.message"
       :confirm-text="dialogData.confirmText"
       :cancel-text="dialogData.cancelText"
+      :action="dialogData.action"
       @confirm="handleConfirm"
       @cancel="handleCancel"
     />

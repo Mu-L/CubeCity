@@ -1,4 +1,5 @@
 <script setup>
+import { eventBus } from '@/js/utils/event-bus.js'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BUILDING_DATA } from '../constants/constants'
@@ -8,16 +9,34 @@ const { t, locale } = useI18n()
 const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
 const currentMode = computed(() => gameState.currentMode)
-const selectedBuildingInstance = computed(() => gameState.selectedBuildingInstance)
+const selectedPosition = computed(() => gameState.selectedPosition)
 const building = computed(() => BUILDING_DATA.find(b => b.type === selectedBuilding.value) || {})
+
+// 升级建筑
 function upgradeBuilding() {
-  gameState.addToast(t('buildingDetails.upgradeUnit'), 'success')
+  const data = {
+    action: 'upgrade',
+    buildingType: building.value.type,
+  }
+  eventBus.emit('ui:confirm-action', data)
 }
+
+// 维修建筑
 function repairBuilding() {
-  gameState.addToast(t('buildingDetails.maintenanceBtn'), 'info')
+  const data = {
+    action: 'repair',
+    buildingType: building.value.type,
+  }
+  eventBus.emit('ui:confirm-action', data)
 }
+
+// 拆除建筑
 function demolishBuilding() {
-  gameState.addToast(t('buildingDetails.demolish'), 'warning')
+  const data = {
+    action: 'demolish',
+    buildingType: building.value.type,
+  }
+  eventBus.emit('ui:confirm-action', data)
 }
 </script>
 
@@ -96,16 +115,13 @@ function demolishBuilding() {
             </div>
             <!-- 显示建筑实例信息 -->
             <!-- 建筑所在 Tile 位置 -->
-            <div class="resource-display rounded p-3">
+            <div v-if="currentMode === 'select'" class="resource-display rounded p-3">
               <div class="text-sm text-gray-400 uppercase tracking-wide mb-2">
                 {{ t('buildingDetails.tile') }}
               </div>
               <div class="flex justify-between">
                 <span class="text-sm font-bold text-industrial-blue">
-                  {{ selectedBuildingInstance.position.x }}, {{ selectedBuildingInstance.position.z }}
-                </span>
-                <span class="text-sm font-bold text-industrial-blue">
-                  {{ selectedBuildingInstance.name }}
+                  {{ selectedPosition.x }}, {{ selectedPosition.z }}
                 </span>
               </div>
             </div>

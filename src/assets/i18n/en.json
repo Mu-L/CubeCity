@@ -13,7 +13,8 @@
     "select": "Select",
     "build": "Build",
     "relocate": "Relocate",
-    "demolish": "Demolish"
+    "demolish": "Demolish",
+    "switchToBuildMode": "Please switch to build mode"
   },
   "dashboardFooter": {
     "cityMetrics": "City Metrics",
@@ -70,5 +71,23 @@
     "message": "Are you sure you want to demolish this building?",
     "confirm": "Confirm",
     "cancel": "Cancel"
+  },
+  "common": {
+    "cancel": "Cancel"
+  },
+  "dialog": {
+    "selectTitle": "Upgrade Building",
+    "selectMessage": "Are you sure to upgrade <span class=\"text-green-500 font-bold\"> {building} </span>? It will cost <span class=\"text-yellow-500 font-bold\"> {cost} </span> credits.",
+    "selectConfirm": "Confirm Upgrade",
+    "relocateTitle": "Relocate Building",
+    "relocateMessage": "Are you sure to relocate <span class=\"text-industrial-accent font-bold\"> {building} </span>?",
+    "relocateConfirm": "Confirm Relocation",
+    "demolishTitle": "Demolish Building",
+    "demolishMessage": "Are you sure to demolish <span class=\"text-industrial-accent font-bold\"> {building} </span>? You will get <span class=\"text-yellow-500 font-bold\"> {refund} </span> credits back.",
+    "demolishConfirm": "Confirm Demolition",
+    "building": "building"
+  },
+  "error": {
+    "insufficientFunds": "Insufficient funds"
   }
 }

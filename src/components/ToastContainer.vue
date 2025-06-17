@@ -26,7 +26,7 @@ eventBus.on('toast:add', ({ message, type }) => {
   <div class="fixed top-20 right-4 space-y-2 z-50">
     <transition-group name="toast-fade" tag="div">
       <div
-        v-for="toast in toastQueue.slice(-3)" :key="toast.id"
+        v-for="toast in toastQueue" :key="toast.id"
         :class="`${toastClass(toast.type)} px-4 py-2 m-2 rounded shadow-industrial transform transition-all duration-300 font-bold text-xs uppercase tracking-[0.05rem]`"
         @click="removeToast(toast.id)"
       >
