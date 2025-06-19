@@ -78,6 +78,11 @@ export function useBuilding() {
       case 'upgrade':
         gameState.updateCredits(-cost)
         break
+      case 'relocate':
+        gameState.updateCredits(-100)
+        break
+      default:
+        break
       // 可以添加其他操作类型
     }
   }

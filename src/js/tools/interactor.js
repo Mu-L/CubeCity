@@ -20,70 +20,59 @@ export default class Interactor {
     this.focused = null
     // 当前选择对象
     this.selected = null
+
+    this.relocateFirst = null // 重新定位的第一个对象
+    this.relocateSecond = null // 重新定位的第二个对象
+
     // 城市资产集合
     this.cityGroup = cityGroup
 
     this.gameState = useGameState() // 获取 pinia 实例
 
+    this.specialMode = ['select', 'relocate'] // 特殊模式，高光不用取消
     // 绑定事件
     this._onMouseMove = this._onMouseMove.bind(this)
-    this.canvas.addEventListener('mousemove', this._onMouseMove.bind(this))
-    this.canvas.addEventListener('click', this._onClick.bind(this))
-    // 右键取消选择
-    this.canvas.addEventListener('contextmenu', this._onRightClick.bind(this))
+    this._onClick = this._onClick.bind(this)
+    this._onRightClick = this._onRightClick.bind(this)
+    this._onActionConfirmed = this._onActionConfirmed.bind(this)
+    this._onKeyDown = this._onKeyDown.bind(this)
 
-    eventBus.on('ui:action-confirmed', this._onActionConfirmed.bind(this))
+    this.canvas.addEventListener('mousemove', this._onMouseMove)
+    this.canvas.addEventListener('click', this._onClick)
+    // 右键取消选择
+    this.canvas.addEventListener('contextmenu', this._onRightClick)
+
+    eventBus.on('ui:action-confirmed', this._onActionConfirmed)
   }
 
   // 鼠标移动事件处理
   _onMouseMove(_event) {
-    // 获取 NDC 坐标（已由 iMouse 处理）
     const mouse = this.iMouse.normalizedMouse
-    // 设置射线
     this.raycaster.setFromCamera(mouse, this.camera)
-
-    // 射线检测
     const intersections = this.raycaster.intersectObjects(this.cityGroup.children, true)
 
-    let newFocused = null
-    if (intersections.length > 0) {
-      // 确保 newFocused 是 Tile 实例
-      newFocused = this._findTileInstance(intersections[0].object)
-    }
-    else {
-      // 在 SELECT 模式下，不要取消已选中对象的高亮
-      if (this.gameState.currentMode === 'select' && this.selected) {
-        // 只取消 focused 对象的高亮，但保持 selected 对象的高亮
-        if (this.focused && this.focused !== this.selected) {
-          this.focused.setFocused(false, this.gameState.currentMode)
-        }
-      }
-      else {
-        this.focused && this.focused.setFocused(false, this.gameState.currentMode)
+    // 没有交互对象，处理高亮取消
+    if (intersections.length === 0) {
+      if (this.focused && (!this.selected || !this.specialMode.includes(this.gameState.currentMode) || this.focused !== this.selected)) {
+        // 只在非 select 模式，或 focused 不是 selected 时取消高亮
+        this.focused.setFocused(false, this.gameState.currentMode)
       }
       this.focused = null
       return
     }
 
+    // 有交互对象，找到 Tile 实例
+    const newFocused = this._findTileInstance(intersections[0].object)
+
     // 切换高亮
     if (newFocused && this.focused !== newFocused) {
-      // 在 SELECT 模式下，不要取消已选中对象的高亮
-      if (this.gameState.currentMode === 'select' && this.selected) {
-        // 只有当前 focused 不是 selected 时才取消其高亮
-        if (this.focused && this.focused !== this.selected) {
-          this.focused.setFocused(false, this.gameState.currentMode)
-        }
-        // 只有当新 focused 不是 selected 时才设置其高亮
-        if (newFocused && newFocused !== this.selected) {
-          newFocused.setFocused(true, this.gameState.currentMode)
-        }
+      // 先取消旧 focused 的高亮（select 模式下 selected 不取消）
+      if (this.focused && (!this.selected || !this.specialMode.includes(this.gameState.currentMode) || this.focused !== this.selected)) {
+        this.focused.setFocused(false, this.gameState.currentMode)
       }
-      else {
-        // 非 SELECT 模式下的正常高亮切换
-        if (this.focused)
-          this.focused.setFocused(false, this.gameState.currentMode)
-        if (newFocused)
-          newFocused.setFocused(true, this.gameState.currentMode)
+      // 设置新 focused 的高亮（select 模式下 selected 不重复设置）
+      if (!this.selected || !this.specialMode.includes(this.gameState.currentMode) || newFocused !== this.selected) {
+        newFocused.setFocused(true, this.gameState.currentMode)
       }
       this.focused = newFocused
     }
@@ -143,8 +132,6 @@ export default class Interactor {
     }
     this.gameState.selectBuilding(buildingInstance.type)
     this.gameState.selectPosition(buildingInstance.position)
-    // 确保选中对象保持高亮
-    this.selected.setFocused(true, 'select')
   }
 
   // BUILD 模式：放置建筑
@@ -154,7 +141,7 @@ export default class Interactor {
       return
 
     this.focused.setBuilding(selectedBuilding)
-
+    this.focused.setType('road')
     // 显示成功提示
     this._showBuildingPlacedToast(selectedBuilding)
   }
@@ -182,19 +169,38 @@ export default class Interactor {
 
   // RELOCATE 模式：重新定位建筑
   _handleRelocateMode() {
-    if (this.selected.buildingInstance) {
+    // 已经选了第一个 tile，尝试选第二个
+    if (this.relocateFirst && this.relocateFirst !== this.selected) {
+      if (this.selected.buildingInstance) {
+        const toastMsg = 'You cannot relocate to a tile with a building'
+        eventBus.emit('toast:add', {
+          message: toastMsg,
+          type: 'error',
+        })
+        return
+      }
+      this.relocateSecond = this.selected
+      // 成功选中第二个对象
+      this.relocateSecond.setFocused(true, 'relocate')
       eventBus.emit('ui:confirm-action', {
         action: 'relocate',
-        tileId: this.selected.id,
-        tileName: this.selected.name || '',
-        buildingType: this.selected.buildingInstance.type,
+        tileId: this.relocateFirst.id,
+        tileName: this.relocateFirst.name || '',
+        buildingType: this.relocateFirst.buildingInstance.type,
       })
-      // 暂停后续逻辑，等 UI 层反馈
+      return
     }
-    else {
-      // 没有建筑不能 relocate
-      // 可选：弹出提示
+    // 选第一个 tile，必须有建筑
+    if (!this.selected.buildingInstance) {
+      const toastMsg = 'You cannot relocate to a tile without a building'
+      eventBus.emit('toast:add', {
+        message: toastMsg,
+        type: 'error',
+      })
+      return
     }
+    this.relocateFirst = this.selected
+    this.relocateFirst.setFocused(true, 'relocate')
   }
 
   // 默认模式：显示信息面板
@@ -246,6 +252,8 @@ export default class Interactor {
     if (this.selected) {
       this.selected.setFocused(false, this.gameState.currentMode)
       this.selected = null
+      this.relocateFirst = null
+      this.relocateSecond = null
     }
   }
 
@@ -260,6 +268,8 @@ export default class Interactor {
           const newBuilding = this.selected.buildingInstance.upgrade()
           if (newBuilding) {
             this.selected.setBuilding(newBuilding.type, newBuilding.direction, newBuilding.options)
+            this.selected.setFocused(false, 'select')
+            this.selected = null
           }
           else {
             eventBus.emit('toast:add', {
@@ -279,7 +289,13 @@ export default class Interactor {
         break
       case 'relocate':
         // 重新定位建筑（示例：这里只做提示，具体逻辑可扩展）
-        if (this.selected && this.selected.buildingInstance) {
+        if (this.relocateFirst && this.relocateFirst.buildingInstance) {
+          this._swapBuilding(this.relocateFirst, this.relocateSecond)
+          this.relocateFirst.setFocused(false, 'relocate')
+          this.relocateSecond.setFocused(false, 'relocate')
+          this.relocateFirst = null
+          this.relocateSecond = null
+          this.selected = null
           // TODO: 实现具体的 relocate 逻辑
           eventBus.emit('toast:add', {
             message: 'Relocate confirmed!（请实现具体逻辑）',
@@ -291,6 +307,16 @@ export default class Interactor {
       default:
         break
     }
+  }
+
+  // 交换建筑
+  _swapBuilding(first, second) {
+    // 记录建筑数据
+    const firstBuilding = first.buildingInstance
+    if (firstBuilding) {
+      second.setBuilding(firstBuilding.type, firstBuilding.direction, firstBuilding.options)
+    }
+    first.removeBuilding()
   }
 
   _findTileInstance(obj) {
