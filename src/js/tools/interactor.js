@@ -37,16 +37,24 @@ export default class Interactor {
     this._onActionConfirmed = this._onActionConfirmed.bind(this)
     this._onKeyDown = this._onKeyDown.bind(this)
 
+    this.lastMode = null // 上一个模式
+
     this.canvas.addEventListener('mousemove', this._onMouseMove)
     this.canvas.addEventListener('click', this._onClick)
     // 右键取消选择
     this.canvas.addEventListener('contextmenu', this._onRightClick)
-
+    this.canvas.addEventListener('keydown', this._onKeyDown)
     eventBus.on('ui:action-confirmed', this._onActionConfirmed)
   }
 
   // 鼠标移动事件处理
   _onMouseMove(_event) {
+    if (this.lastMode !== this.gameState.currentMode) {
+      this.lastMode = this.gameState.currentMode
+      this.selected && this.selected.setFocused(false, this.lastMode)
+      this.selected = null
+    }
+
     const mouse = this.iMouse.normalizedMouse
     this.raycaster.setFromCamera(mouse, this.camera)
     const intersections = this.raycaster.intersectObjects(this.cityGroup.children, true)
@@ -246,7 +254,7 @@ export default class Interactor {
   }
 
   _onRightClick(_event) {
-    _event.preventDefault() // 阻止右键菜单
+    // _event.preventDefault() // 阻止右键菜单
 
     // 取消之前选中对象的状态
     if (this.selected) {
@@ -336,6 +344,15 @@ export default class Interactor {
     if (event.key === 'Escape') {
       this._onRightClick()
     }
+
+    // 监听 relocate 模式下的 R 键，用于调整建筑方向
+    if (this.gameState.currentMode === 'relocate' && event.key === 'r') {
+      if (this.selected && this.selected.buildingInstance) {
+        const building = this.selected.buildingInstance
+        this.selected.removeBuilding()
+        this.selected.setBuilding(building.type, (building.direction + 1) % 4, building.options)
+      }
+    }
   }
 
   // 清理事件
@@ -343,6 +360,7 @@ export default class Interactor {
     this.canvas.removeEventListener('mousemove', this._onMouseMove)
     this.canvas.removeEventListener('click', this._onClick)
     this.canvas.removeEventListener('contextmenu', this._onRightClick)
+    this.canvas.removeEventListener('keydown', this._onKeyDown)
     eventBus.off('ui:action-confirmed', this._onActionConfirmed.bind(this))
   }
 }

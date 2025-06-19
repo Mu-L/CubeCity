@@ -142,7 +142,7 @@ export default class SimObject extends THREE.Object3D {
         // 先停止可能已有动画
         gsap.killTweensOf(this.mesh.position)
         gsap.to(this.mesh.position, {
-          y: 0.1,
+          y: 0.13,
           duration: 0.41,
           yoyo: true,
           repeat: -1,
