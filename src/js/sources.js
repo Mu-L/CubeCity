@@ -30,7 +30,7 @@ export default [
     ],
   },
   { name: 'grass', type: 'gltfModel', path: 'models/tile-grass.glb' },
-  { name: 'road', type: 'gltfModel', path: 'models/tile-road.glb' },
+  { name: 'ground', type: 'gltfModel', path: 'models/tile-ground.glb' },
   // 房屋
   { name: 'house_level1', type: 'gltfModel', path: 'models/house_level1.glb' },
   { name: 'house_level2', type: 'gltfModel', path: 'models/house_level2.glb' },
@@ -47,6 +47,27 @@ export default [
   { name: 'park_level1', type: 'gltfModel', path: 'models/tree_level1.glb' },
   { name: 'park_level2', type: 'gltfModel', path: 'models/tree_level2.glb' },
   { name: 'park_level3', type: 'gltfModel', path: 'models/tree_level3.glb' },
+  // roadPass
+  {
+    name: 'road',
+    type: 'gltfModel',
+    path: 'models/road-straight.glb',
+  },
+  {
+    name: 'roadBend',
+    type: 'gltfModel',
+    path: 'models/road-bend.glb',
+  },
+  {
+    name: 'road3Way',
+    type: 'gltfModel',
+    path: 'models/road-3way.glb',
+  },
+  {
+    name: 'road4Way',
+    type: 'gltfModel',
+    path: 'models/road-4way.glb',
+  },
   // hospital
   { name: 'hospital', type: 'gltfModel', path: 'models/hospital.glb' },
   // police

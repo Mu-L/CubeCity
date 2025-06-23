@@ -119,6 +119,13 @@ export const BUILDING_DATA = [
     zh: '环境设施',
     en: 'Environmental Facility',
   }, cost: 200, category: 'environment', visible: false },
+  { type: 'road', name: {
+    zh: '道路',
+    en: 'Road',
+  }, icon: '🛣️', buildingType: {
+    zh: '道路',
+    en: 'Road',
+  }, cost: 0, category: 'environment' },
   { type: 'hospital', name: {
     zh: '医院',
     en: 'Hospital',
