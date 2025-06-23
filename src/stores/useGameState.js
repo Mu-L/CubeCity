@@ -62,5 +62,9 @@ export const useGameState = defineStore('gameState', {
     removeToast(id) {
       this.toastQueue = this.toastQueue.filter(t => t.id !== id)
     },
+    clearSelection() {
+      this.selectedBuilding = null
+      this.selectedPosition = null
+    },
   },
 })

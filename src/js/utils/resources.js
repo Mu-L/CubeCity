@@ -67,77 +67,85 @@ export default class Resources extends EventEmitter {
 
   startLoading() {
     for (const source of this.sources) {
+      // 报错事件
+      const onError = (error) => {
+        console.error(`加载资源失败: ${source.name} (${source.path})`, error)
+        // 为防止加载过程卡住，我们仍然调用 sourceLoaded 并传入 null。
+        // 使用该资源的代码部分需要能够处理 null 的情况。
+        this.sourceLoaded(source, null)
+      }
+
       switch (source.type) {
         case 'gltfModel': {
           this.loaders.gltfLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'texture': {
           this.loaders.textureLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'cubeTexture': {
           this.loaders.cubeTextureLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'font': {
           this.loaders.fontLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'fbxModel': {
           this.loaders.fbxLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'audio': {
           this.loaders.audioLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'objModel': {
           this.loaders.objLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'hdrTexture': {
           this.loaders.hdrTextureLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'svg': {
           this.loaders.svgLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'exrTexture': {
           this.loaders.exrLoader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         case 'video': {
           this.loadVideoTexture(source.path).then((file) => {
             this.sourceLoaded(source, file)
-          })
+          }).catch(onError)
           break
         }
         case 'ktx2Texture': {
           this.loaders.ktx2Loader.load(source.path, (file) => {
             this.sourceLoaded(source, file)
-          })
+          }, undefined, onError)
           break
         }
         // No default
@@ -174,7 +182,7 @@ export default class Resources extends EventEmitter {
   }
 
   loadVideoTexture(path) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const video = document.createElement('video')
       video.src = path
       video.loop = true
@@ -188,6 +196,10 @@ export default class Resources extends EventEmitter {
         texture.format = THREE.RGBFormat
 
         resolve(texture)
+      })
+
+      video.addEventListener('error', (e) => {
+        reject(new Error(`视频加载失败，路径: ${path}`, { cause: e }))
       })
 
       video.load()

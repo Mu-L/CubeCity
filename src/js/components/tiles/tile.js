@@ -11,7 +11,7 @@ export default class Tile extends SimObject {
    * @param {number} x
    * @param {number} y
    * @param {object} options
-   *   options.type: 'grass' | 'road'
+   *   options.type: 'grass' | 'ground'
    *   options.building: null | 'house'
    *   options.color: 颜色字符串
    *   options.direction: 建筑朝向，0/90/180/270，单位为度，默认为0
@@ -27,7 +27,7 @@ export default class Tile extends SimObject {
     this.debug = experience.debug
 
     this.name = `Tile-${x}-${y}`
-    this.type = type // 草地/道路
+    this.type = type // 草地/道路/住宿/商业/工业/公共设施/社会服务/政府建筑
     this.direction = direction // 建筑朝向，单位为度
     this.buildingInstance = null
 
@@ -48,21 +48,21 @@ export default class Tile extends SimObject {
     this.grassMesh.userData = this
     this.grassMesh.name = `${this.name}-grass`
 
-    // ========== 创建 road mesh（上层，默认隐藏） ==========
-    const roadResource = resources.items.road ? resources.items.road : null
-    this.roadMesh = roadResource
-      ? this.initMeshFromResource(roadResource)
+    // ========== 创建 ground mesh（上层，默认隐藏） ==========
+    const groundResource = resources.items.ground ? resources.items.ground : null
+    this.groundMesh = groundResource
+      ? this.initMeshFromResource(groundResource)
       : new THREE.Mesh(
         new THREE.BoxGeometry(1, 0.2, 1),
         new THREE.MeshStandardMaterial({ color: '#a89984' }),
       )
-    this.roadMesh.position.set(0, 0.01, 0) // 稍微高于 grass，避免 z-fighting
-    this.roadMesh.scale.set(0.98, 1, 0.98)
-    this.roadMesh.userData = this
-    this.roadMesh.name = `${this.name}-road`
-    this.roadMesh.visible = (type === 'road') // 初始是否显示
+    this.groundMesh.position.set(0, 0.01, 0) // 稍微高于 grass，避免 z-fighting
+    this.groundMesh.scale.set(0.98, 1, 0.98)
+    this.groundMesh.userData = this
+    this.groundMesh.name = `${this.name}-ground`
+    this.groundMesh.visible = (type === 'ground') // 初始是否显示
 
-    this.grassMesh.add(this.roadMesh)
+    this.grassMesh.add(this.groundMesh)
     this.setMesh(this.grassMesh)
 
     // 如果有建筑，加载建筑实例
@@ -71,10 +71,10 @@ export default class Tile extends SimObject {
     }
   }
 
-  // 切换地皮类型（只切换 road mesh 显隐）
+  // 切换地皮类型（只切换 ground mesh 显隐）
   setType(type) {
     this.type = type
-    this.roadMesh.visible = (type === 'road')
+    this.groundMesh.visible = (type === 'ground')
   }
 
   // 创建并添加建筑实例

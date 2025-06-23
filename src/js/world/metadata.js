@@ -14,9 +14,9 @@ export function generateMetadata(size = SIZE) {
       // 允许在任意位置生成 road+house
       if (x === 8 && y === 8) {
         return {
-          type: 'road',
+          type: 'ground',
           building: 'factory',
-          direction: randomDirection(), // house 随机方向
+          direction: 0, // house 随机方向
           x,
           y,
         }

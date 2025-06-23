@@ -4,7 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 const _props = defineProps({
   building: { type: Object, required: true },
-  selectedPosition: { type: Object, required: true },
+  selectedPosition: {
+    type: Object,
+    default: () => ({
+      x: 0,
+      y: 0,
+    }),
+  },
   currentMode: { type: String, required: true },
 })
 
