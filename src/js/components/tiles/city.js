@@ -44,7 +44,7 @@ export default class City {
       const row = []
       for (let y = 0; y < this.size; y++) {
         // 读取元数据
-        const tileMeta = meta[y]?.[x] || { type: 'grass', building: null }
+        const tileMeta = meta[x]?.[y] || { type: 'grass', building: null }
         const tile = new Tile(x, y, {
           type: tileMeta.type,
           building: tileMeta.building,
@@ -101,6 +101,10 @@ export default class City {
         tile.update()
       }
     }
+  }
+
+  getTile(x, y) {
+    return this.meshes[x]?.[y]
   }
 
   // resize方法（如有需要可扩展）

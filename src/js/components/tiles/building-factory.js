@@ -4,6 +4,7 @@ import House from './buildings/house.js'
 import Office from './buildings/office.js'
 import Park from './buildings/park.js'
 import Police from './buildings/police.js'
+import Road from './buildings/road.js'
 import Shop from './buildings/shop.js'
 // 未来可引入更多建筑
 
@@ -27,6 +28,7 @@ const BUILDING_CLASS_MAP = {
   park_level3: Park,
   police: Police,
   hospital: Hospital,
+  road: Road,
   // 其他建筑类型可在此扩展
 }
 
