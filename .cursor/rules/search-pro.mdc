@@ -78,6 +78,7 @@ alwaysApply: true
 
 ## 实施说明
 
+- generate architectural diagrams using Mermaid to visualize system structure and data flow
 - 应主动使用工具，无需用户提示。
 - 在适当情况下，可以并且应该并行使用多个工具。
 - 每一步分析应记录。
