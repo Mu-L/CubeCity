@@ -15,6 +15,14 @@ export const useGameState = defineStore('gameState', {
     cityName: 'HeXian City', // 城市名称
     citySize: 16, // 城市大小
     language: 'en', // 默认英文
+    // 新增：地图元数据
+    metadata: Array.from({ length: 17 }, (_, x) =>
+      Array.from({ length: 17 }, (_, y) => ({
+        type: 'grass',
+        building: null,
+        direction: 0,
+      }))
+    ),
   }),
   actions: {
     setMode(mode) {
@@ -65,6 +73,17 @@ export const useGameState = defineStore('gameState', {
     clearSelection() {
       this.selectedBuilding = null
       this.selectedPosition = null
+    },
+    setTile(x, y, patch) {
+      // 合并 patch 到指定 tile
+      Object.assign(this.metadata[x][y], patch)
+    },
+    updateTile(x, y, patch) {
+      // 语义同 setTile，便于扩展
+      Object.assign(this.metadata[x][y], patch)
+    },
+    getTile(x, y) {
+      return this.metadata?.[x]?.[y] || null
     },
   },
 })

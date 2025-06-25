@@ -54,8 +54,8 @@ export default class City {
         this.root.add(tile)
       }
       // 随后让 group 居中
-      this.root.position.x = -this.size / 2 + 0.5
-      this.root.position.z = -this.size / 2 + 0.5
+      // this.root.position.x = -this.size / 2 + 0.5
+      // this.root.position.z = -this.size / 2 + 0.5
       this.meshes.push(row)
     }
   }

@@ -177,3 +177,6 @@ export const HIGHLIGHTED_COLOR = 0x555555
 export const HIGHLIGHTED_COLOR_OPACITY = 0.7
 export const RELOCATE_COLOR = 0x0303FF
 export const RELOCATE_COLOR_OPACITY = 0.7
+// 新增：建造无效时的橙色高亮
+export const BUILD_INVALID_COLOR = 0xBF0000 // 橙色
+export const BUILD_INVALID_COLOR_OPACITY = 0.7
