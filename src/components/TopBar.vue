@@ -1,12 +1,17 @@
 <script setup>
 import { useGameState } from '@/stores/useGameState.js'
 import { storeToRefs } from 'pinia'
+import { ref, defineEmits } from 'vue'
 
 const gameState = useGameState()
-const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language } = storeToRefs(gameState)
+const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview } = storeToRefs(gameState)
 
 function toggleLang() {
   gameState.setLanguage(language.value === 'zh' ? 'en' : 'zh')
+}
+
+function toggleMapOverview() {
+  gameState.setShowMapOverview(!showMapOverview.value)
 }
 </script>
 
@@ -74,6 +79,13 @@ function toggleLang() {
         </div>
         <button class="ml-4 px-2 py-1 rounded bg-gray-700 text-white" @click="toggleLang">
           {{ language === 'zh' ? 'EN' : '中' }}
+        </button>
+        <!-- 新增：显示地图按钮 -->
+        <button
+          class="ml-2 px-3 py-1 rounded bg-industrial-accent text-white font-bold shadow hover:bg-industrial-accent/80 transition"
+          @click="toggleMapOverview"
+        >
+          {{ showMapOverview ? '隐藏地图' : '显示地图' }}
         </button>
       </div>
     </div>

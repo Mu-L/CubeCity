@@ -23,6 +23,8 @@ export const useGameState = defineStore('gameState', {
         direction: 0,
       }))
     ),
+    // 新增：地图总览显隐
+    showMapOverview: false,
   }),
   actions: {
     setMode(mode) {
@@ -84,6 +86,9 @@ export const useGameState = defineStore('gameState', {
     },
     getTile(x, y) {
       return this.metadata?.[x]?.[y] || null
+    },
+    setShowMapOverview(val) {
+      this.showMapOverview = val
     },
   },
 })
