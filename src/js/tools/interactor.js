@@ -30,6 +30,25 @@ const MODES = {
 // 在这些模式下，选中的对象会保持高亮
 const PERSISTENT_HIGHLIGHT_MODES = [MODES.SELECT, MODES.RELOCATE, MODES.DEMOLISH]
 
+// ========== 新增：建造合法性判断函数 ==========
+function canPlaceBuilding(x, y, buildingType, metadata) {
+  // 金额大于建造所需消耗
+  if (!metadata?.[x]?.[y]) return false
+  // 工厂 & 道路可随意建造
+  if (buildingType === 'factory' || buildingType === 'road') {
+    return true
+  }
+  // 其他建筑需相邻道路
+  const dirs = [[0,1],[1,0],[0,-1],[-1,0]]
+  for (const [dx, dy] of dirs) {
+    const nx = x + dx, ny = y + dy
+    if (metadata[nx]?.[ny]?.type === 'ground' && metadata[nx]?.[ny]?.building === 'road') {
+      return true
+    }
+  }
+  return false
+}
+
 export default class Interactor {
   constructor(cityGroup) {
     // --- 核心依赖 ---
@@ -211,15 +230,25 @@ export default class Interactor {
    * [建造模式] 逻辑
    */
   _handleBuildMode(tile) {
+    
     const buildingTypeToBuild = this.gameState.selectedBuilding
-    const canBuild = tile && !tile.buildingInstance
-
-    if (!buildingTypeToBuild || !canBuild) {
-      this._showToast('error', '无法在此处建造，请选择空地。')
+    if (!tile) return
+    const { x, y } = tile
+    const metadata = this.gameState.metadata
+    const canBuild = canPlaceBuilding(x, y, buildingTypeToBuild, metadata) 
+    if (!buildingTypeToBuild || !canBuild || tile.buildingInstance) {
+      this._showToast('error', '无法在此处建造，请选择合规地块。')
       return
     }
-
-    tile.setBuilding(buildingTypeToBuild)
+    // 通过 Pinia 修改 metadata
+    this.gameState.setTile(x, y, {
+      type: 'ground',
+      building: buildingTypeToBuild,
+      direction: 0 // 可根据实际情况
+    })
+    this.gameState.updateCredits(-BUILDING_DATA.find(b => b.type === buildingTypeToBuild).cost)
+    // ...后续同步 Three.js 层刷新
+    tile.setBuilding(buildingTypeToBuild, 0, { buildingData: BUILDING_DATA.find(b => b.type === buildingTypeToBuild) })
     tile.setType('ground')
     this._updateAdjacentRoads(tile)
     this._showBuildingPlacedToast(buildingTypeToBuild, tile)
@@ -313,22 +342,35 @@ export default class Interactor {
   }
 
   _confirmDemolish() {
-    const building = this.selected?.buildingInstance
-    if (building) {
-      const { type } = building
-      this.selected.removeBuilding()
-      this._showBuildingRemovedToast(type, this.selected)
-      this._updateAdjacentRoads(this.selected)
+   
+    const tile = this.selected
+    const building = tile.buildingInstance
+    if (tile && building) {
+      // 这里才修改 metadata
+      this.gameState.setTile(tile.x, tile.y, {
+        type: 'ground',
+        building: null,
+        direction: 0
+      })
+      tile.removeBuilding()
+      this._showBuildingRemovedToast(building.type, tile)
+      this._updateAdjacentRoads(tile)
     }
   }
 
   _confirmRelocate() {
-    const sourceBuilding = this.relocateFirst?.buildingInstance
-    if (sourceBuilding && this.relocateSecond) {
-      this._swapBuilding(this.relocateFirst, this.relocateSecond)
+    const sourceTile = this.relocateFirst
+    const destTile = this.relocateSecond
+    if (sourceTile && destTile) {
+      // 交换 metadata
+      const srcData = { ...this.gameState.getTile(sourceTile.x, sourceTile.y) }
+      const dstData = { ...this.gameState.getTile(destTile.x, destTile.y) }
+      this.gameState.setTile(destTile.x, destTile.y, srcData)
+      this.gameState.setTile(sourceTile.x, sourceTile.y, { ...dstData, building: null, direction: 0 })
+      this._swapBuilding(sourceTile, destTile)
       this._showToast('info', '建筑搬迁成功！')
-      this._updateAdjacentRoads(this.relocateFirst)
-      this._updateAdjacentRoads(this.relocateSecond)
+      this._updateAdjacentRoads(sourceTile)
+      this._updateAdjacentRoads(destTile)
     }
   }
 
@@ -353,16 +395,27 @@ export default class Interactor {
     // 如果焦点没变，则不执行任何操作
     if (this.focused === newFocusedTile)
       return
-
+    let mode = this.gameState.currentMode
+    // ========== 新增：建造模式下不可建造橙色高亮 ==========
+    if (mode === 'build' && newFocusedTile) {
+      const { x, y } = newFocusedTile
+      console.log(x, y)
+      const buildingType = this.gameState.selectedBuilding
+      const metadata = this.gameState.metadata
+      const canBuild = canPlaceBuilding(x, y, buildingType, metadata)
+      if (!canBuild) {
+        mode = 'build-invalid'
+      }
+    }
     // 移除旧焦点的悬停高亮
     // 条件：旧焦点存在，且不是当前选中的对象 (或者当前模式不需要保持高亮)
     if (this.focused && (!this.selected || this.focused !== this.selected || !PERSISTENT_HIGHLIGHT_MODES.includes(this.gameState.currentMode)))
-      this.focused.setFocused(false, this.gameState.currentMode)
+      this.focused.setFocused(false, mode)
 
     // 为新焦点添加悬停高亮
     // 条件：新焦点存在，且不是当前选中的对象 (或者当前模式不需要保持高亮)
     if (newFocusedTile && (!this.selected || newFocusedTile !== this.selected || !PERSISTENT_HIGHLIGHT_MODES.includes(this.gameState.currentMode)))
-      newFocusedTile.setFocused(true, this.gameState.currentMode)
+      newFocusedTile.setFocused(true, mode)
 
     this.focused = newFocusedTile
   }
@@ -418,19 +471,6 @@ export default class Interactor {
     tile.removeBuilding()
     tile.setBuilding(type, (direction + 1) % 4, options)
     this._updateAdjacentRoads(tile)
-  }
-
-  /**
-   * 交换两个地块上的建筑 (用于搬迁)
-   */
-  _swapBuilding(sourceTile, destinationTile) {
-    const sourceBuilding = sourceTile.buildingInstance
-    if (sourceBuilding && destinationTile) {
-      // 将源建筑设置到目标地块
-      destinationTile.setBuilding(sourceBuilding.type, sourceBuilding.direction, sourceBuilding.options)
-      // 移除源建筑
-      sourceTile.removeBuilding()
-    }
   }
 
   /**

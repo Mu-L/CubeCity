@@ -2,7 +2,9 @@ import { SIZE } from '@/constants/constants.js' // 导入常量
 import * as THREE from 'three'
 import Experience from '../../experience.js'
 
+import { useGameState } from '@/stores/useGameState.js'
 import Tile from './tile.js'
+import { storeToRefs } from 'pinia'
 
 // City 类，负责管理所有地皮
 export default class City {
@@ -39,7 +41,9 @@ export default class City {
     this.meshes = []
     this.root.clear()
 
-    const meta = this.sceneMetadata.getAll()
+    const gameState = useGameState()
+    const { metadata } = storeToRefs(gameState)
+    const meta = metadata.value
     for (let x = 0; x < this.size; x++) {
       const row = []
       for (let y = 0; y < this.size; y++) {
