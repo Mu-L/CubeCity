@@ -35,6 +35,64 @@ export const BUILDING_DATA = [
     zh: '工业建筑',
     en: 'Industrial Building',
   }, cost: 500, category: 'industrial' },
+  {
+    type: 'chemistry_level1',
+    name: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    icon: '🧪',
+    buildingType: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    cost: 1000,
+    category: 'industrial',
+  },
+  {
+    type: 'chemistry_level2',
+    name: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    icon: '🧪',
+    buildingType: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    cost: 1000,
+    category: 'industrial',
+    visible: false,
+  },
+  {
+    type: 'chemistry_level3',
+    name: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    icon: '🧪',
+    buildingType: {
+      zh: '化学工厂',
+      en: 'Chemistry Factory',
+    },
+    cost: 1000,
+    category: 'industrial',
+    visible: false,
+  },
+  {
+    type: 'nuke_factory',
+    name: {
+      zh: '核电站',
+      en: 'Nuclear Power Plant',
+    },
+    icon: '☢️',
+    buildingType: {
+      zh: '核电站',
+      en: 'Nuclear Power Plant',
+    },
+    cost: 1000,
+    category: 'industrial',
+  },
   { type: 'house_level1', name: {
     zh: '住宅',
     en: 'Residential',

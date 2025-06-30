@@ -6,6 +6,8 @@ import Park from './buildings/park.js'
 import Police from './buildings/police.js'
 import Road from './buildings/road.js'
 import Shop from './buildings/shop.js'
+import ChemistryFactory from './buildings/chemistry-factory.js'
+import NukeFactory from './buildings/nuke-factory.js'
 // 未来可引入更多建筑
 
 const BUILDING_CLASS_MAP = {
@@ -29,6 +31,10 @@ const BUILDING_CLASS_MAP = {
   police: Police,
   hospital: Hospital,
   road: Road,
+  chemistry_level1: ChemistryFactory,
+  chemistry_level2: ChemistryFactory,
+  chemistry_level3: ChemistryFactory,
+  nuke_factory: NukeFactory,
   // 其他建筑类型可在此扩展
 }
 

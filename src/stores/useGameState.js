@@ -7,11 +7,11 @@ export const useGameState = defineStore('gameState', {
     selectedPosition: null, // 当前选中位置
     toastQueue: [], // Toast 消息队列
     // 其他全局状态可在此扩展
-    credits: 12345, // 金币
-    population: 200, // 人口
-    maxPopulation: 300, // 最大人口
+    credits: 10000, // 金币
+    population: 0, // 人口
+    maxPopulation: 0, // 最大人口
     territory: 16, // 地皮
-    cityLevel: 5, // 城市等级
+    cityLevel: 1, // 城市等级
     cityName: 'HeXian City', // 城市名称
     citySize: 16, // 城市大小
     language: 'en', // 默认英文
@@ -21,8 +21,7 @@ export const useGameState = defineStore('gameState', {
         type: 'grass',
         building: null,
         direction: 0,
-      }))
-    ),
+      }))),
     // 新增：地图总览显隐
     showMapOverview: false,
   }),

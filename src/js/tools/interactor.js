@@ -30,18 +30,22 @@ const MODES = {
 // 在这些模式下，选中的对象会保持高亮
 const PERSISTENT_HIGHLIGHT_MODES = [MODES.SELECT, MODES.RELOCATE, MODES.DEMOLISH]
 
+// 可随意建造的建筑
+const FREE_BUILDING_TYPES = ['factory', 'road', 'chemistry_level1', 'nuke_factory']
 // ========== 新增：建造合法性判断函数 ==========
 function canPlaceBuilding(x, y, buildingType, metadata) {
   // 金额大于建造所需消耗
-  if (!metadata?.[x]?.[y]) return false
+  if (!metadata?.[x]?.[y])
+    return false
   // 工厂 & 道路可随意建造
-  if (buildingType === 'factory' || buildingType === 'road') {
+  if (FREE_BUILDING_TYPES.includes(buildingType)) {
     return true
   }
   // 其他建筑需相邻道路
-  const dirs = [[0,1],[1,0],[0,-1],[-1,0]]
+  const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
   for (const [dx, dy] of dirs) {
-    const nx = x + dx, ny = y + dy
+    const nx = x + dx
+    const ny = y + dy
     if (metadata[nx]?.[ny]?.type === 'ground' && metadata[nx]?.[ny]?.building === 'road') {
       return true
     }
@@ -230,12 +234,12 @@ export default class Interactor {
    * [建造模式] 逻辑
    */
   _handleBuildMode(tile) {
-    
     const buildingTypeToBuild = this.gameState.selectedBuilding
-    if (!tile) return
+    if (!tile)
+      return
     const { x, y } = tile
     const metadata = this.gameState.metadata
-    const canBuild = canPlaceBuilding(x, y, buildingTypeToBuild, metadata) 
+    const canBuild = canPlaceBuilding(x, y, buildingTypeToBuild, metadata)
     if (!buildingTypeToBuild || !canBuild || tile.buildingInstance) {
       this._showToast('error', '无法在此处建造，请选择合规地块。')
       return
@@ -244,7 +248,7 @@ export default class Interactor {
     this.gameState.setTile(x, y, {
       type: 'ground',
       building: buildingTypeToBuild,
-      direction: 0 // 可根据实际情况
+      direction: 0, // 可根据实际情况
     })
     this.gameState.updateCredits(-BUILDING_DATA.find(b => b.type === buildingTypeToBuild).cost)
     // ...后续同步 Three.js 层刷新
@@ -297,6 +301,10 @@ export default class Interactor {
 
     // 步骤2: 选择目标空地
     if (this.relocateFirst !== tile) {
+      if (!canPlaceBuilding(tile.x, tile.y, this.relocateFirst.buildingInstance.type, this.gameState.metadata)) {
+        this._showToast('error', '无法在此处搬迁，请选择合规地块。')
+        return
+      }
       if (tile.buildingInstance) {
         this._showToast('error', '目标地块已被占用，无法搬迁。')
         return
@@ -342,7 +350,6 @@ export default class Interactor {
   }
 
   _confirmDemolish() {
-   
     const tile = this.selected
     const building = tile.buildingInstance
     if (tile && building) {
@@ -350,7 +357,7 @@ export default class Interactor {
       this.gameState.setTile(tile.x, tile.y, {
         type: 'ground',
         building: null,
-        direction: 0
+        direction: 0,
       })
       tile.removeBuilding()
       this._showBuildingRemovedToast(building.type, tile)
@@ -399,7 +406,6 @@ export default class Interactor {
     // ========== 新增：建造模式下不可建造橙色高亮 ==========
     if (mode === 'build' && newFocusedTile) {
       const { x, y } = newFocusedTile
-      console.log(x, y)
       const buildingType = this.gameState.selectedBuilding
       const metadata = this.gameState.metadata
       const canBuild = canPlaceBuilding(x, y, buildingType, metadata)
@@ -553,5 +559,17 @@ export default class Interactor {
 
   _showToast(type, message) {
     eventBus.emit('toast:add', { message, type })
+  }
+
+  // 交换建筑
+  _swapBuilding(first, second) {
+    first.setType('ground')
+    second.setType('ground')
+    // 记录建筑数据
+    const firstBuilding = first.buildingInstance
+    if (firstBuilding) {
+      second.setBuilding(firstBuilding.type, firstBuilding.direction, firstBuilding.options)
+    }
+    first.removeBuilding()
   }
 }
