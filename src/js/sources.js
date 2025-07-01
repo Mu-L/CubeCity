@@ -108,7 +108,28 @@ export default [
     type: 'gltfModel',
     path: 'models/nuke_factory.glb',
   },
-
+  // hero_park
+  { name: 'hero_park', type: 'gltfModel', path: 'models/hero_park.glb' },
+  {
+    name: 'garbage_station',
+    type: 'gltfModel',
+    path: 'models/garbage_station.glb',
+  },
+  {
+    name: 'sun_power',
+    type: 'gltfModel',
+    path: 'models/sun_power.glb',
+  },
+  {
+    name: 'wind_power',
+    type: 'gltfModel',
+    path: 'models/wind_power.glb',
+  },
+  {
+    name: 'water_tower',
+    type: 'gltfModel',
+    path: 'models/water_tower.glb',
+  },
   // smoke 用 perlin 噪声
   {
     name: 'perlinNoise',

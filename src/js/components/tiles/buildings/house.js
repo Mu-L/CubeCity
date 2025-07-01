@@ -6,6 +6,9 @@ export default class House extends Building {
     house_level1: 'house_level2',
     house_level2: 'house_level3',
     house_level3: null,
+    house2_level1: 'house2_level2',
+    house2_level2: 'house2_level3',
+    house2_level3: null,
   }
 
   constructor(type = 'house_level1', direction = 0, options = {}) {

@@ -114,6 +114,50 @@ export const BUILDING_DATA = [
     zh: '住宅建筑',
     en: 'Residential Building',
   }, cost: 300, category: 'residential', visible: false },
+  {
+    type: 'house2_level1',
+    name: {
+      zh: '民宅',
+      en: 'House',
+    },
+    icon: '🏡',
+    buildingType: {
+      zh: '住宅建筑',
+      en: 'Residential Building',
+    },
+    cost: 300,
+    category: 'residential',
+  },
+  {
+    type: 'house2_level2',
+    name: {
+      zh: '二级民宅',
+      en: 'Secondary House',
+    },
+    icon: '🏡',
+    buildingType: {
+      zh: '住宅建筑',
+      en: 'Residential Building',
+    },
+    cost: 300,
+    category: 'residential',
+    visible: false,
+  },
+  {
+    type: 'house2_level3',
+    name: {
+      zh: '三级民宅',
+      en: 'Tertiary House',
+    },
+    icon: '🏡',
+    buildingType: {
+      zh: '住宅建筑',
+      en: 'Residential Building',
+    },
+    cost: 300,
+    category: 'residential',
+    visible: false,
+  },
   { type: 'shop_level1', name: {
     zh: '商店',
     en: 'Shop',
@@ -177,6 +221,34 @@ export const BUILDING_DATA = [
     zh: '环境设施',
     en: 'Environmental Facility',
   }, cost: 200, category: 'environment', visible: false },
+  {
+    type: 'garbage_station',
+    name: {
+      zh: '垃圾站',
+      en: 'Garbage Station',
+    },
+    icon: '🗑️',
+    buildingType: {
+      zh: '环境设施',
+      en: 'Environmental Facility',
+    },
+    cost: 500,
+    category: 'environment',
+  },
+  {
+    type: 'hero_park',
+    name: {
+      zh: '英雄纪念碑',
+      en: 'Hero Monument',
+    },
+    icon: '🗽',
+    buildingType: {
+      zh: '社会设施',
+      en: 'Social Facility',
+    },
+    cost: 1200,
+    category: 'social',
+  },
   { type: 'road', name: {
     zh: '道路',
     en: 'Road',
@@ -198,6 +270,34 @@ export const BUILDING_DATA = [
     zh: '治理设施',
     en: 'Governance Facility',
   }, cost: 800, category: 'governance' },
+  { type: 'fire_station', name: {
+    zh: '消防站',
+    en: 'Fire Station',
+  }, icon: '🚒', buildingType: {
+    zh: '社会设施',
+    en: 'Social Facility',
+  }, cost: 600, category: 'social' },
+  { type: 'sun_power', name: {
+    zh: '太阳能电板',
+    en: 'Solar Panel',
+  }, icon: '☀️', buildingType: {
+    zh: '环境设施',
+    en: 'Environmental Facility',
+  }, cost: 800, category: 'environment' },
+  { type: 'water_tower', name: {
+    zh: '水塔',
+    en: 'Water Tower',
+  }, icon: '🚰', buildingType: {
+    zh: '环境设施',
+    en: 'Environmental Facility',
+  }, cost: 700, category: 'environment' },
+  { type: 'wind_power', name: {
+    zh: '风力发电塔',
+    en: 'Wind Power',
+  }, icon: '🌬️', buildingType: {
+    zh: '环境设施',
+    en: 'Environmental Facility',
+  }, cost: 900, category: 'environment' },
   // ... 可继续扩展
 ]
 
@@ -236,5 +336,5 @@ export const HIGHLIGHTED_COLOR_OPACITY = 0.7
 export const RELOCATE_COLOR = 0x0303FF
 export const RELOCATE_COLOR_OPACITY = 0.7
 // 新增：建造无效时的橙色高亮
-export const BUILD_INVALID_COLOR = 0xBF0000 // 橙色
+export const BUILD_INVALID_COLOR = 0x555555 // 橙色
 export const BUILD_INVALID_COLOR_OPACITY = 0.7

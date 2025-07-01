@@ -1,13 +1,19 @@
+import ChemistryFactory from './buildings/chemistry-factory.js'
 import Factory from './buildings/factory.js'
+import FireStation from './buildings/fire_station.js'
+import GarbageStation from './buildings/garbage_station.js'
+import HeroPark from './buildings/hero_park.js'
 import Hospital from './buildings/hospital.js'
 import House from './buildings/house.js'
+import NukeFactory from './buildings/nuke-factory.js'
 import Office from './buildings/office.js'
 import Park from './buildings/park.js'
 import Police from './buildings/police.js'
 import Road from './buildings/road.js'
 import Shop from './buildings/shop.js'
-import ChemistryFactory from './buildings/chemistry-factory.js'
-import NukeFactory from './buildings/nuke-factory.js'
+import SunPower from './buildings/sun_power.js'
+import WaterTower from './buildings/water_tower.js'
+import WindPower from './buildings/wind_power.js'
 // 未来可引入更多建筑
 
 const BUILDING_CLASS_MAP = {
@@ -15,6 +21,9 @@ const BUILDING_CLASS_MAP = {
   house_level1: House,
   house_level2: House,
   house_level3: House,
+  house2_level1: House,
+  house2_level2: House,
+  house2_level3: House,
   factory: Factory,
   shop: Shop,
   shop_level1: Shop,
@@ -35,6 +44,12 @@ const BUILDING_CLASS_MAP = {
   chemistry_level2: ChemistryFactory,
   chemistry_level3: ChemistryFactory,
   nuke_factory: NukeFactory,
+  fire_station: FireStation,
+  sun_power: SunPower,
+  water_tower: WaterTower,
+  wind_power: WindPower,
+  garbage_station: GarbageStation,
+  hero_park: HeroPark,
   // 其他建筑类型可在此扩展
 }
 
