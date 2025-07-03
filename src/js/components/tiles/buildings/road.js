@@ -18,6 +18,7 @@ export default class Road extends Building {
     this.name = 'Road'
     this.style = 'straight' // 默认样式
     this.hideTerrain = true
+    this.mesh.position.set(0, 0.01, 0)
   }
 
   /**

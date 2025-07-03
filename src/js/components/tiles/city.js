@@ -58,9 +58,16 @@ export default class City {
         this.root.add(tile)
       }
       // 随后让 group 居中
-      // this.root.position.x = -this.size / 2 + 0.5
-      // this.root.position.z = -this.size / 2 + 0.5
       this.meshes.push(row)
+    }
+    // === 新增：重建后刷新所有道路表现 ===
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        const tile = this.meshes[x][y]
+        if (tile.buildingInstance && tile.buildingInstance.type === 'road') {
+          tile.buildingInstance.refreshView(this)
+        }
+      }
     }
   }
 
