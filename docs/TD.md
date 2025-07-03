@@ -63,6 +63,7 @@
 ```mermaid
 classDiagram
   SimObject <|-- Tile
+  Tile <|-- Building
   SimObject <|-- Building
   Building <|-- House
   Building <|-- Factory

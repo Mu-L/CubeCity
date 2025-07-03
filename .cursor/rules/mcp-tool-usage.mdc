@@ -25,3 +25,10 @@ alwaysApply: true
 - Commit and push code changes to GitHub using the **GitHub MCP server** after every successful test.
 - Ensure commits are clear, descriptive, and incremental.
 - Never overwrite or unintentionally alter files like README.md or other critical documentation without explicit user approval.
+
+## Linear
+- Use as many emojis as possible in issues, descriptions, comments, and markdown content to enhance readability and fun.
+- When creating an issue, automatically set the status to 📝 To Do.
+- Automatically assign the issue to hexianWeb 👤. only Me
+- Labels should be set intelligently according to the scenario (e.g., bug 🐞, feature ✨, enhancement 🚀, question ❓, etc.).
+- 不要出现参考 PRD.md 或者参考 TD.md 等文字，而是读取文件中具体内容，将特定内容写入issue中。文件可在 @docs 中获取
