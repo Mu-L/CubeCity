@@ -12,6 +12,10 @@ export const BUILDING_CATEGORIES = [
     zh: '工业',
     en: 'Industrial',
   }, color: 'bg-red-400' },
+  { key: 'infrastructure', label: {
+    zh: '基础设施',
+    en: 'Infrastructure',
+  }, color: 'bg-purple-400' },
   { key: 'environment', label: {
     zh: '环境',
     en: 'Environment',
@@ -206,21 +210,21 @@ export const BUILDING_DATA = [
   }, icon: '🌳', buildingType: {
     zh: '环境设施',
     en: 'Environmental Facility',
-  }, cost: 200, category: 'environment' },
+  }, cost: 200, category: 'social' },
   { type: 'park_level2', name: {
     zh: '二级公园',
     en: 'Secondary Park',
   }, icon: '🌳', buildingType: {
     zh: '环境设施',
     en: 'Environmental Facility',
-  }, cost: 200, category: 'environment', visible: false },
+  }, cost: 200, category: 'social', visible: false },
   { type: 'park_level3', name: {
     zh: '三级公园',
     en: 'Tertiary Park',
   }, icon: '🌳', buildingType: {
     zh: '环境设施',
     en: 'Environmental Facility',
-  }, cost: 200, category: 'environment', visible: false },
+  }, cost: 200, category: 'social', visible: false },
   {
     type: 'garbage_station',
     name: {
@@ -255,14 +259,14 @@ export const BUILDING_DATA = [
   }, icon: '🛣️', buildingType: {
     zh: '道路',
     en: 'Road',
-  }, cost: 0, category: 'environment' },
+  }, cost: 0, category: 'infrastructure' },
   { type: 'hospital', name: {
     zh: '医院',
     en: 'Hospital',
   }, icon: '🏥', buildingType: {
     zh: '社会设施',
     en: 'Social Facility',
-  }, cost: 350, category: 'social' },
+  }, cost: 350, category: 'governance' },
   { type: 'police', name: {
     zh: '警察局',
     en: 'Police Station',
@@ -276,7 +280,7 @@ export const BUILDING_DATA = [
   }, icon: '🚒', buildingType: {
     zh: '社会设施',
     en: 'Social Facility',
-  }, cost: 600, category: 'social' },
+  }, cost: 600, category: 'governance' },
   { type: 'sun_power', name: {
     zh: '太阳能电板',
     en: 'Solar Panel',
