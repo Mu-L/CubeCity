@@ -1,7 +1,6 @@
 ---
-description: 
-globs: 
-alwaysApply: true
+description: 当我提的问题中带有“智能搜索”等相关词语时
+alwaysApply: false
 ---
 # 增强版 Cursor 搜索工具
 

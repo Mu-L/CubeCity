@@ -1,7 +1,6 @@
 <script setup>
 import { useGameState } from '@/stores/useGameState.js'
 import { storeToRefs } from 'pinia'
-import { ref, defineEmits } from 'vue'
 
 const gameState = useGameState()
 const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview } = storeToRefs(gameState)
