@@ -11,15 +11,6 @@ export default class Shop extends Building {
     super(type, direction, options)
   }
 
-  upgrade() {
-    const nextType = Shop.upgradeMap[this.type]
-    if (nextType) {
-      // 预留材料/金币判断接口
-      return new Shop(nextType, this.direction, this.options)
-    }
-    return null
-  }
-
   getCost() {
     return this.options.buildingData?.cost || 0
   }

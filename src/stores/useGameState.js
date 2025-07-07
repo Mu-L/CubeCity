@@ -29,10 +29,10 @@ export const useGameState = defineStore('gameState', {
     setMode(mode) {
       this.currentMode = mode
     },
-    selectBuilding(type) {
+    setSelectedBuilding(type) {
       this.selectedBuilding = type
     },
-    selectPosition(position) {
+    setSelectedPosition(position) {
       this.selectedPosition = position
     },
     // 金币

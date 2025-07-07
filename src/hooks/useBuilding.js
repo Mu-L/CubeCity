@@ -18,18 +18,35 @@ export function useBuilding() {
     return getBuildingCost(buildingType) * 0.7
   }
 
+  // 获取下一级建筑类型
+  const getNextLevelBuildingType = (buildingType) => {
+    const match = buildingType.match(/^(.*)_level(\d+)$/)
+    if (!match) {
+      return null
+    }
+    const base = match[1]
+    const level = Number.parseInt(match[2], 10)
+    const nextLevel = level + 1
+    if (nextLevel > 3) {
+      return null
+    }
+    return `${base}_level${nextLevel}`
+  }
+
   // 处理建筑操作的对话框配置
   const getDialogConfig = (action, buildingType) => {
     const cost = getBuildingCost(buildingType)
+    const nextLevelBuildingType = getNextLevelBuildingType(buildingType)
+    const nextLevelCost = getBuildingCost(nextLevelBuildingType)
     const configs = {
       upgrade: {
         title: t('dialog.selectTitle'),
         message: t('dialog.selectMessage', {
-          building: buildingType || t('dialog.building'),
-          cost,
+          building: nextLevelBuildingType || t('dialog.building'),
+          cost: nextLevelCost,
         }),
         confirmText: t('dialog.selectConfirm'),
-        cost,
+        cost: nextLevelCost,
       },
       demolish: {
         title: t('dialog.demolishTitle'),
@@ -93,5 +110,6 @@ export function useBuilding() {
     getDialogConfig,
     handleBuildingTransaction,
     canAffordOperation,
+    getNextLevelBuildingType,
   }
 }

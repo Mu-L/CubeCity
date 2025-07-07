@@ -1,18 +1,18 @@
 <script setup>
 import { eventBus } from '@/js/utils/event-bus.js'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { useGameState } from '@/stores/useGameState.js'
+import { onMounted, onUnmounted, ref } from 'vue'
 import BuildingDetails from './components/BuildingDetails.vue'
 import BuildingSidebar from './components/BuildingSidebar.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 import DashboardFooter from './components/DashboardFooter.vue'
 import GameCanvas from './components/GameCanvas.vue'
+import MapOverview from './components/MapOverview.vue'
 import ModeIndicator from './components/ModeIndicator.vue'
 import SelectedIndicator from './components/SelectedIndicator.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import TopBar from './components/TopBar.vue'
-import MapOverview from './components/MapOverview.vue'
 import { useBuilding } from './hooks/useBuilding.js'
-import { useGameState } from '@/stores/useGameState.js'
 
 const showDialog = ref(false)
 const dialogData = ref({})
@@ -39,8 +39,6 @@ function handleCancel() {
   showDialog.value = false
 }
 
-
-
 // ESC关闭地图总览
 function handleKeydown(e) {
   if (gameState.showMapOverview && (e.key === 'Escape' || e.key === 'Esc')) {
@@ -58,7 +56,7 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <TopBar  />
+    <TopBar />
     <div class="flex gap-2 px-2 h-[calc(100vh-200px)]">
       <BuildingSidebar />
       <main class="flex-1 industrial-panel shadow-industrial relative overflow-hidden industrial-grid">
@@ -70,10 +68,10 @@ onUnmounted(() => {
       <transition name="fade">
         <div v-if="gameState.showMapOverview" class="absolute top-[20%] right-[50%] translate-x-[50%] w-[min(90vw,600px)] h-[min(90vh,600px)] z-50 bg-[#212121] rounded-lg shadow-lg p-2" @contextmenu.prevent="gameState.setShowMapOverview(false)">
           <button
-            @click="gameState.setShowMapOverview(false)"
             class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full text-xl font-bold text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150 focus:outline-none z-10"
             aria-label="关闭地图总览"
             tabindex="0"
+            @click="gameState.setShowMapOverview(false)"
           >
             ❌
           </button>

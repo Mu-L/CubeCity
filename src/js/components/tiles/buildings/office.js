@@ -11,15 +11,6 @@ export default class Office extends Building {
     super(type, direction, options)
   }
 
-  upgrade() {
-    const nextType = Office.upgradeMap[this.type]
-    if (nextType) {
-      // 预留材料/金币判断接口
-      return new Office(nextType, this.direction, this.options)
-    }
-    return null
-  }
-
   getCost() {
     return this.options.buildingData?.cost || 0
   }

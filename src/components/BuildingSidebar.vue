@@ -29,14 +29,14 @@ function selectBuilding({ type, name }) {
     return
   if (selectedBuilding.value === type)
     return
-  gameState.selectBuilding(type)
+  gameState.setSelectedBuilding(type)
   gameState.addToast(`${t('selectedIndicator.selected')}: ${name[language.value]}`, 'info')
 }
 function setMode(mode) {
   if (currentMode.value === mode)
     return
   gameState.setMode(mode)
-  gameState.selectBuilding(null)
+  gameState.setSelectedBuilding(null)
   gameState.addToast(`MODE : ${mode.toUpperCase()} CHANGE`, 'info')
 }
 

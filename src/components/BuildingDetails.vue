@@ -16,6 +16,7 @@ const building = computed(() => BUILDING_DATA.find(b => b.type === selectedBuild
 
 // 升级建筑
 function upgradeBuilding() {
+  // TODO: 找到当前建筑的下一级建筑
   const data = {
     action: 'upgrade',
     buildingType: building.value.type,

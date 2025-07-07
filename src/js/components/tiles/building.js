@@ -48,7 +48,31 @@ export default class Building extends SimObject {
   update() {
   }
 
-  upgrade() {}
+  /**
+   * 通用升级方法：根据命名规则推算下一级类型
+   * @returns {object|null} 下一级类型信息，或 null（不可升级/已最高级）
+   */
+  upgrade() {
+    // 匹配形如 'xxx_level1' 的类型
+    const match = this.type.match(/^(.*)_level(\d+)$/)
+    if (!match) {
+      // 不可升级类型，直接返回 null
+      return null
+    }
+    const base = match[1]
+    const level = Number.parseInt(match[2], 10)
+    const nextLevel = level + 1
+    // 假设最高级为 level3，可根据实际情况调整
+    if (nextLevel > 3) {
+      return null // 已是最高级
+    }
+    return {
+      type: `${base}_level${nextLevel}`,
+      direction: this.direction,
+      options: this.options,
+    }
+  }
+
   getPopulation() { return 0 }
   getPower() { return 0 }
   getEconomy() { return 0 }

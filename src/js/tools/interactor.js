@@ -226,8 +226,8 @@ export default class Interactor {
       return
 
     // 更新 Pinia store，通知UI层
-    this.gameState.selectBuilding(building.type)
-    this.gameState.selectPosition(tile.position)
+    this.gameState.setSelectedBuilding(building.type)
+    this.gameState.setSelectedPosition(tile.position)
   }
 
   /**
