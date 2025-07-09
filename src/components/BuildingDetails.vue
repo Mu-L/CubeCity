@@ -12,14 +12,20 @@ const gameState = useGameState()
 const selectedBuilding = computed(() => gameState.selectedBuilding)
 const currentMode = computed(() => gameState.currentMode)
 const selectedPosition = computed(() => gameState.selectedPosition)
-const building = computed(() => BUILDING_DATA.find(b => b.type === selectedBuilding.value) || {})
+const building = computed(() => {
+  if (!selectedBuilding.value)
+    return {}
+  const { type, level } = selectedBuilding.value
+  return BUILDING_DATA[type]?.levels[level] || {}
+})
 
 // 升级建筑
 function upgradeBuilding() {
   // TODO: 找到当前建筑的下一级建筑
   const data = {
     action: 'upgrade',
-    buildingType: building.value.type,
+    buildingType: selectedBuilding.value.type,
+    buildingLevel: selectedBuilding.value.level,
   }
   eventBus.emit('ui:confirm-action', data)
 }
@@ -28,7 +34,8 @@ function upgradeBuilding() {
 function repairBuilding() {
   const data = {
     action: 'repair',
-    buildingType: building.value.type,
+    buildingType: selectedBuilding.value.type,
+    buildingLevel: selectedBuilding.value.level,
   }
   eventBus.emit('ui:confirm-action', data)
 }
@@ -37,7 +44,8 @@ function repairBuilding() {
 function demolishBuilding() {
   const data = {
     action: 'demolish',
-    buildingType: building.value.type,
+    buildingType: selectedBuilding.value.type,
+    buildingLevel: selectedBuilding.value.level,
   }
   eventBus.emit('ui:confirm-action', data)
 }

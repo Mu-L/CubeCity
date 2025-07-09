@@ -225,8 +225,8 @@ export default class Interactor {
     if (!building)
       return
 
-    // 更新 Pinia store，通知UI层
-    this.gameState.setSelectedBuilding(building.type)
+    // 选中建筑
+    this.gameState.setSelectedBuilding({ type: building.type, level: building.level || 1 })
     this.gameState.setSelectedPosition(tile.position)
   }
 
@@ -234,7 +234,8 @@ export default class Interactor {
    * [建造模式] 逻辑
    */
   _handleBuildMode(tile) {
-    const buildingTypeToBuild = this.gameState.selectedBuilding
+    const buildingTypeToBuild = this.gameState.selectedBuilding?.type
+    const buildingLevelToBuild = 1
     if (!tile)
       return
     const { x, y } = tile
@@ -250,12 +251,12 @@ export default class Interactor {
       building: buildingTypeToBuild,
       direction: 0, // 可根据实际情况
     })
-    this.gameState.updateCredits(-BUILDING_DATA.find(b => b.type === buildingTypeToBuild).cost)
+    this.gameState.updateCredits(-BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost)
     // ...后续同步 Three.js 层刷新
-    tile.setBuilding(buildingTypeToBuild, 0, { buildingData: BUILDING_DATA.find(b => b.type === buildingTypeToBuild) })
+    tile.setBuilding(buildingTypeToBuild, buildingLevelToBuild, 0)
     tile.setType('ground')
     this._updateAdjacentRoads(tile)
-    this._showBuildingPlacedToast(buildingTypeToBuild, tile)
+    this._showBuildingPlacedToast(buildingTypeToBuild, tile, buildingLevelToBuild)
   }
 
   /**
@@ -272,6 +273,7 @@ export default class Interactor {
         tileId: tile.id,
         tileName: tile.name || '',
         buildingType: tile.buildingInstance.type,
+        buildingLevel: tile.buildingInstance.level,
       })
     }
     else {
@@ -312,12 +314,14 @@ export default class Interactor {
       this.relocateSecond = tile
       this.relocateSecond.setFocused(true, MODES.RELOCATE) // 保持目标地高亮
 
+      debugger
       // 发起UI确认
       eventBus.emit('ui:confirm-action', {
         action: 'relocate',
         tileId: this.relocateFirst.id,
         tileName: this.relocateFirst.name || '',
         buildingType: this.relocateFirst.buildingInstance.type,
+        buildingLevel: this.relocateFirst.buildingInstance.level,
       })
     }
   }
@@ -340,7 +344,7 @@ export default class Interactor {
     if (building && typeof building.upgrade === 'function') {
       const newBuilding = building.upgrade()
       if (newBuilding) {
-        this.selected.setBuilding(newBuilding.type, newBuilding.direction, newBuilding.options)
+        this.selected.setBuilding(newBuilding.type, newBuilding.level || 1, newBuilding.direction)
         this._showToast('success', '建筑升级成功！')
       }
       else {
@@ -360,7 +364,7 @@ export default class Interactor {
         direction: 0,
       })
       tile.removeBuilding()
-      this._showBuildingRemovedToast(building.type, tile)
+      this._showBuildingRemovedToast(building.type, tile, building.level)
       this._updateAdjacentRoads(tile)
     }
   }
@@ -406,7 +410,8 @@ export default class Interactor {
     // ========== 新增：建造模式下不可建造橙色高亮 ==========
     if (mode === 'build' && newFocusedTile) {
       const { x, y } = newFocusedTile
-      const buildingType = this.gameState.selectedBuilding
+      const buildingType = this.gameState.selectedBuilding?.type
+      const buildingLevel = this.gameState.selectedBuilding?.level || 1
       const metadata = this.gameState.metadata
       const canBuild = canPlaceBuilding(x, y, buildingType, metadata)
       if (!canBuild) {
@@ -475,7 +480,7 @@ export default class Interactor {
 
     const { type, direction, options } = building
     tile.removeBuilding()
-    tile.setBuilding(type, (direction + 1) % 4, options)
+    tile.setBuilding(type, building.level || 1, (direction + 1) % 4)
     this._updateAdjacentRoads(tile)
   }
 
@@ -533,14 +538,15 @@ export default class Interactor {
 
   // --- Toast 提示封装 ---
 
-  _getBuildingName(buildingType) {
+  _getBuildingName(buildingType, level) {
     const lang = this.gameState.language
-    const buildingData = BUILDING_DATA.find(b => b.type === buildingType)
-    return buildingData?.name?.[lang] || buildingData?.name?.zh || '建筑'
+    const buildingData = BUILDING_DATA[buildingType]
+    // 只返回指定 level 下的名称
+    return buildingData.levels[level].displayName[lang]
   }
 
-  _showBuildingPlacedToast(buildingType, tile) {
-    const buildingName = this._getBuildingName(buildingType)
+  _showBuildingPlacedToast(buildingType, tile, level) {
+    const buildingName = this._getBuildingName(buildingType, level)
     const tilePos = tile.name.replace('Tile-', '')
     const message = this.gameState.language === 'zh'
       ? `建筑 ${buildingName} 已成功放置在 ${tilePos}。`
@@ -548,8 +554,8 @@ export default class Interactor {
     this._showToast('success', message)
   }
 
-  _showBuildingRemovedToast(buildingType, tile) {
-    const buildingName = this._getBuildingName(buildingType)
+  _showBuildingRemovedToast(buildingType, tile, level) {
+    const buildingName = this._getBuildingName(buildingType, level)
     const tilePos = tile.name.replace('Tile-', '')
     const message = this.gameState.language === 'zh'
       ? `位于 ${tilePos} 的 ${buildingName} 已被移除。`
@@ -568,7 +574,7 @@ export default class Interactor {
     // 记录建筑数据
     const firstBuilding = first.buildingInstance
     if (firstBuilding) {
-      second.setBuilding(firstBuilding.type, firstBuilding.direction, firstBuilding.options)
+      second.setBuilding(firstBuilding.type, firstBuilding.level || 1, firstBuilding.direction)
     }
     first.removeBuilding()
   }

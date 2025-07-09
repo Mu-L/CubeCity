@@ -72,61 +72,61 @@ export default [
     path: 'models/road-4way.glb',
   },
   // hospital
-  { name: 'hospital', type: 'gltfModel', path: 'models/hospital.glb' },
+  { name: 'hospital_level1', type: 'gltfModel', path: 'models/hospital.glb' },
   // police
-  { name: 'police', type: 'gltfModel', path: 'models/police.glb' },
+  { name: 'police_level1', type: 'gltfModel', path: 'models/police.glb' },
   // factory
   {
-    name: 'factory',
+    name: 'factory_level1',
     type: 'gltfModel',
     path: 'models/factory.glb',
   },
   {
-    name: 'fire_station',
+    name: 'fire_station_level1',
     type: 'gltfModel',
     path: 'models/fire_station.glb',
   },
   // chemistry
   {
-    name: 'chemistry_level1',
+    name: 'chemistry_factory_level1',
     type: 'gltfModel',
     path: 'models/chemistry_level1.glb',
   },
   {
-    name: 'chemistry_level2',
+    name: 'chemistry_factory_level2',
     type: 'gltfModel',
     path: 'models/chemistry_level2.glb',
   },
   {
-    name: 'chemistry_level3',
+    name: 'chemistry_factory_level3',
     type: 'gltfModel',
     path: 'models/chemistry_level3.glb',
   },
   // nuke
   {
-    name: 'nuke_factory',
+    name: 'nuke_factory_level1',
     type: 'gltfModel',
     path: 'models/nuke_factory.glb',
   },
   // hero_park
   { name: 'hero_park', type: 'gltfModel', path: 'models/hero_park.glb' },
   {
-    name: 'garbage_station',
+    name: 'garbage_station_level1',
     type: 'gltfModel',
     path: 'models/garbage_station.glb',
   },
   {
-    name: 'sun_power',
+    name: 'sun_power_level1',
     type: 'gltfModel',
     path: 'models/sun_power.glb',
   },
   {
-    name: 'wind_power',
+    name: 'wind_power_level1',
     type: 'gltfModel',
     path: 'models/wind_power.glb',
   },
   {
-    name: 'water_tower',
+    name: 'water_tower_level1',
     type: 'gltfModel',
     path: 'models/water_tower.glb',
   },

@@ -1,11 +1,6 @@
 import Building from '../building.js'
 
 export default class Shop extends Building {
-  static upgradeMap = {
-    shop_level1: 'shop_level2',
-    shop_level2: 'shop_level3',
-    shop_level3: null,
-  }
 
   constructor(type = 'shop', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)

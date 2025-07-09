@@ -23,7 +23,7 @@ const gameState = useGameState()
 // 只监听一次即可
 if (!window.__confirmDialogListenerAdded) {
   eventBus.on('ui:confirm-action', (data) => {
-    dialogData.value = getDialogConfig(data.action, data.buildingType)
+    dialogData.value = getDialogConfig(data.action, data.buildingType, data.buildingLevel)
     showDialog.value = true
   })
   window.__confirmDialogListenerAdded = true
@@ -82,6 +82,7 @@ onUnmounted(() => {
     <DashboardFooter />
     <ToastContainer />
     <ConfirmDialog
+      v-if="dialogData"
       :show="showDialog"
       :title="dialogData.title"
       :message="dialogData.message"

@@ -1,3 +1,4 @@
+import { BUILDING_DATA } from '@/constants/constants.js'
 import * as THREE from 'three'
 import Experience from '../../experience.js'
 import SimObject from './sim-object.js'
@@ -6,23 +7,27 @@ import SimObject from './sim-object.js'
 export default class Building extends SimObject {
   /**
    * @param {string} type 建筑类型
+   * @param {number} level 建筑等级
    * @param {number} direction 朝向（0/1/2/3，单位90度）
    * @param {object} [options] 其他可选参数
    */
-  constructor(type, direction = 0, options = {}) {
+  constructor(type, level = 1, direction = 0, options = {}) {
     // 位置和资源由外部设置，建筑一般位于tile中心
     super(0, 0, null)
     this.experience = new Experience()
     this.resources = this.experience.resources
     this.type = type
+    this.level = level
     this.direction = direction
     this.options = options
+    this.levelData = options.levelData || null
     this.initModel()
   }
 
   // 初始化建筑模型
   initModel() {
-    const modelResource = this.resources.items[this.type]
+    const modelName = `${this.type}_level${this.level}`
+    const modelResource = this.resources.items[modelName]
     if (modelResource && modelResource.scene) {
       const mesh = this.initMeshFromResource(modelResource)
       mesh.position.set(0, 0, 0)
@@ -49,27 +54,21 @@ export default class Building extends SimObject {
   }
 
   /**
-   * 通用升级方法：根据命名规则推算下一级类型
-   * @returns {object|null} 下一级类型信息，或 null（不可升级/已最高级）
+   * 通用升级方法：根据 BUILDING_DATA 结构查找下一级 level
+   * @returns {object|null} 下一级 {type, level, direction}，或 null（不可升级/已最高级）
    */
   upgrade() {
-    // 匹配形如 'xxx_level1' 的类型
-    const match = this.type.match(/^(.*)_level(\d+)$/)
-    if (!match) {
-      // 不可升级类型，直接返回 null
+    const buildingData = BUILDING_DATA[this.type]
+    if (!buildingData || !buildingData.levels)
       return null
-    }
-    const base = match[1]
-    const level = Number.parseInt(match[2], 10)
-    const nextLevel = level + 1
-    // 假设最高级为 level3，可根据实际情况调整
-    if (nextLevel > 3) {
+    const nextLevel = this.level + 1
+    const nextLevelData = buildingData.levels[nextLevel]
+    if (!nextLevelData)
       return null // 已是最高级
-    }
     return {
-      type: `${base}_level${nextLevel}`,
+      type: this.type,
+      level: nextLevel,
       direction: this.direction,
-      options: this.options,
     }
   }
 

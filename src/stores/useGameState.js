@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useGameState = defineStore('gameState', {
   state: () => ({
     currentMode: 'build', // 当前操作模式
-    selectedBuilding: null, // 当前选中建筑类型
+    selectedBuilding: null, // 当前选中建筑 {type, level}
     selectedPosition: null, // 当前选中位置
     toastQueue: [], // Toast 消息队列
     // 其他全局状态可在此扩展
@@ -16,8 +16,8 @@ export const useGameState = defineStore('gameState', {
     citySize: 16, // 城市大小
     language: 'en', // 默认英文
     // 新增：地图元数据
-    metadata: Array.from({ length: 17 }, (_, x) =>
-      Array.from({ length: 17 }, (_, y) => ({
+    metadata: Array.from({ length: 17 }, _ =>
+      Array.from({ length: 17 }, _ => ({
         type: 'grass',
         building: null,
         direction: 0,
@@ -29,8 +29,8 @@ export const useGameState = defineStore('gameState', {
     setMode(mode) {
       this.currentMode = mode
     },
-    setSelectedBuilding(type) {
-      this.selectedBuilding = type
+    setSelectedBuilding(payload) {
+      this.selectedBuilding = payload
     },
     setSelectedPosition(position) {
       this.selectedPosition = position

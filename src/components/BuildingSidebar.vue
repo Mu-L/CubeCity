@@ -20,16 +20,16 @@ const language = computed(() => gameState.language)
 // 按分类筛选建筑
 function buildingsByCategory(catKey) {
   // 只返回分类匹配且 visible !== false 的建筑
-  return buildingData.value.filter(b => b.category === catKey && b.visible !== false)
+  return Object.values(buildingData.value).filter(b => b.category === catKey && b.visible !== false)
 }
 // 选中建筑时，pinia 存储 buildingType（type 字段）
-function selectBuilding({ type, name }) {
+function selectBuilding({ type, name, level = 1 }) {
   // 仅在 BUILD 模式下允许选中
   if (currentMode.value !== 'build')
     return
-  if (selectedBuilding.value === type)
+  if (selectedBuilding.value?.type === type && selectedBuilding.value?.level === level)
     return
-  gameState.setSelectedBuilding(type)
+  gameState.setSelectedBuilding({ type, level })
   gameState.addToast(`${t('selectedIndicator.selected')}: ${name[language.value]}`, 'info')
 }
 function setMode(mode) {
@@ -81,8 +81,8 @@ onUnmounted(() => {
             v-for="b in buildingsByCategory(cat.key)" :key="b.type"
             class="building-card-industrial rounded-lg p-3 cursor-pointer"
             :class="[
-              selectedBuilding === b.type ? 'ring-2 ring-industrial-accent' : '',
-              currentMode !== 'build' && selectedBuilding !== b.type ? 'pointer-events-none opacity-50 grayscale' : '',
+              selectedBuilding?.type === b.type ? 'ring-2 ring-industrial-accent' : '',
+              currentMode !== 'build' && (selectedBuilding?.type !== b.type) ? 'pointer-events-none opacity-50 grayscale' : '',
             ]"
             :title="currentMode !== 'build' ? $t('buildingSidebar.switchToBuildMode') : ''"
             @click="selectBuilding(b)"
@@ -95,7 +95,7 @@ onUnmounted(() => {
             </div>
             <div class="text-xs text-center text-industrial-yellow">
               <span class="text-xs">⚡</span>
-              <span class="tracking-widest">{{ b.cost }}</span>
+              <span class="tracking-widest">{{ b.levels[1].cost }}</span>
             </div>
           </div>
         </div>

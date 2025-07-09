@@ -5,7 +5,7 @@ import { useGameState } from '../stores/useGameState'
 const gameState = useGameState()
 // 这里简单显示类型，后续可根据 type 查表显示名称
 const selectedBuilding = computed(() => gameState.selectedBuilding)
-const selectedBuildingLabel = computed(() => selectedBuilding.value ? selectedBuilding.value.toUpperCase() : 'NONE')
+const selectedBuildingLabel = computed(() => selectedBuilding.value ? `${selectedBuilding.value.type?.toUpperCase()} (Lv.${selectedBuilding.value.level})` : 'NONE')
 </script>
 
 <template>

@@ -3,7 +3,7 @@ import Building from '../building.js'
 // 住宅类建筑
 export default class House extends Building {
 
-  constructor(type = 'house', level = 1, direction = 0, options = {}) {
+  constructor(type = 'house2', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
   }
 
