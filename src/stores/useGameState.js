@@ -90,4 +90,5 @@ export const useGameState = defineStore('gameState', {
       this.showMapOverview = val
     },
   },
+  persist: true, // 启用持久化
 })

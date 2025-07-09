@@ -1,4 +1,5 @@
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import App from './App.vue'
@@ -18,7 +19,8 @@ const i18n = createI18n({
 
 const app = createApp(App)
 const pinia = createPinia()
-app.use(pinia)
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)  
 app.use(i18n)
 app.mount('#app')
 
