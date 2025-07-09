@@ -32,9 +32,8 @@ const PERSISTENT_HIGHLIGHT_MODES = [MODES.SELECT, MODES.RELOCATE, MODES.DEMOLISH
 
 // 可随意建造的建筑
 const FREE_BUILDING_TYPES = ['factory', 'road', 'chemistry_level1', 'nuke_factory']
-// ========== 新增：建造合法性判断函数 ==========
+// ========== 建造合法性判断函数 (单纯判断地形) ==========
 function canPlaceBuilding(x, y, buildingType, metadata) {
-  // 金额大于建造所需消耗
   if (!metadata?.[x]?.[y])
     return false
   // 工厂 & 道路可随意建造
@@ -251,6 +250,10 @@ export default class Interactor {
       building: buildingTypeToBuild,
       direction: 0, // 可根据实际情况
     })
+    if (this.gameState.credits < BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost) {
+      this._showToast('error', 'Insufficient funds, unable to build.')
+      return
+    }
     this.gameState.updateCredits(-BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost)
     // ...后续同步 Three.js 层刷新
     tile.setBuilding(buildingTypeToBuild, buildingLevelToBuild, 0)
@@ -314,7 +317,6 @@ export default class Interactor {
       this.relocateSecond = tile
       this.relocateSecond.setFocused(true, MODES.RELOCATE) // 保持目标地高亮
 
-      debugger
       // 发起UI确认
       eventBus.emit('ui:confirm-action', {
         action: 'relocate',

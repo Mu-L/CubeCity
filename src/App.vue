@@ -30,8 +30,10 @@ if (!window.__confirmDialogListenerAdded) {
 }
 
 function handleConfirm() {
-  handleBuildingTransaction(dialogData.value.action, dialogData.value.buildingType)
-  eventBus.emit('ui:action-confirmed', dialogData.value.action)
+  const result = handleBuildingTransaction(dialogData.value.action, dialogData.value.buildingType, dialogData.value.buildingLevel)
+  if (result) {
+    eventBus.emit('ui:action-confirmed', dialogData.value.action)
+  }
   showDialog.value = false
 }
 
