@@ -2,8 +2,8 @@ import Building from '../building.js'
 
 // 风力发电塔 3D 组件
 export default class WindPower extends Building {
-  constructor(type = 'wind_power', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'wind_power', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
     this.mesh.rotateY(-45)
   }
 

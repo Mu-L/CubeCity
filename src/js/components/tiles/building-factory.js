@@ -4,6 +4,7 @@ import FireStation from './buildings/fire_station.js'
 import GarbageStation from './buildings/garbage_station.js'
 import HeroPark from './buildings/hero_park.js'
 import Hospital from './buildings/hospital.js'
+import House2 from './buildings/house2.js'
 import House from './buildings/house.js'
 import NukeFactory from './buildings/nuke-factory.js'
 import Office from './buildings/office.js'
@@ -18,31 +19,15 @@ import WindPower from './buildings/wind_power.js'
 
 const BUILDING_CLASS_MAP = {
   house: House,
-  house_level1: House,
-  house_level2: House,
-  house_level3: House,
-  house2_level1: House,
-  house2_level2: House,
-  house2_level3: House,
+  house2: House2,
   factory: Factory,
   shop: Shop,
-  shop_level1: Shop,
-  shop_level2: Shop,
-  shop_level3: Shop,
   office: Office,
-  office_level1: Office,
-  office_level2: Office,
-  office_level3: Office,
   park: Park,
-  park_level1: Park,
-  park_level2: Park,
-  park_level3: Park,
   police: Police,
   hospital: Hospital,
   road: Road,
-  chemistry_level1: ChemistryFactory,
-  chemistry_level2: ChemistryFactory,
-  chemistry_level3: ChemistryFactory,
+  chemistry_factory: ChemistryFactory,
   nuke_factory: NukeFactory,
   fire_station: FireStation,
   sun_power: SunPower,
@@ -53,10 +38,10 @@ const BUILDING_CLASS_MAP = {
   // 其他建筑类型可在此扩展
 }
 
-export function createBuilding(type, direction = 0, options = {}) {
+export function createBuilding(type, level = 1, direction = 0, options = {}) {
   const Cls = BUILDING_CLASS_MAP[type]
   if (Cls) {
-    return new Cls(type, direction, options)
+    return new Cls(type, level, direction, options)
   }
   return null
 }

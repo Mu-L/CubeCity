@@ -7,9 +7,8 @@ import Building from '../building.js'
  * 它的模型会根据相邻的道路自动更新.
  */
 export default class Road extends Building {
-  constructor(type, direction, options) {
-    // 初始时使用一个占位符或基础模型, `refreshView` 将会替换它
-    super('road', direction, options)
+  constructor(type = 'road', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
 
     this.experience = new Experience()
     this.resources = this.experience.resources

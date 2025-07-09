@@ -67,7 +67,7 @@ export default class Tile extends SimObject {
 
     // 如果有建筑，加载建筑实例
     if (building) {
-      this.setBuilding(building, direction)
+      this.setBuilding(building, 1, direction)
     }
   }
 
@@ -78,12 +78,12 @@ export default class Tile extends SimObject {
   }
 
   // 创建并添加建筑实例
-  setBuilding(type, direction = 0) {
+  setBuilding(type, level = 1, direction = 0) {
     this.removeBuilding()
-    // 传递元数据
-    const baseType = type.split('_level')[0]
-    const options = { buildingData: BUILDING_DATA[baseType] }
-    const buildingInstance = createBuilding(type, direction, options)
+    const buildingData = BUILDING_DATA[type]
+    const levelData = buildingData.levels[level]
+    const options = { buildingData, levelData }
+    const buildingInstance = createBuilding(type, level, direction, options)
     if (buildingInstance) {
       this.buildingInstance = buildingInstance
       this.grassMesh.add(buildingInstance)

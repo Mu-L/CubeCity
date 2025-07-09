@@ -6,8 +6,8 @@ import Building from '../building.js'
 
 // 核工厂类建筑
 export default class NukeFactory extends Building {
-  constructor(type = 'nuke_factory', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'nuke_factory', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
 
     // 获取全局依赖
     this.experience = new Experience()
@@ -67,4 +67,4 @@ export default class NukeFactory extends Building {
   }
 
   // 可扩展更多核工厂特有方法
-} 
+}

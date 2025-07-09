@@ -8,8 +8,8 @@ export default class ChemistryFactory extends Building {
     chemistry_level3: null,
   }
 
-  constructor(type = 'chemistry_level1', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'chemistry_factory', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
   }
 
   getCost() {

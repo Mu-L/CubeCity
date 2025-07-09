@@ -7,8 +7,8 @@ export default class Park extends Building {
     park_level3: null,
   }
 
-  constructor(type = 'park_level1', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'park', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
   }
 
   getCost() {

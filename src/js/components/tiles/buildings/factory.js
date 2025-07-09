@@ -5,8 +5,8 @@ import * as THREE from 'three'
 import Building from '../building.js'
 // 工厂类建筑
 export default class Factory extends Building {
-  constructor(type = 'factory', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'factory', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
 
     this.experience = new Experience()
     this.resources = this.experience.resources

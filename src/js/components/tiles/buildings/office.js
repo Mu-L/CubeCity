@@ -7,8 +7,8 @@ export default class Office extends Building {
     office_level3: null,
   }
 
-  constructor(type = 'office_level1', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'office', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
   }
 
   getCost() {

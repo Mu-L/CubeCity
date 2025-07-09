@@ -1,8 +1,8 @@
 import Building from '../building.js'
 
 export default class Hospital extends Building {
-  constructor(type = 'hospital', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'hospital', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
     this.mesh.scale.set(0.5, 0.5, 0.5)
   }
 

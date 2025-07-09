@@ -7,8 +7,8 @@ export default class Shop extends Building {
     shop_level3: null,
   }
 
-  constructor(type = 'shop_level1', direction = 0, options = {}) {
-    super(type, direction, options)
+  constructor(type = 'shop', level = 1, direction = 0, options = {}) {
+    super(type, level, direction, options)
   }
 
   getCost() {
