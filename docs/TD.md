@@ -1,4 +1,4 @@
-# Simcity threejs version
+#  Simcity threejs version
 
 > by:hexianWeb
 
@@ -9,6 +9,123 @@
 | **Scene**    | 游戏世界的3D环境 | 就像游乐场的场地               |
 | **Game UI**  | 用户界面和交互层 | 相当于游乐场的指示牌和售票处   |
 | **Metadata** | 游戏数据和逻辑   | 类似游乐场的运营规则和游客数据 |
+
+# Metadata 设计
+
+## BUILDING_DATA 数据结构说明
+
+`BUILDING_DATA` 是一个包含所有建筑类型及其属性的常量对象，定义于 `src/constants/constants.js`。其结构如下：
+
+```js
+export const BUILDING_DATA = {
+  [buildingType]: {
+    name: { zh: '中文名', en: 'English Name' }, // 建筑名称（多语言）
+    type: 'buildingType',                      // 建筑类型唯一标识
+    icon: '🏠',                                // 图标（emoji或字符串）
+    buildingType: { zh: '建筑类型', en: 'Type' }, // 建筑大类（多语言）
+    category: 'residential' | 'industrial' | 'commercial' | 'environment' | 'governance' | 'social' | 'infrastructure', // 分类
+    levels: {
+      [level]: {
+        displayName: { zh: '中文名', en: 'English Name' }, // 等级显示名
+        cost: number,                // 建造消耗金币
+        maxPopulation?: number,      // 最大人口（住宅类）
+        powerUsage?: number,         // 用电量
+        powerOutput?: number,        // 发电量（发电建筑）
+        pollution: number,           // 污染值（负数为减污）
+        coinOutput?: number,         // 金币产出（商业/工业）
+        population?: number,         // 提供就业/人口（商业/工业/设施）
+        upgradeCost?: number,        // 升级消耗金币
+        nextLevel?: number,          // 下一级编号（无则为null）
+        visible: boolean,            // 是否在UI可见
+      },
+      // ...更多等级
+    }
+  },
+  // ...更多建筑类型
+}
+```
+
+### 字段说明
+
+- **name**：建筑的多语言名称，`zh` 为中文，`en` 为英文。
+- **type**：建筑类型唯一标识（如 `house`, `factory`）。
+- **icon**：建筑图标，通常为 emoji。
+- **buildingType**：建筑大类（如“住宅建筑”、“工业建筑”），多语言。
+- **category**：建筑所属分类，用于功能分组（如 `residential`、`industrial`）。
+- **levels**：建筑的多级属性，key 为等级（1, 2, 3...），value 为该等级的详细属性对象。
+
+#### levels 下的属性
+
+- **displayName**：该等级的多语言显示名。
+- **cost**：建造该等级建筑所需金币。
+- **maxPopulation**：最大人口容量，仅住宅类有。
+- **powerUsage**：用电量，部分建筑有。
+- **powerOutput**：发电量，仅发电建筑有。
+- **pollution**：污染值，负数表示减污（如公园）。
+- **coinOutput**：金币产出，商业/工业建筑有。
+- **population**：提供就业/人口，部分建筑有。
+- **upgradeCost**：升级到下一级所需金币。
+- **nextLevel**：下一级编号，无则为 null。
+- **visible**：该等级是否在UI中可见。
+
+### 示例
+
+以住宅（house）为例：
+
+```js
+house: {
+  name: { zh: '住宅', en: 'Residential' },
+  type: 'house',
+  icon: '🏠',
+  buildingType: { zh: '住宅建筑', en: 'Residential Building' },
+  category: 'residential',
+  levels: {
+    1: {
+      displayName: { zh: '普通住宅', en: 'Basic Residential' },
+      cost: 300,
+      maxPopulation: 50,
+      powerUsage: 10,
+      pollution: 2,
+      upgradeCost: 600,
+      nextLevel: 2,
+      visible: true,
+    },
+    2: {
+      displayName: { zh: '高级住宅', en: 'Advanced Residential' },
+      cost: 600,
+      maxPopulation: 100,
+      powerUsage: 15,
+      pollution: 3,
+      upgradeCost: 1200,
+      nextLevel: 3,
+      visible: false,
+    },
+    3: {
+      displayName: { zh: '豪华住宅', en: 'Luxury Residential' },
+      cost: 1200,
+      maxPopulation: 200,
+      powerUsage: 20,
+      pollution: 5,
+      upgradeCost: null,
+      nextLevel: null,
+      visible: false,
+    },
+  },
+}
+```
+
+---
+
+### 设计原则
+
+- **多语言支持**：所有显示相关字段均为 `{ zh, en }` 结构，便于国际化。
+- **多级建筑**：通过 `levels` 字段支持建筑升级，每级有独立属性。
+- **灵活扩展**：可轻松添加新建筑类型或扩展属性。
+- **UI 可控**：`visible` 字段控制各等级在UI的显示与否。
+
+---
+
+如需进一步细化字段含义或扩展，请补充在此结构说明下方。
 
 # SimObject  互动基类
 
@@ -223,7 +340,7 @@ _onClick(_event) {
   // experience.js / interactor.js
   import { eventBus } from './event-bus'
   eventBus.emit('building:placed', { tile, type })
-
+  
   // index.js
   import { eventBus } from './event-bus'
   eventBus.on('building:placed', ({ tile, type }) => {
@@ -285,7 +402,7 @@ _onClick(_event) {
 
 # 建筑四大模式
 
-### 1. SELECT（选择）模式
+## 1. SELECT（选择）模式
 **核心功能**：信息查看与建筑升级
 ```mermaid
 graph TD
@@ -334,9 +451,68 @@ graph TD
 - 交互限制：
   - 禁用放置/删除操作
   - 升级按钮仅在满足条件时可用
+  
+  ```mermaid
+  graph TD
+    A[用户鼠标点击/移动] --> B[Interactor 监听事件]
+    B --> C[获取当前模式: SELECT]
+    C --> D[获取射线焦点 Tile]
+    D --> E[高亮/选中 Tile]
+    E --> F[调用 _handleSelectMode]
+    F --> G[更新 Pinia: selectBuilding/selectPosition]
+    G --> H[UI 组件监听 Pinia 状态]
+    H --> I[App.vue 及子组件响应, 展示详情/高亮]
+  ```
 
-### 2. BUILD（建造）模式
+### upgrade, demolish 升级功能
+
+```mermaid
+sequenceDiagram
+  participant User as 用户
+  participant Interactor as Interactor(射线交互器)
+  participant Pinia as Pinia(GameState)
+  participant App as App.vue/子组件
+  participant Building as buildingInstance
+
+  User->>Interactor: 鼠标点击建筑
+  Interactor->>Interactor: 获取当前模式: SELECT
+  Interactor->>Interactor: 获取射线焦点 Tile
+  Interactor->>Interactor: 高亮/选中 Tile
+  Interactor->>Interactor: 调用 _handleSelectMode
+  Interactor->>Pinia: setSelectedBuilding(building.type)
+  Interactor->>Pinia: setSelectedPosition(tile.position)
+  Pinia-->>App: 状态变更通知
+  App->>App: 响应状态, 展示建筑详情/高亮
+
+  User->>App: 点击升级/拆除按钮
+  App->>App: 弹出 ConfirmDialog
+  User->>App: 确认操作
+  App->>Interactor: eventBus.emit('ui:action-confirmed', action)
+  Interactor->>Interactor: _onActionConfirmed(action)
+  alt 升级
+    Interactor->>Interactor: _confirmUpgrade
+    Interactor->>Building: building.upgrade()
+    alt 可升级
+      Building-->>Interactor: 返回新 building 数据
+      Interactor->>Building: selected.setBuilding(newType, newDir, options)
+      Interactor->>App: eventBus.emit('toast:add', '升级成功')
+    else 已最高级
+      Interactor->>App: eventBus.emit('toast:add', '已达最高等级')
+    end
+  else 拆除
+    Interactor->>Interactor: _confirmDemolish
+    Interactor->>Pinia: setTile, removeBuilding
+    Interactor->>App: eventBus.emit('toast:add', '建筑移除')
+  end
+  App->>App: 响应状态, 刷新地图
+```
+
+
+
+## 2. BUILD（建造）模式
+
 **核心流程**：
+
 ```mermaid
 sequenceDiagram
     participant UI as 左侧面板
@@ -393,7 +569,7 @@ _onClick() {
 3. 状态栏：
    - 实时金币计数（放置时跳动减少）
 
-### 3. RELOCATE（移动）模式
+## 3. RELOCATE（移动）模式
 **状态机实现**：
 ```mermaid
 stateDiagram-v2
@@ -454,7 +630,31 @@ confirmRelocation(targetTile) {
 4. 无效目标地皮：静态红色边框
 5. 方向指示器：底部罗盘UI（显示当前朝向）
 
-### 4. DEMOLISH（拆除）模式
+```mermaid
+graph TD
+  A[用户鼠标点击/移动] --> B[Interactor 监听事件]
+  B --> C[获取当前模式: RELOCATE]
+  C --> D[获取射线焦点 Tile]
+  D --> E[高亮/选中 Tile]
+  E --> F{第几次点击?}
+  F -- 第一次 --> G[记录 relocateFirst]
+  F -- 第二次 --> H{canPlaceBuilding 合法性判断}
+  H -- 合法且空地 --> I[事件总线 ui:confirm-action]
+  I --> J[App.vue 监听, 弹出 ConfirmDialog]
+  J --> K[用户确认]
+  K --> L[事件总线 'ui:action-confirmed']
+  L --> M[Interactor._confirmRelocate]
+  M --> N[Pinia: setTile, 交换建筑]
+  N --> O[UI Toast: 搬迁成功]
+  H -- 不合法/已占用 --> P[UI Toast: 无法搬迁]
+  O & P --> Q[UI 组件监听 Pinia 状态]
+  Q --> R[App.vue 及子组件响应, 刷新地图]
+```
+
+
+
+## 4. DEMOLISH（拆除）模式
+
 **安全交互流程**：
 ```mermaid
 graph LR
@@ -470,53 +670,6 @@ graph LR
     style C stroke:#090
 ```
 
-**实现代码**：
-```js
-// Interactor.js
-_onClick() {
-  if (this.experience.currentMode === 'demolish' && focusedBuilding) {
-    eventBus.emit('ui:demolish-confirm', {
-      building: focusedBuilding,
-      callback: (confirmed) => {
-        if (confirmed) {
-          const refund = focusedBuilding.getRefund();
-          focusedBuilding.parentTile.removeBuilding();
-          this.experience.credits += refund;
-
-          eventBus.emit('credits:changed', {
-            credits: this.experience.credits,
-            delta: refund
-          });
-        }
-      }
-    });
-  }
-}
-
-// UI组件
-function showDemolishConfirm(building, callback) {
-  const modal = createModal(`
-    <h3>拆除确认</h3>
-    <p>确定要拆除 ${building.name} 吗？</p>
-    <p>返还金币: ${building.getRefund()}</p>
-    <div class="buttons">
-      <button class="cancel">取消</button>
-      <button class="confirm">确认拆除</button>
-    </div>
-  `);
-
-  modal.querySelector('.confirm').addEventListener('click', () => {
-    callback(true);
-    modal.remove();
-  });
-
-  modal.querySelector('.cancel').addEventListener('click', () => {
-    callback(false);
-    modal.remove();
-  });
-}
-```
-
 **视觉提示**：
 1. 场景内：
    - 所有建筑：显示红色边框
@@ -528,6 +681,27 @@ function showDemolishConfirm(building, callback) {
    - 半透明黑色蒙层
    - 居中红色边框面板
    - 拆除图标动画
+
+```mermaid
+graph TD
+  A[用户鼠标点击/移动] --> B[Interactor 监听事件]
+  B --> C[获取当前模式: DEMOLISH]
+  C --> D[获取射线焦点 Tile]
+  D --> E[高亮/选中 Tile]
+  E --> F{Tile 是否有建筑}
+  F -- 有建筑 --> G[事件总线 ui:confirm-action]
+  G --> H[App.vue 监听, 弹出 ConfirmDialog]
+  H --> I[用户确认]
+  I --> J[事件总线 ui:action-confirmed]
+  J --> K[已确认销毁 执行销毁逻辑]
+  K --> L[Metadata 更新数据，Scene 删除地皮]
+  L --> M[UI Toast: 建筑移除]
+  F -- 无建筑 --> N[设置地皮为草地]
+  M & N --> O[UI 组件监听 Pinia 状态]
+  O --> P[App.vue 及子组件响应, 刷新地图]
+```
+
+
 
 # 产出系统
 
@@ -693,9 +867,9 @@ class GameState {
 graph LR
     A[住宅] -->|提供| B[人口]
     B -->|需要| C[就业]
-    C -->|由| D[商业/工业]提供
+    C -->|由| D[提供 by 商业/工业]
     D -->|消耗| E[电力]
-    E -->|由| F[发电厂]提供
+    E -->|由| F[提供 by 发电厂]
     F -->|产生| G[污染]
     G -->|降低| H[满意度]
     H -->|影响| A[住宅人口增长]
@@ -979,4 +1153,5 @@ class SaveSystem {
 
 同时保持了游戏的休闲本质，所有复杂系统都通过清晰的UI和渐进式引导呈现给玩家。
 
->
+---
+
