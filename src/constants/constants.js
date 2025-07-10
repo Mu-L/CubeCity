@@ -71,6 +71,7 @@ export const BUILDING_DATA = {
         maxPopulation: 50,
         powerUsage: 10,
         pollution: 2,
+        coinOutput: 5, // 新增
         upgradeCost: 600,
         nextLevel: 2,
         visible: true,
@@ -81,6 +82,7 @@ export const BUILDING_DATA = {
         maxPopulation: 100,
         powerUsage: 15,
         pollution: 3,
+        coinOutput: 10, // 新增
         upgradeCost: 1200,
         nextLevel: 3,
         visible: false,
@@ -91,6 +93,7 @@ export const BUILDING_DATA = {
         maxPopulation: 200,
         powerUsage: 20,
         pollution: 5,
+        coinOutput: 20, // 新增
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -111,6 +114,7 @@ export const BUILDING_DATA = {
         maxPopulation: 40,
         powerUsage: 8,
         pollution: 1,
+        coinOutput: 4, // 新增
         upgradeCost: 800,
         nextLevel: 2,
         visible: true,
@@ -121,6 +125,7 @@ export const BUILDING_DATA = {
         maxPopulation: 80,
         powerUsage: 12,
         pollution: 2,
+        coinOutput: 8, // 新增
         upgradeCost: 1600,
         nextLevel: 3,
         visible: false,
@@ -131,6 +136,7 @@ export const BUILDING_DATA = {
         maxPopulation: 160,
         powerUsage: 18,
         pollution: 3,
+        coinOutput: 16, // 新增
         upgradeCost: null,
         nextLevel: null,
         visible: false,

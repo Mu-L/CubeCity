@@ -20,6 +20,9 @@ const dialogData = ref({})
 const { getDialogConfig, handleBuildingTransaction } = useBuilding()
 const gameState = useGameState()
 
+// 计时器，用于每日收益
+let dayInterval = null
+
 // 监听 mitt 事件
 // 只监听一次即可
 if (!window.__confirmDialogListenerAdded) {
@@ -51,9 +54,15 @@ function handleKeydown(e) {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  // 每 10 秒触发一次“下一天”
+  dayInterval = setInterval(() => {
+    gameState.nextDay()
+  }, 5000)
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
+  // 清除计时器
+  clearInterval(dayInterval)
 })
 </script>
 

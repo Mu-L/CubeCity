@@ -146,7 +146,7 @@ const upgradeImprovements = computed(() => {
         </div>
       </div>
       <!-- 升级信息区块 -->
-      <div class="resource-display rounded p-3">
+      <div v-if="currentMode === 'select'" class="resource-display rounded p-3">
         <div class="text-sm text-gray-400 uppercase tracking-wide mb-2">
           {{ t('buildingDetails.upgradeInfo') }}
         </div>

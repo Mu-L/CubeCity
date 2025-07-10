@@ -3,7 +3,7 @@ import { useGameState } from '@/stores/useGameState.js'
 import { storeToRefs } from 'pinia'
 
 const gameState = useGameState()
-const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview } = storeToRefs(gameState)
+const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay } = storeToRefs(gameState)
 
 function toggleLang() {
   gameState.setLanguage(language.value === 'zh' ? 'en' : 'zh')
@@ -73,7 +73,7 @@ function toggleMapOverview() {
           </h1>
           <div class="flex items-center justify-end space-x-2 mt-1">
             <div class="status-indicator status-online" />
-            <span class="text-sm text-gray-400 uppercase tracking-wide">{{ $t('topbar.level') }} {{ cityLevel }} • {{ $t('topbar.online') }}</span>
+            <span class="text-sm text-gray-400 uppercase tracking-wide">{{ $t('topbar.level') }} {{ cityLevel }} • {{ $t('topbar.day') }} {{ gameDay }}</span>
           </div>
         </div>
         <button class="ml-4 px-2 py-1 rounded bg-gray-700 text-white" @click="toggleLang">

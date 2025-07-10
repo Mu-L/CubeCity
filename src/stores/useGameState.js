@@ -1,3 +1,4 @@
+import { BUILDING_DATA } from '@/constants/constants.js'
 import { defineStore } from 'pinia'
 
 export const useGameState = defineStore('gameState', {
@@ -6,6 +7,7 @@ export const useGameState = defineStore('gameState', {
     selectedBuilding: null, // 当前选中建筑 {type, level}
     selectedPosition: null, // 当前选中位置
     toastQueue: [], // Toast 消息队列
+    gameDay: 1, // 新增：游戏天数
     // 其他全局状态可在此扩展
     credits: 10000, // 金币
     population: 0, // 人口
@@ -26,6 +28,27 @@ export const useGameState = defineStore('gameState', {
     // 新增：地图总览显隐
     showMapOverview: false,
   }),
+  getters: {
+    /**
+     * 计算每日总收入
+     * @param {object} state - a
+     * @returns {number} - b
+     */
+    dailyIncome: (state) => {
+      let totalIncome = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (buildingData && buildingData.levels[tile.level]) {
+              totalIncome += buildingData.levels[tile.level].coinOutput || 0
+            }
+          }
+        })
+      })
+      return totalIncome
+    },
+  },
   actions: {
     setMode(mode) {
       this.currentMode = mode
@@ -90,6 +113,13 @@ export const useGameState = defineStore('gameState', {
     setShowMapOverview(val) {
       this.showMapOverview = val
     },
+    /**
+     * 进入下一天，更新金币
+     */
+    nextDay() {
+      this.credits += this.dailyIncome
+      this.gameDay++
+    },
     resetAll() {
       this.metadata = Array.from({ length: 17 }, _ =>
         Array.from({ length: 17 }, _ => ({
@@ -101,6 +131,7 @@ export const useGameState = defineStore('gameState', {
       this.selectedBuilding = null
       this.selectedPosition = null
       this.toastQueue = []
+      this.gameDay = 1
       this.credits = 10000
       this.population = 0
       this.maxPopulation = 0
