@@ -1,6 +1,8 @@
 <script setup>
 import { useGameState } from '@/stores/useGameState.js'
+import { CountUp } from 'countup.js'
 import { storeToRefs } from 'pinia'
+import { onMounted, ref, watch } from 'vue'
 
 const gameState = useGameState()
 const { credits, population, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay } = storeToRefs(gameState)
@@ -12,6 +14,41 @@ function toggleLang() {
 function toggleMapOverview() {
   gameState.setShowMapOverview(!showMapOverview.value)
 }
+
+const creditsDisplay = ref(credits.value)
+const populationDisplay = ref(population.value)
+const maxPopulationDisplay = ref(maxPopulation.value)
+let creditsCountUp, populationCountUp, maxPopulationCountUp
+
+onMounted(() => {
+  creditsCountUp = new CountUp('credits-countup', credits.value, { duration: 10, separator: ',' })
+  creditsCountUp.printValue(credits.value)
+  populationCountUp = new CountUp('population-countup', population.value, { duration: 10, separator: ',' })
+  populationCountUp.printValue(population.value)
+  maxPopulationCountUp = new CountUp('max-population-countup', maxPopulation.value, { duration: 10, separator: ',' })
+  maxPopulationCountUp.printValue(maxPopulation.value)
+})
+
+watch(credits, (newVal, _oldVal) => {
+  if (creditsCountUp) {
+    creditsCountUp.update(newVal)
+  }
+  creditsDisplay.value = newVal
+})
+
+watch(population, (newVal, _oldVal) => {
+  if (populationCountUp) {
+    populationCountUp.update(newVal)
+  }
+  populationDisplay.value = newVal
+})
+
+watch(maxPopulation, (newVal, _oldVal) => {
+  if (maxPopulationCountUp) {
+    maxPopulationCountUp.update(newVal)
+  }
+  maxPopulationDisplay.value = newVal
+})
 </script>
 
 <template>
@@ -29,7 +66,7 @@ function toggleMapOverview() {
                 {{ $t('topbar.credits') }}
               </div>
               <div class="text-lg font-bold text-industrial-yellow neon-text">
-                {{ credits.toLocaleString() }}
+                <span id="credits-countup">{{ creditsDisplay.toLocaleString() }}</span>
               </div>
             </div>
           </div>
@@ -44,7 +81,8 @@ function toggleMapOverview() {
                 {{ $t('topbar.population') }}
               </div>
               <div class="text-lg font-bold text-industrial-blue neon-text">
-                {{ population }}/{{ maxPopulation }}
+                <span id="population-countup">{{ populationDisplay }}</span>/
+                <span id="max-population-countup">{{ maxPopulationDisplay }}</span>
               </div>
             </div>
           </div>

@@ -17,6 +17,9 @@ importers:
       cannon:
         specifier: ^0.6.2
         version: 0.6.2
+      countup.js:
+        specifier: ^2.9.0
+        version: 2.9.0
       gsap:
         specifier: ^3.12.5
         version: 3.12.5
@@ -38,6 +41,9 @@ importers:
       vue:
         specifier: '3'
         version: 3.5.17(typescript@5.8.3)
+      vue-countup-v3:
+        specifier: ^1.4.2
+        version: 1.4.2(vue@3.5.17(typescript@5.8.3))
       vue-i18n:
         specifier: ^11.1.5
         version: 11.1.7(vue@3.5.17(typescript@5.8.3))
@@ -1781,6 +1787,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  countup.js@2.9.0:
+    resolution: {integrity: sha512-llqrvyXztRFPp6+i8jx25phHWcVWhrHO4Nlt0uAOSKHB8778zzQswa4MU3qKBvkXfJKftRYFJuVHez67lyKdHg==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -4019,6 +4028,11 @@ packages:
       terser:
         optional: true
 
+  vue-countup-v3@1.4.2:
+    resolution: {integrity: sha512-nRC65jBcdgwybxqztgd/WaK8ZN5T9ECPyiCFGYFMewCsvqdRVo1CtpT7JREcPNF837Fgu/izTSFiuzrIGD6w0A==}
+    peerDependencies:
+      vue: ^3.0.0
+
   vue-eslint-parser@10.1.1:
     resolution: {integrity: sha512-bh2Z/Au5slro9QJ3neFYLanZtb1jH+W2bKqGHXAoYD4vZgNG3KeotL7JpPv5xzY4UXUXJl7TrIsnzECH63kd3Q==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -5928,6 +5942,8 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.8.3
+
+  countup.js@2.9.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
@@ -8456,6 +8472,11 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.83.0
       terser: 5.37.0
+
+  vue-countup-v3@1.4.2(vue@3.5.17(typescript@5.8.3)):
+    dependencies:
+      countup.js: 2.9.0
+      vue: 3.5.17(typescript@5.8.3)
 
   vue-eslint-parser@10.1.1(eslint@9.22.0(jiti@2.4.2)):
     dependencies:
