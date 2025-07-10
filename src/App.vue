@@ -9,6 +9,7 @@ import DashboardFooter from './components/DashboardFooter.vue'
 import GameCanvas from './components/GameCanvas.vue'
 import MapOverview from './components/MapOverview.vue'
 import ModeIndicator from './components/ModeIndicator.vue'
+import RestorePrompt from './components/RestorePrompt.vue'
 import SelectedIndicator from './components/SelectedIndicator.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import TopBar from './components/TopBar.vue'
@@ -58,6 +59,7 @@ onUnmounted(() => {
 
 <template>
   <div>
+    <RestorePrompt />
     <TopBar />
     <div class="flex gap-2 px-2 h-[calc(100vh-200px)]">
       <BuildingSidebar />

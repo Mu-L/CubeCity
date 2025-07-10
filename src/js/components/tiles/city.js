@@ -1,10 +1,10 @@
 import { SIZE } from '@/constants/constants.js' // 导入常量
+import { useGameState } from '@/stores/useGameState.js'
+import { storeToRefs } from 'pinia'
+
 import * as THREE from 'three'
 import Experience from '../../experience.js'
-
-import { useGameState } from '@/stores/useGameState.js'
 import Tile from './tile.js'
-import { storeToRefs } from 'pinia'
 
 // City 类，负责管理所有地皮
 export default class City {

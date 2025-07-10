@@ -89,6 +89,27 @@ export const useGameState = defineStore('gameState', {
     setShowMapOverview(val) {
       this.showMapOverview = val
     },
+    resetAll() {
+      this.metadata = Array.from({ length: 17 }, _ =>
+        Array.from({ length: 17 }, _ => ({
+          type: 'grass',
+          building: null,
+          direction: 0,
+        })))
+      this.currentMode = 'build'
+      this.selectedBuilding = null
+      this.selectedPosition = null
+      this.toastQueue = []
+      this.credits = 10000
+      this.population = 0
+      this.maxPopulation = 0
+      this.territory = 16
+      this.cityLevel = 1
+      this.cityName = 'HeXian City'
+      this.citySize = 16
+      this.language = 'en'
+      this.showMapOverview = false
+    },
   },
   persist: true, // 启用持久化
 })
