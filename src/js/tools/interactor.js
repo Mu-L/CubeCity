@@ -279,10 +279,14 @@ export default class Interactor {
         buildingType: tile.buildingInstance.type,
         buildingLevel: tile.buildingInstance.level,
       })
+      // 选中建筑
+      this.gameState.setSelectedBuilding({ type: tile.buildingInstance.type, level: tile.buildingInstance.level || 1 })
+      this.gameState.setSelectedPosition(tile.position)
     }
     else {
       // 没建筑，直接变草地
       tile.setType('grass')
+      this._clearSelection()
     }
   }
 
