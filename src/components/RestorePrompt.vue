@@ -48,7 +48,7 @@ function onReject() {
         <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide" @click="onAccept">
           Yes, Continue Last Game
         </button>
-        <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide bg-industrial-red hover:bg-red-700" @click="onReject">
+        <button class=" w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide bg-industrial-red hover:bg-red-700" @click="onReject">
           No, Start New Game
         </button>
       </div>

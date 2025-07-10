@@ -20,7 +20,7 @@ const i18n = createI18n({
 const app = createApp(App)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
-app.use(pinia)  
+app.use(pinia)
 app.use(i18n)
 app.mount('#app')
 

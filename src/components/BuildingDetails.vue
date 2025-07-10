@@ -16,7 +16,9 @@ const building = computed(() => {
   if (!selectedBuilding.value)
     return {}
   const { type, level } = selectedBuilding.value
-  return BUILDING_DATA[type]?.levels[level] || {}
+  const base = BUILDING_DATA[type] || {}
+  const levelData = base.levels?.[level] || {}
+  return { ...base, ...levelData, level }
 })
 
 // 升级建筑
@@ -57,7 +59,7 @@ function demolishBuilding() {
       <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
         <span class="neon-text">{{ t('buildingDetails.unitDetails') }}</span>
       </h2>
-      <div class="flex-1">
+      <div class="flex-1 overflow-y-auto custom-scrollbar">
         <EmptyState v-if="!selectedBuilding" :current-mode="currentMode" />
         <BuildingDetail
           v-else
@@ -72,3 +74,26 @@ function demolishBuilding() {
     </div>
   </aside>
 </template>
+
+<style scoped>
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3b3b3b #18181b;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #18181b;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b3b3b 60%, #ffb800 100%);
+  border-radius: 8px;
+  min-height: 24px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ffb800 60%, #3b3b3b 100%);
+}
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: #18181b;
+}
+</style>

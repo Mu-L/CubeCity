@@ -64,7 +64,21 @@
     "upgradeUnit": "Upgrade Unit",
     "maintenanceBtn": "Maintenance",
     "demolish": "Demolish",
-    "tile": "Tile Position"
+    "tile": "Tile Position",
+    "coinOutput": "Coin Output",
+    "powerUsage": "Power Usage",
+    "powerOutput": "Power Output",
+    "maxPopulation": "Max Population",
+    "pollution": "Pollution",
+    "cost": "Build Cost",
+    "displayName": "Level Name",
+    "category": "Category",
+    "upgradeCost": "Upgrade Cost",
+    "nextLevel": "Next Level",
+    "upgradeInfo": "Upgrade Info",
+    "currentLevel": "Current Level",
+    "improvements": "Improvements",
+    "maxLevel": "Max Level Reached"
   },
   "confirmDialog": {
     "title": "Confirm",

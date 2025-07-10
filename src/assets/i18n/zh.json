@@ -64,7 +64,17 @@
     "upgradeUnit": "升级单位",
     "maintenanceBtn": "维护",
     "demolish": "拆除",
-    "tile": "地皮位置"
+    "tile": "地皮位置",
+    "coinOutput": "金币产出",
+    "powerUsage": "用电量",
+    "powerOutput": "发电量",
+    "maxPopulation": "最大人口",
+    "pollution": "污染",
+    "cost": "建造花费",
+    "displayName": "等级名称",
+    "category": "分类",
+    "upgradeCost": "升级消耗",
+    "nextLevel": "下一级"
   },
   "confirmDialog": {
     "title": "确认操作",
