@@ -10,8 +10,6 @@ export const useGameState = defineStore('gameState', {
     gameDay: 1, // 新增：游戏天数
     // 其他全局状态可在此扩展
     credits: 10000, // 金币
-    population: 0, // 人口
-    maxPopulation: 0, // 最大人口
     territory: 16, // 地皮
     cityLevel: 1, // 城市等级
     cityName: 'HeXian City', // 城市名称
@@ -48,6 +46,50 @@ export const useGameState = defineStore('gameState', {
       })
       return totalIncome
     },
+    /**
+     * 计算总人口容量
+     * @param {object} state - a
+     * @returns {number} - b
+     */
+    maxPopulation: (state) => {
+      let totalCapacity = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (buildingData?.category === 'residential' && buildingData.levels[tile.level]) {
+              totalCapacity += buildingData.levels[tile.level].maxPopulation || 0
+            }
+          }
+        })
+      })
+      return totalCapacity
+    },
+    /**
+     * 计算总就业岗位
+     * @param {object} state - a
+     * @returns {number} - b
+     */
+    totalJobs: (state) => {
+      let totalJobs = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (
+              (buildingData?.category === 'commercial' || buildingData?.category === 'industrial')
+              && buildingData.levels[tile.level]
+            ) {
+              totalJobs += buildingData.levels[tile.level].population || 0
+            }
+          }
+        })
+      })
+      return totalJobs
+    },
+    population() {
+      return Math.min(this.maxPopulation * 1.5, this.totalJobs)
+    },
   },
   actions: {
     setMode(mode) {
@@ -65,9 +107,6 @@ export const useGameState = defineStore('gameState', {
     },
     updateCredits(credits) {
       this.credits += credits
-    },
-    setPopulation(population) {
-      this.population = population
     },
     setTerritory(territory) {
       this.territory = territory
@@ -133,8 +172,6 @@ export const useGameState = defineStore('gameState', {
       this.toastQueue = []
       this.gameDay = 1
       this.credits = 10000
-      this.population = 0
-      this.maxPopulation = 0
       this.territory = 16
       this.cityLevel = 1
       this.cityName = 'HeXian City'
