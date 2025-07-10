@@ -20,7 +20,7 @@ export default class Environment {
 
   setSunLight() {
     this.sunLightColor = '#ffffff'
-    this.sunLightIntensity = 1
+    this.sunLightIntensity = 0.8
     this.sunLight = new THREE.DirectionalLight(
       this.sunLightColor,
       this.sunLightIntensity,
@@ -40,7 +40,7 @@ export default class Environment {
 
     // 设置 sunLight Target
     this.sunLight.target = new THREE.Object3D()
-    this.sunLightTarget = new THREE.Vector3(0, 0, 0)
+    this.sunLightTarget = new THREE.Vector3(9, 0, 9)
     this.sunLight.target.position.copy(this.sunLightTarget)
     this.scene.add(this.sunLight.target)
 

@@ -7,11 +7,20 @@ export function useBuilding() {
   const gameState = useGameState()
   const { t } = useI18n()
 
+  // 获取下一级建筑等级
+  const getNextLevel = (buildingType, level = 1) => {
+    const building = BUILDING_DATA[buildingType]
+    if (!building || !building.levels)
+      return null
+    return building.levels[level].nextLevel
+  }
+
   // 根据 action 推断实际的 buildingLevel
   const resolveBuildingLevel = (action, buildingType, level = 1) => {
     if (action === 'upgrade') {
       return getNextLevel(buildingType, level)
-    } else {
+    }
+    else {
       return level
     }
   }
@@ -24,7 +33,8 @@ export function useBuilding() {
       action = actionOrType
       buildingType = buildingTypeOrLevel
       level = levelMaybe ?? 1
-    } else {
+    }
+    else {
       action = null
       buildingType = actionOrType
       level = buildingTypeOrLevel ?? 1
@@ -37,14 +47,6 @@ export function useBuilding() {
   // 获取建筑退款金额 (70%)，支持 action 参数
   const getBuildingRefund = (actionOrType, buildingTypeOrLevel, levelMaybe) => {
     return getBuildingCost(actionOrType, buildingTypeOrLevel, levelMaybe) * 0.7
-  }
-
-  // 获取下一级建筑等级
-  const getNextLevel = (buildingType, level = 1) => {
-    const building = BUILDING_DATA[buildingType]
-    if (!building || !building.levels)
-      return null
-    return building.levels[level].nextLevel
   }
 
   // 处理建筑操作的对话框配置
@@ -109,9 +111,11 @@ export function useBuilding() {
     switch (action) {
       case 'demolish':
         gameState.updateCredits(getBuildingRefund(action, buildingType, level))
+        gameState.updateTile(gameState.selectedPosition.x, gameState.selectedPosition.z, { building: null, level: 0 })
         break
       case 'upgrade':
         gameState.updateCredits(-getBuildingCost(action, buildingType, level))
+        gameState.updateTile(gameState.selectedPosition.x, gameState.selectedPosition.z, { level: level + 1 })
         break
       case 'relocate':
         gameState.updateCredits(-100)

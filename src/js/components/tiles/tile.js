@@ -16,7 +16,7 @@ export default class Tile extends SimObject {
    *   options.color: 颜色字符串
    *   options.direction: 建筑朝向，0/90/180/270，单位为度，默认为0
    */
-  constructor(x, y, { type = 'grass', building = null, direction = 0 } = {}) {
+  constructor(x, y, { type = 'grass', building = null, direction = 0, level = 0 } = {}) {
     // 获取 Experience 单例
     const experience = new Experience()
     const resources = experience.resources
@@ -29,6 +29,7 @@ export default class Tile extends SimObject {
     this.name = `Tile-${x}-${y}`
     this.type = type // 草地/道路/住宿/商业/工业/公共设施/社会服务/政府建筑
     this.direction = direction // 建筑朝向，单位为度
+    this.level = level // 建筑等级
     this.buildingInstance = null
 
     // ========== 创建 grass mesh ==========
@@ -67,7 +68,7 @@ export default class Tile extends SimObject {
 
     // 如果有建筑，加载建筑实例
     if (building) {
-      this.setBuilding(building, 1, direction)
+      this.setBuilding(building, level, direction)
     }
   }
 

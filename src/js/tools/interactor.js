@@ -249,6 +249,7 @@ export default class Interactor {
       type: 'ground',
       building: buildingTypeToBuild,
       direction: 0, // 可根据实际情况
+      level: buildingLevelToBuild,
     })
     if (this.gameState.credits < BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost) {
       this._showToast('error', 'Insufficient funds, unable to build.')
@@ -364,6 +365,7 @@ export default class Interactor {
         type: 'ground',
         building: null,
         direction: 0,
+        level: 0,
       })
       tile.removeBuilding()
       this._showBuildingRemovedToast(building.type, tile, building.level)
@@ -379,7 +381,7 @@ export default class Interactor {
       const srcData = { ...this.gameState.getTile(sourceTile.x, sourceTile.y) }
       const dstData = { ...this.gameState.getTile(destTile.x, destTile.y) }
       this.gameState.setTile(destTile.x, destTile.y, srcData)
-      this.gameState.setTile(sourceTile.x, sourceTile.y, { ...dstData, building: null, direction: 0 })
+      this.gameState.setTile(sourceTile.x, sourceTile.y, { ...dstData, building: null, direction: 0, level: 0 })
       this._swapBuilding(sourceTile, destTile)
       this._showToast('info', '建筑搬迁成功！')
       this._updateAdjacentRoads(sourceTile)

@@ -53,6 +53,7 @@ export default class City {
           type: tileMeta.type,
           building: tileMeta.building,
           direction: tileMeta.direction !== undefined ? tileMeta.direction : 0, // 传递建筑朝向
+          level: tileMeta.level !== undefined ? tileMeta.level : 0, // 传递建筑等级
         })
         row.push(tile)
         this.root.add(tile)

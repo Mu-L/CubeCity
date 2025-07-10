@@ -21,6 +21,7 @@ export const useGameState = defineStore('gameState', {
         type: 'grass',
         building: null,
         direction: 0,
+        level: 0, // 建筑等级
       }))),
     // 新增：地图总览显隐
     showMapOverview: false,
