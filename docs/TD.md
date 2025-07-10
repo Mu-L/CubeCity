@@ -12,6 +12,8 @@
 
 # Metadata 设计
 
+
+
 ## BUILDING_DATA 数据结构说明
 
 `BUILDING_DATA` 是一个包含所有建筑类型及其属性的常量对象，定义于 `src/constants/constants.js`。其结构如下：
@@ -782,9 +784,11 @@ graph TD
 - 拆除建筑可返还部分金币。
 - 随着游戏进程推进，金币产出与消耗会动态调整。
 
-## 3. 挑战与失败机制
+# 未来功能
 
-### 2.1 动态经济系统
+## 1. 挑战与失败机制
+
+### 1..1 动态经济系统
 ```js
 class Economy {
   constructor() {
@@ -824,7 +828,7 @@ class Economy {
 }
 ```
 
-### 2.2 失败条件
+### 1.2 失败条件
 ```js
 class GameState {
   checkFailureConditions() {
@@ -860,9 +864,9 @@ class GameState {
 }
 ```
 
-## 4. 策略性建筑系统
+## 2. 策略性建筑系统
 
-### 3.1 建筑相互依存关系
+### 2.1 建筑相互依存关系
 ```mermaid
 graph LR
     A[住宅] -->|提供| B[人口]
@@ -881,7 +885,7 @@ graph LR
     K -->|增加| D[商业收入]
 ```
 
-### 3.2 建筑升级树示例（住宅）
+### 2.2 建筑升级树示例（住宅）
 ```
 基础住宅
   ├─ 升级方向A：公寓大楼
@@ -894,7 +898,7 @@ graph LR
        └─ 商业住宅（增加商业收入）
 ```
 
-## 5. 动态事件系统
+## 3. 动态事件系统
 
 **事件类型表**：
 | 事件类型 | 频率       | 影响                | 玩家应对策略           |
@@ -946,7 +950,7 @@ class EventSystem {
 }
 ```
 
-## 6. 进阶游戏机制
+## 4. 进阶游戏机制
 
 ### 5.1 区域规划加成
 ```js
@@ -1040,9 +1044,9 @@ class PolicySystem {
 }
 ```
 
-## 7. 平衡性调整
+## 5. 平衡性调整
 
-### 6.1 资源转换公式
+### 5.1 资源转换公式
 ```
 人口增长 = (基础增长率 + 满意度/100) × (1 - 污染/200)
         × (就业率^0.5) × 住宅容量使用率
@@ -1051,7 +1055,7 @@ class PolicySystem {
 污染产生 = Σ(燃煤发电×0.8 + 工业建筑×0.5 - 公园×0.3)
 ```
 
-### 6.2 动态难度曲线
+### 5.2 动态难度曲线
 ```js
 class DifficultySystem {
   getDifficultyMultiplier() {
@@ -1076,9 +1080,9 @@ class DifficultySystem {
 }
 ```
 
-## 8. 玩家进度与成就
+## 6. 玩家进度与成就
 
-### 7.1 里程碑系统
+### 6.1 里程碑系统
 ```js
 const milestones = [
   { id: 'first_city', name: '初具规模', condition: state => state.population >= 100 },
@@ -1088,7 +1092,7 @@ const milestones = [
 ]
 ```
 
-### 7.2 保存进度设计
+### 6.2 保存进度设计
 ```js
 class SaveSystem {
   saveGame() {
