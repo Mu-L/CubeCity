@@ -3,8 +3,8 @@
     "credits": "Credits",
     "population": "Population",
     "territory": "Territory",
-    "level": "Level",
-    "online": "Online",
+    "power": "Power",
+    "level": "Lv",
     "day": "Day"
   },
   "buildingSidebar": {
@@ -20,7 +20,7 @@
     "cityMetrics": "City Metrics",
     "buildings": "Buildings",
     "dailyIncome": "Daily Income",
-    "efficiency": "Efficiency",
+    "efficiency": "Pollution",
     "stability": "Stability",
     "achievements": "Achievements",
     "firstFactory": "First Factory",

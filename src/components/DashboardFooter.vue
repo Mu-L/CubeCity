@@ -1,13 +1,31 @@
 <script setup>
-import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useGameState } from '../stores/useGameState'
+import AnimatedNumber from './AnimatedNumber.vue'
 
 const gameState = useGameState()
 const { t } = useI18n()
+const { buildingCount, dailyIncome, pollution, stability } = storeToRefs(gameState)
+
 function showAchievements() {
   gameState.addToast(t('dashboardFooter.achievementLoading'), 'info')
 }
+
+let stabilityInterval = null
+
+onMounted(() => {
+  stabilityInterval = setInterval(() => {
+    gameState.updateStability()
+    gameState.applyStabilityChange()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (stabilityInterval)
+    clearInterval(stabilityInterval)
+})
 
 // 系统状态数据抽离
 const systemStatusList = computed(() => [
@@ -53,7 +71,7 @@ const systemStatusList = computed(() => [
         <div class="grid grid-cols-2 gap-4">
           <div class="text-center">
             <div class="text-2xl font-bold text-industrial-green neon-text">
-              25
+              <AnimatedNumber :value="buildingCount" :duration="2" />
             </div>
             <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
               {{ t('dashboardFooter.buildings') }}
@@ -61,15 +79,19 @@ const systemStatusList = computed(() => [
           </div>
           <div class="text-center">
             <div class="text-2xl font-bold text-industrial-blue neon-text">
-              +1.2K
+              +<AnimatedNumber :value="dailyIncome" :duration="2" separator="," />
             </div>
             <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
               {{ t('dashboardFooter.dailyIncome') }}
             </div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-industrial-yellow neon-text">
-              85%
+            <div
+              class="text-2xl font-bold neon-text"
+              :class="pollution > 100 ? 'text-red-500' : 'text-industrial-yellow'"
+            >
+              <AnimatedNumber :value="pollution" :duration="2" />
+              <span v-if="pollution > 100" class="text-sm"> DANGER</span>
             </div>
             <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
               {{ t('dashboardFooter.efficiency') }}
@@ -77,7 +99,7 @@ const systemStatusList = computed(() => [
           </div>
           <div class="text-center">
             <div class="text-2xl font-bold text-industrial-green neon-text">
-              92%
+              <AnimatedNumber :value="stability" :duration="2" />%
             </div>
             <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
               {{ t('dashboardFooter.stability') }}

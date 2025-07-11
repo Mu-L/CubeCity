@@ -25,6 +25,10 @@ export const useGameState = defineStore('gameState', {
       }))),
     // 新增：地图总览显隐
     showMapOverview: false,
+    // 新增：稳定度
+    stability: 100,
+    // 新增：稳定度每秒变化率
+    stabilityChangeRate: 0,
   }),
   getters: {
     /**
@@ -90,8 +94,112 @@ export const useGameState = defineStore('gameState', {
     population() {
       return Math.min(this.maxPopulation * 1.5, this.totalJobs)
     },
+    /**
+     * 计算最大发电量
+     * @param {object} state - a
+     * @returns {number} - b
+     */
+    maxPower: (state) => {
+      let totalPower = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (buildingData && buildingData.levels[tile.level]) {
+              totalPower += buildingData.levels[tile.level].powerOutput || 0
+            }
+          }
+        })
+      })
+      return totalPower
+    },
+    /**
+     * 计算总耗电量
+     * @param {object} state - a
+     * @returns {number} - b
+     */
+    power: (state) => {
+      let totalUsage = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (buildingData && buildingData.levels[tile.level]) {
+              totalUsage += buildingData.levels[tile.level].powerUsage || 0
+            }
+          }
+        })
+      })
+      return totalUsage
+    },
+    buildingCount: (state) => {
+      let count = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.building !== 'road') {
+            count++
+          }
+        })
+      })
+      return count
+    },
+    pollution: (state) => {
+      let totalPollution = 0
+      state.metadata.forEach((row) => {
+        row.forEach((tile) => {
+          if (tile.building && tile.level > 0) {
+            const buildingData = BUILDING_DATA[tile.building]
+            if (buildingData && buildingData.levels[tile.level]) {
+              totalPollution += buildingData.levels[tile.level].pollution || 0
+            }
+          }
+        })
+      })
+      return totalPollution
+    },
+    hospitalCount: state =>
+      state.metadata.flat().filter(tile => tile.building === 'hospital').length,
+    policeStationCount: state =>
+      state.metadata.flat().filter(tile => tile.building === 'police').length,
+    fireStationCount: state =>
+      state.metadata.flat().filter(tile => tile.building === 'fire_station').length,
   },
   actions: {
+    updateStability() {
+      // 每秒变化率
+      let changeRate = 0
+
+      // 1. 公共服务建筑带来的稳定度提升
+      const servicesCount = this.hospitalCount + this.policeStationCount + this.fireStationCount
+      changeRate += servicesCount * 0.05 // 每个服务建筑每秒提升 0.05
+
+      // 2. 就业不足导致的稳定度下降
+      const jobDeficit = this.totalJobs - this.maxPopulation
+      if (jobDeficit > 0) {
+        const unemploymentRatio = Number((jobDeficit / this.maxPopulation).toFixed(2))
+        changeRate -= unemploymentRatio * 0.5 // 失业率越高，下降越快
+      }
+
+      // 3. 污染导致的稳定度下降
+      if (this.pollution > 50) {
+        // 污染越高，下降越快，呈指数增长
+        changeRate -= Number((this.pollution / 50) ** 2 * 0.2).toFixed(2)
+      }
+
+      // 4. 电力短缺导致的稳定度下降
+      const powerDeficit = this.power - this.maxPower
+      if (powerDeficit > 0) {
+        const powerDeficitRatio = Number((powerDeficit / this.maxPower).toFixed(2))
+        changeRate -= powerDeficitRatio * 1.0 // 电力缺口越大，下降越快
+      }
+      this.stabilityChangeRate = changeRate
+    },
+
+    applyStabilityChange() {
+      const newStability = this.stability + this.stabilityChangeRate
+      this.stability = Math.max(0, Math.min(100, newStability))
+    },
+
     setMode(mode) {
       this.currentMode = mode
     },

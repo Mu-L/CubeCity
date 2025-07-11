@@ -109,7 +109,7 @@ export default [
     path: 'models/nuke_factory.glb',
   },
   // hero_park
-  { name: 'hero_park', type: 'gltfModel', path: 'models/hero_park.glb' },
+  { name: 'hero_park_level1', type: 'gltfModel', path: 'models/hero_park.glb' },
   {
     name: 'garbage_station_level1',
     type: 'gltfModel',
