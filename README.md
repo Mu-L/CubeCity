@@ -1,180 +1,66 @@
-[node]: https://nodejs.org/en
-[yarn]: https://yarnpkg.com
-[pnpm]: https://pnpm.io
-[demo]: https://vite-three-js.d1a.app
-[license]: https://github.com/doinel1a/vite-three-js/blob/main/LICENSE
-[code-of-conduct]: https://github.com/doinel1a/vite-three-js/blob/main/CODE_OF_CONDUCT.md
-[issues]: https://github.com/doinel1a/vite-three-js/issues
-[pulls]: https://github.com/doinel1a/vite-three-js/pulls
-[browserslist]: https://browsersl.ist/#q=last+3+versions%2C%3E+0.2%25%2C+not+dead
-[graphviz]: https://www.graphviz.org/download
-[commitlint]: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
-[webpack-three-js]: https://github.com/doinel1a/webpack-three-js
-[react-icon]: https://skillicons.dev/icons?i=react
-[ts-icon]: https://skillicons.dev/icons?i=ts
-[js-icon]: https://skillicons.dev/icons?i=js
-[tailwind-icon]: https://skillicons.dev/icons?i=tailwind
-[chrome-icon]: https://github.com/alrra/browser-logos/blob/main/src/chrome/chrome_64x64.png
-[firefox-icon]: https://github.com/alrra/browser-logos/blob/main/src/firefox/firefox_64x64.png
-[edge-icon]: https://github.com/alrra/browser-logos/blob/main/src/edge/edge_64x64.png
-[opera-icon]: https://github.com/alrra/browser-logos/blob/main/src/opera/opera_64x64.png
-[safari-icon]: https://github.com/alrra/browser-logos/blob/main/src/safari/safari_64x64.png
+# 2.5D 卡通城市放置系统 (CubeCity)
 
-# Vite Three JS — Template
+> A lightweight 2.5D city-building simulation game based on Three.js and Vue.
 
-This boilerplate starter template is the ultimate solution to help you getting started on your project in no time, without the hassle of setting up and configuring your environment from scratch each time you start developing. <br />
-It's ideal for front-end engineers who want to build modern, fast and reliable **webgl** web applications with the latest cutting edge technologies such as **Three.JS**, **GLSL**, **JavaScript**, **TailwindCSS**, **Vite**, **ESLint**, **Prettier**, **Husky** and much more!
+Welcome to CubeCity! This is a cartoon-style 2.5D city simulation game where you can build, manage, and expand your very own metropolis. Place buildings, lay down roads, and watch your city grow as you manage resources and expand your territory.
 
-**[Demo][demo]** | **[Bug(label: bug)][issues]** | **[Feature(label: enhancement)][issues]**
+![Gameplay Demo](README/游玩时动图.gif)
 
-## :bookmark: Table of contents
+## ✨ 核心功能
 
-- :computer: [Getting started](#computer-getting-started "Go to 'Getting started' section")
-- :battery: [Features](#battery-features "Go to 'Features' section")
-- :arrows_clockwise: [Versions](#arrows_clockwise-versions "Go to 'Versions' section")
-- :globe_with_meridians: [Browsers support](#globe_with_meridians-browsers-support "Go to 'Browsers support' section")
-- :busts_in_silhouette: [Contribute](#busts_in_silhouette-contribute "Go to 'Contribute' section")
-- :bookmark_tabs: [License](#bookmark_tabs-license "Go to 'License' section")
-- :gem: [Acknowledgements](#gem-acknowledgements "Go to 'Acknowledgements' section")
+*   **🏙️ 自由建设:** 随心所欲地放置、移动和拆除各类建筑与道路，打造独一无二的城市景观。
+*   **🧩 策略规划:** 平衡住宅 (R)、商业 (C)、工业 (I) 的发展，同时兼顾环境 (E)、社会 (S)、治理 (G) 的需求，实现城市可持续发展。
+*   **💰 经济系统:** 建筑会自动产出金币，利用这些金币来建造新建筑、升级或扩展你的领地。
+*   **💾 本地存储:** 你的城市进度会自动保存在本地，随时可以回来继续你的建设大业。
+*   **🎨 卡通风味:** 明快的色彩和可爱的卡通模型，带来轻松愉悦的视觉体验。
 
----
+| 界面总览                                     | 城市一隅                                       | 离线存储                                     |
+| :------------------------------------------- | :--------------------------------------------- | :------------------------------------------- |
+| ![Interface Overview](README/界面总览.png) | ![A corner of the city](README/随意把玩城市.png) | ![Offline Storage](README/离线存储.png) |
 
-## :computer: Getting started
+## 🎮 玩法介绍
 
-### Prerequisites:
+游戏主要围绕四种操作模式展开，让你轻松管理城市的方方面面：
 
-- JavaScript runtime **[node.js][node]**;
-- **(OPTIONAL)** Alternative package manager:
-  - **[PNPM][pnpm]** `npm install --global pnpm` <br /> or
-  - **[Yarn][yarn]** `npm install --global yarn`
+*   **🔍 选择模式 (SELECT):**
+    *   点击建筑查看详细信息，如居民数量、状态、产出等。
+    *   满足条件时可对建筑进行升级，提升其功能和产出。
 
-### Start developing:
+*   **🏗️ 建造模式 (BUILD):**
+    *   从左侧面板选择你想要的建筑。
+    *   在地图上的可用地皮上点击即可放置建筑，实时预览模型和高亮提示让操作更直观。
 
-- Get the repository:
-  - click **"Use this template"** &nbsp; or &nbsp; **"Fork"** button <br /> alternately
-  - **clone** the repository through your terminal: <br />
-    `git clone https://github.com/doinel1a/vite-three-js YOUR-PROJECT-NAME`;
-- Open your terminal or code editor to the path your project is located, and run:
-  | | **NPM** | **PNPM** | **Yarn** |
-  | ------------------------------------------------ | ----------------- | -------------- | -------------- |
-  | To **install** the dependencies | `npm install` | `pnpm install` | `yarn install` |
-  | To **run** the **development server** | `npm run dev` | `pnpm dev` | `yarn dev` |
-  | To **build** your app **for production** | `npm run build` | `pnpm build` | `yarn build` |
-  | To **preview** your **production optimized app** | `npm run preview` | `pnpm preview` | `yarn preview` |
+*   **🚚 搬迁模式 (RELOCATE):**
+    *   选中一个已建好的建筑，然后点击一个空地，即可轻松完成搬迁。
+    *   在放置前，可以旋转建筑以适应你的城市布局。
 
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
+*   **💣 拆除模式 (DEMOLISH):**
+    *   切换到此模式，点击不再需要的建筑即可将其拆除。
+    *   拆除建筑会返还部分建造成本。
 
----
+## 🛠️ 技术栈
 
-## :battery: Features
+*   **核心渲染:** [Three.js](https://threejs.org/)
+*   **前端框架:** [Vue 3](https://vuejs.org/)
+*   **构建工具:** [Vite](https://vitejs.dev/)
+*   **UI & 样式:** [Tailwind CSS](https://tailwindcss.com/) & SCSS
+*   **状态管理:** [Pinia](https://pinia.vuejs.org/)
+*   **事件总线:** [mitt](https://github.com/developit/mitt)
 
-This repository comes 🔋 packed with:
+## 🚀 未来展望
 
-- **Three.JS**: A JavaScript library built on top of **WebGL** that provides an abstraction layer for rendering interactive 3D and 2D scenes in the web browser;
-- **TailwindCSS**: A utility-first CSS framework that provides predefined classes for common styles and layout patterns, allowing quick styling without writing custom CSS;
-- **SASS**: A CSS preprocessor that adds features such as variables, nesting, and mixins to CSS, making it easier to write and maintain large CSS codebases;
-- **PostCSS**: A tool for transforming CSS with JavaScript plugins, allowing to add new features to CSS and improve the development process;
-- **Playwright**: A library for automating web browser interactions, allowing the writing of end-to-end tests and perform browser automation tasks;
-- **Vite**: A build tool and development server that provides fast and efficient development and production builds for modern web applications;
+我们计划在未来为游戏增加更多有趣的功能，包括：
 
-And with tools that enhance the development experience:
+*   **动态经济系统:** 市场需求会根据你的城市建筑比例动态变化。
+*   **挑战与失败机制:** 引入破产、人口流失、环境崩溃等失败条件，增加游戏挑战性。
+*   **策略性建筑系统:** 建筑之间将产生相互影响，考验你的规划能力。
+*   **动态事件系统:** 随机发生经济危机、移民潮等事件，让城市管理充满变数。
+*   **科技树与政策系统:** 解锁新技术，颁布新政策，从更高维度引导城市发展。
 
-- **ESLint**: A tool for enforcing coding standards and identifying potential errors in the code;
-- **Prettier**: A code formatter that automatically formats code to conform to a consistent style, making it easier to read and maintain;
-- **Husky**: A Git hook manager that allows easy set up and configuration of Git hooks, which are scripts that run at certain points in the Git workflow;
-- **Commitlint**: A tool for enforcing commit message conventions in Git repositories, helping to ensure consistent and informative commit messages;
+## 🧑‍💻 作者
 
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
+Developed by [hexianWeb](https://github.com/hexianWeb).
 
----
+## 📄 许可
 
-## :arrows_clockwise: Versions
-
-This repository comes configured with 2 of the industry standards for development tools: **Webpack** and **Vite**. <br />
-Both tools support **SWC (Speedy Web Compiler)**, a **Rust-based compiler**; Vite is optimized for it out of the box.
-
-### Vite (SWC compiler)
-
-Is a simple and fast solution thanks to it's "zero-config" approach which offers a smoother development experience.
-
-|                   React - TypeScript                   |                   React - JavaScript                   |     |       Vanilla TypeScript        |     Vanilla JavaScript      |
-| :----------------------------------------------------: | :----------------------------------------------------: | :-: | :-----------------------------: | :-------------------------: |
-| ![React][react-icon] & ![TS][ts-icon] <br /> **Soon!** | ![React][react-icon] & ![JS][js-icon] <br /> **Soon!** |     | ![TS][ts-icon] <br /> **Soon!** | ![JS][js-icon] <br /> **/** |
-
-### Webpack (Babel compiler)
-
-Is more a flexible solution, capable of handling complex configurations.
-
-|                   React - TypeScript                   |                   React - JavaScript                   |     |       Vanilla TypeScript        |                 Vanilla JavaScript                 |
-| :----------------------------------------------------: | :----------------------------------------------------: | :-: | :-----------------------------: | :------------------------------------------------: |
-| ![React][react-icon] & ![TS][ts-icon] <br /> **Soon!** | ![React][react-icon] & ![JS][js-icon] <br /> **Soon!** |     | ![TS][ts-icon] <br /> **Soon!** | ![JS][js-icon] <br /> **[Repo][webpack-three-js]** |
-
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
-
----
-
-## :globe_with_meridians: Browsers support
-
-The provided configuration ensures **92.3%** coverage for all browsers, in particular of the following:
-
-|            Chrome             |             Firefox              |             Edge             |        Opera         | Safari                       |
-| :---------------------------: | :------------------------------: | :--------------------------: | :------------------: | ---------------------------- |
-| ![Google Chrome][chrome-icon] | ![Mozilla Firefox][firefox-icon] | ![Microsoft Edge][edge-icon] | ![Opera][opera-icon] | ![Apple Safari][safari-icon] |
-
-**\*** In order to support a wider percentage of browsers, update the `./.browserslistrc` configuration file:
-
-1. `last 3 versions`: browser version;
-2. `> 0.2%`: browser usage statistics;
-3. `not dead`: whether the browser is officially supported;
-
-Update the configuration [here][browserslist] and check in real-time the **global browsers support**.
-
-**\* The more versions to support, larger JS and CSS bundles size will be.**
-
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
-
----
-
-## :busts_in_silhouette: Contribute
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create.
-Any contribution is greatly appreciated: big or small, it can be documentation updates, adding new features or something bigger.
-Please check the [**contributing guide**][code-of-conduct] for details on how to help out and keep in mind that all commits must follow the **[conventional commit format][commitlint]**.
-
-### How to contribute:
-
-1.  **[Get started](#computer-getting-started "Go to 'Getting started' section");**
-2.  **For a new feature:**
-    1.  Create a new branch: `git checkout -b feat/NEW-FEATURE`;
-    2.  Add your changes to the staging area: `git add PATH/TO/FILENAME.EXTENSION`;
-    3.  Commit your changes: `git commit -m "feat: NEW FEATURE"`;
-    4.  Push your new branch: `git push origin feat/NEW-FEATURE`;
-3.  **For a bug fix:**
-    1.  Create a new branch: `git checkout -b fix/BUG-FIX`;
-    2.  Add your changes to the staging area: `git add PATH/TO/FILENAME.EXTENSION`;
-    3.  Commit your changes: `git commit -m "fix: BUG FIX"`;
-    4.  Push your new branch: `git push origin fix/BUG-FIX`;
-4.  **Open a new [pull request][pulls];**
-
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
-
----
-
-## :bookmark_tabs: License
-
-All logos and trademarks are the property of their respective owners.
-Everything else is distributed under the **MIT License**.
-See the [LICENSE][license] file for more informations.
-
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
-
----
-
-## :gem: Acknowledgements
-
-Special thanks to:
-
-- [alrra](https://github.com/alrra) for [browser-logos](https://github.com/alrra/browser-logos);
-- [tandpfun](https://github.com/tandpfun) for [skill-icons](https://github.com/tandpfun/skill-icons);
-
-[Back to :arrow_up:](#vite-three-js--template "Back to 'Table of contents' section")
+This project is licensed under the [MIT License](LICENSE).
