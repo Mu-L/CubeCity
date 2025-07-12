@@ -80,12 +80,7 @@ export const useGameState = defineStore('gameState', {
         row.forEach((tile) => {
           if (tile.building && tile.level > 0) {
             const buildingData = BUILDING_DATA[tile.building]
-            if (
-              (buildingData?.category === 'commercial' || buildingData?.category === 'industrial')
-              && buildingData.levels[tile.level]
-            ) {
-              totalJobs += buildingData.levels[tile.level].population || 0
-            }
+            totalJobs += buildingData.levels[tile.level].population || 0
           }
         })
       })

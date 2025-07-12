@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 export function useBuilding() {
   const gameState = useGameState()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   // 获取下一级建筑等级
   const getNextLevel = (buildingType, level = 1) => {
@@ -56,7 +56,7 @@ export function useBuilding() {
       gameState.addToast(t('error.noNextLevel'), 'error')
       return null
     }
-    const buildingName = `${BUILDING_DATA[buildingType]?.levels[buildingLevel]?.displayName?.[t('lang')]} Lv.${buildingLevel}`
+    const buildingName = `${BUILDING_DATA[buildingType]?.levels[buildingLevel]?.displayName?.[locale.value]} Lv.${buildingLevel}`
     const buildingCost = getBuildingCost(action, buildingType, level)
     const configs = {
       upgrade: {
