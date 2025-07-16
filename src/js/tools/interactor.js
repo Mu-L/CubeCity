@@ -182,7 +182,7 @@ export default class Interactor {
     const currentMode = this.gameState.currentMode
     if (currentMode === MODES.BUILD || currentMode === MODES.RELOCATE) {
       if (event.key.toLowerCase() === 'r') {
-        const tileToRotate = currentMode === MODES.RELOCATE ? this.relocateFirst : this.selected
+        const tileToRotate = currentMode === MODES.RELOCATE && this.selected
         this._rotateBuilding(tileToRotate)
       }
     }

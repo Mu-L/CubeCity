@@ -20,6 +20,7 @@ module.exports = {
         'industrial-yellow': '#ffb800',
         'industrial-red': '#ff4757',
         'industrial-purple': '#be29ec',
+        'industrial-orange': '#ffa801',
       },
       fontFamily: {
         industrial: ['Orbitron', 'monospace', 'sans-serif'],

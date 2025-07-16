@@ -68,10 +68,10 @@ export const BUILDING_DATA = {
       1: {
         displayName: { zh: '普通住宅', en: 'Basic Residential' },
         cost: 300,
-        maxPopulation: 50,
+        maxPopulation: 30, // 从50调整为30
         powerUsage: 10,
         pollution: 2,
-        coinOutput: 5, // 新增
+        coinOutput: 5,
         upgradeCost: 600,
         nextLevel: 2,
         visible: true,
@@ -79,10 +79,10 @@ export const BUILDING_DATA = {
       2: {
         displayName: { zh: '高级住宅', en: 'Advanced Residential' },
         cost: 600,
-        maxPopulation: 100,
+        maxPopulation: 60, // 从100调整为60
         powerUsage: 15,
         pollution: 3,
-        coinOutput: 10, // 新增
+        coinOutput: 10,
         upgradeCost: 1200,
         nextLevel: 3,
         visible: false,
@@ -90,10 +90,10 @@ export const BUILDING_DATA = {
       3: {
         displayName: { zh: '豪华住宅', en: 'Luxury Residential' },
         cost: 1200,
-        maxPopulation: 200,
+        maxPopulation: 120, // 从200调整为120
         powerUsage: 20,
         pollution: 5,
-        coinOutput: 20, // 新增
+        coinOutput: 20,
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -114,7 +114,7 @@ export const BUILDING_DATA = {
         maxPopulation: 40,
         powerUsage: 8,
         pollution: 1,
-        coinOutput: 4, // 新增
+        coinOutput: 4,
         upgradeCost: 800,
         nextLevel: 2,
         visible: true,
@@ -125,7 +125,7 @@ export const BUILDING_DATA = {
         maxPopulation: 80,
         powerUsage: 12,
         pollution: 2,
-        coinOutput: 8, // 新增
+        coinOutput: 8,
         upgradeCost: 1600,
         nextLevel: 3,
         visible: false,
@@ -136,7 +136,7 @@ export const BUILDING_DATA = {
         maxPopulation: 160,
         powerUsage: 18,
         pollution: 3,
-        coinOutput: 16, // 新增
+        coinOutput: 16,
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -158,7 +158,7 @@ export const BUILDING_DATA = {
         powerUsage: 25,
         pollution: 15,
         coinOutput: 20,
-        population: 20,
+        population: 30, // 从20调整为30
         upgradeCost: 1000,
         nextLevel: null,
         visible: true,
@@ -179,7 +179,7 @@ export const BUILDING_DATA = {
         powerUsage: 35,
         pollution: 25,
         coinOutput: 30,
-        population: 25,
+        population: 30, // 从25调整为30
         upgradeCost: 1500,
         nextLevel: 2,
         visible: true,
@@ -190,7 +190,7 @@ export const BUILDING_DATA = {
         powerUsage: 45,
         pollution: 35,
         coinOutput: 45,
-        population: 35,
+        population: 45, // 从35调整为45
         upgradeCost: 2000,
         nextLevel: 3,
         visible: false,
@@ -201,7 +201,7 @@ export const BUILDING_DATA = {
         powerUsage: 60,
         pollution: 50,
         coinOutput: 60,
-        population: 50,
+        population: 60, // 从50调整为60
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -244,7 +244,7 @@ export const BUILDING_DATA = {
         powerUsage: 15,
         pollution: 5,
         coinOutput: 25,
-        population: 15,
+        population: 40, // 从15调整为40
         upgradeCost: 800,
         nextLevel: 2,
         visible: true,
@@ -255,7 +255,7 @@ export const BUILDING_DATA = {
         powerUsage: 25,
         pollution: 8,
         coinOutput: 40,
-        population: 25,
+        population: 80, // 从25调整为80
         upgradeCost: 1600,
         nextLevel: 3,
         visible: false,
@@ -266,7 +266,7 @@ export const BUILDING_DATA = {
         powerUsage: 40,
         pollution: 12,
         coinOutput: 60,
-        population: 40,
+        population: 160, // 从40调整为160
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -287,7 +287,7 @@ export const BUILDING_DATA = {
         powerUsage: 30,
         pollution: 8,
         coinOutput: 35,
-        population: 30,
+        population: 50, // 从30调整为50
         upgradeCost: 1000,
         nextLevel: 2,
         visible: true,
@@ -298,7 +298,7 @@ export const BUILDING_DATA = {
         powerUsage: 45,
         pollution: 12,
         coinOutput: 55,
-        population: 45,
+        population: 100, // 从45调整为100
         upgradeCost: 2000,
         nextLevel: 3,
         visible: false,
@@ -309,7 +309,7 @@ export const BUILDING_DATA = {
         powerUsage: 65,
         pollution: 18,
         coinOutput: 80,
-        population: 60,
+        population: 200, // 从60调整为200
         upgradeCost: null,
         nextLevel: null,
         visible: false,
