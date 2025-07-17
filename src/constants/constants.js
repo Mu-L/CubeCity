@@ -68,10 +68,10 @@ export const BUILDING_DATA = {
       1: {
         displayName: { zh: '普通住宅', en: 'Basic Residential' },
         cost: 300,
-        maxPopulation: 30, // 从50调整为30
+        maxPopulation: 30, // 36→30 (覆盖工厂20+商店10)
         powerUsage: 10,
         pollution: 2,
-        coinOutput: 5,
+        coinOutput: 5, // 5/300=0.0167
         upgradeCost: 600,
         nextLevel: 2,
         visible: true,
@@ -79,10 +79,10 @@ export const BUILDING_DATA = {
       2: {
         displayName: { zh: '高级住宅', en: 'Advanced Residential' },
         cost: 600,
-        maxPopulation: 60, // 从100调整为60
+        maxPopulation: 72, // 90→72 (覆盖高级商店20+化学工厂55)
         powerUsage: 15,
         pollution: 3,
-        coinOutput: 10,
+        coinOutput: 11, // 11/600=0.0183
         upgradeCost: 1200,
         nextLevel: 3,
         visible: false,
@@ -90,10 +90,10 @@ export const BUILDING_DATA = {
       3: {
         displayName: { zh: '豪华住宅', en: 'Luxury Residential' },
         cost: 1200,
-        maxPopulation: 120, // 从200调整为120
+        maxPopulation: 120, // 144→120 (覆盖购物中心40+现代化工厂80)
         powerUsage: 20,
         pollution: 5,
-        coinOutput: 20,
+        coinOutput: 24, // 24/1200=0.0200
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -111,10 +111,10 @@ export const BUILDING_DATA = {
       1: {
         displayName: { zh: '普通民宅', en: 'Basic House' },
         cost: 400,
-        maxPopulation: 40,
+        maxPopulation: 39, // 42→39 (1.3倍覆盖率)
         powerUsage: 8,
         pollution: 1,
-        coinOutput: 4,
+        coinOutput: 7, // 7/400=0.0175 (原6→7)
         upgradeCost: 800,
         nextLevel: 2,
         visible: true,
@@ -122,10 +122,10 @@ export const BUILDING_DATA = {
       2: {
         displayName: { zh: '高级民宅', en: 'Advanced House' },
         cost: 800,
-        maxPopulation: 80,
+        maxPopulation: 98, // 102→98 (1.3倍覆盖率)
         powerUsage: 12,
         pollution: 2,
-        coinOutput: 8,
+        coinOutput: 14, // 14/800=0.0175
         upgradeCost: 1600,
         nextLevel: 3,
         visible: false,
@@ -133,10 +133,10 @@ export const BUILDING_DATA = {
       3: {
         displayName: { zh: '豪华民宅', en: 'Luxury House' },
         cost: 1600,
-        maxPopulation: 160,
+        maxPopulation: 156, // 168→156 (1.3倍覆盖率)
         powerUsage: 18,
         pollution: 3,
-        coinOutput: 16,
+        coinOutput: 32, // 32/1600=0.0200
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -155,10 +155,10 @@ export const BUILDING_DATA = {
       1: {
         displayName: { zh: '普通工厂', en: 'Basic Factory' },
         cost: 500,
-        powerUsage: 25,
-        pollution: 15,
-        coinOutput: 20,
-        population: 30, // 从20调整为30
+        powerUsage: 40,
+        pollution: 22, // 20→22 (污染/成本=0.044)
+        coinOutput: 70, // 70/500=0.140
+        population: 20, // 工作岗位不变
         upgradeCost: 1000,
         nextLevel: null,
         visible: true,
@@ -176,10 +176,10 @@ export const BUILDING_DATA = {
       1: {
         displayName: { zh: '化学工厂', en: 'Chemistry Factory' },
         cost: 1000,
-        powerUsage: 35,
-        pollution: 25,
-        coinOutput: 30,
-        population: 30, // 从25调整为30
+        powerUsage: 60,
+        pollution: 45, // 保持45 (污染/成本=0.045)
+        coinOutput: 140, // 150→140 (140/1000=0.140)
+        population: 35, // 工作岗位不变
         upgradeCost: 1500,
         nextLevel: 2,
         visible: true,
@@ -187,10 +187,10 @@ export const BUILDING_DATA = {
       2: {
         displayName: { zh: '高级化学工厂', en: 'Advanced Chemistry Factory' },
         cost: 1500,
-        powerUsage: 45,
-        pollution: 35,
-        coinOutput: 45,
-        population: 45, // 从35调整为45
+        powerUsage: 80,
+        pollution: 65,
+        coinOutput: 240, // 240/1500=0.160 (效率↑)
+        population: 55,
         upgradeCost: 2000,
         nextLevel: 3,
         visible: false,
@@ -198,10 +198,10 @@ export const BUILDING_DATA = {
       3: {
         displayName: { zh: '现代化化学工厂', en: 'Modern Chemistry Factory' },
         cost: 2000,
-        powerUsage: 60,
-        pollution: 50,
-        coinOutput: 60,
-        population: 60, // 从50调整为60
+        powerUsage: 100,
+        pollution: 90,
+        coinOutput: 350, // 350/2000=0.175 (效率↑)
+        population: 80,
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -221,7 +221,7 @@ export const BUILDING_DATA = {
         cost: 5000,
         powerOutput: 300,
         pollution: 40,
-        coinOutput: 50,
+        coinOutput: 0, // 50→0 (原则6)
         population: 50,
         upgradeCost: null,
         nextLevel: null,
@@ -242,9 +242,9 @@ export const BUILDING_DATA = {
         displayName: { zh: '普通商店', en: 'Basic Shop' },
         cost: 400,
         powerUsage: 15,
-        pollution: 5,
-        coinOutput: 25,
-        population: 40, // 从15调整为40
+        pollution: 6, // 5→6 (污染/成本=0.015)
+        coinOutput: 24, // 25→24 (24/400=0.060)
+        population: 10, // 工作岗位不变
         upgradeCost: 800,
         nextLevel: 2,
         visible: true,
@@ -254,8 +254,8 @@ export const BUILDING_DATA = {
         cost: 800,
         powerUsage: 25,
         pollution: 8,
-        coinOutput: 40,
-        population: 80, // 从25调整为80
+        coinOutput: 60, // 60/800=0.075 (效率↑)
+        population: 20,
         upgradeCost: 1600,
         nextLevel: 3,
         visible: false,
@@ -265,8 +265,8 @@ export const BUILDING_DATA = {
         cost: 1600,
         powerUsage: 40,
         pollution: 12,
-        coinOutput: 60,
-        population: 160, // 从40调整为160
+        coinOutput: 140, // 140/1600=0.0875 (效率↑)
+        population: 40,
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -285,9 +285,9 @@ export const BUILDING_DATA = {
         displayName: { zh: '普通办公室', en: 'Basic Office' },
         cost: 500,
         powerUsage: 30,
-        pollution: 8,
-        coinOutput: 35,
-        population: 50, // 从30调整为50
+        pollution: 7, // 8→7 (污染/成本=0.014)
+        coinOutput: 30, // 35→30 (30/500=0.060)
+        population: 15, // 工作岗位不变
         upgradeCost: 1000,
         nextLevel: 2,
         visible: true,
@@ -297,8 +297,8 @@ export const BUILDING_DATA = {
         cost: 1000,
         powerUsage: 45,
         pollution: 12,
-        coinOutput: 55,
-        population: 100, // 从45调整为100
+        coinOutput: 80, // 80/1000=0.080 (效率↑)
+        population: 30,
         upgradeCost: 2000,
         nextLevel: 3,
         visible: false,
@@ -308,8 +308,8 @@ export const BUILDING_DATA = {
         cost: 2000,
         powerUsage: 65,
         pollution: 18,
-        coinOutput: 80,
-        population: 200, // 从60调整为200
+        coinOutput: 180, // 180/2000=0.090 (效率↑)
+        population: 60,
         upgradeCost: null,
         nextLevel: null,
         visible: false,
@@ -329,7 +329,7 @@ export const BUILDING_DATA = {
         displayName: { zh: '小公园', en: 'Small Park' },
         cost: 200,
         powerUsage: 5,
-        pollution: -10,
+        pollution: -10, // -10/200=-0.05
         population: 0,
         upgradeCost: 400,
         nextLevel: 2,
@@ -339,7 +339,7 @@ export const BUILDING_DATA = {
         displayName: { zh: '社区公园', en: 'Community Park' },
         cost: 400,
         powerUsage: 8,
-        pollution: -20,
+        pollution: -20, // -20/400=-0.05
         population: 0,
         upgradeCost: 800,
         nextLevel: 3,
@@ -349,7 +349,7 @@ export const BUILDING_DATA = {
         displayName: { zh: '城市公园', en: 'City Park' },
         cost: 800,
         powerUsage: 12,
-        pollution: -30,
+        pollution: -40, // -30→-40 (-40/800=-0.05)
         population: 0,
         upgradeCost: null,
         nextLevel: null,
@@ -369,7 +369,7 @@ export const BUILDING_DATA = {
         displayName: { zh: '垃圾站', en: 'Garbage Station' },
         cost: 500,
         powerUsage: 20,
-        pollution: -15,
+        pollution: -15, // -15/500=-0.03
         population: 10,
         upgradeCost: null,
         nextLevel: null,
@@ -391,6 +391,7 @@ export const BUILDING_DATA = {
         powerOutput: 50,
         pollution: -10,
         population: 5,
+        coinOutput: 0, // 50→0 (原则6)
         upgradeCost: null,
         nextLevel: null,
         visible: true,
@@ -489,7 +490,7 @@ export const BUILDING_DATA = {
     levels: {
       1: {
         displayName: { zh: '医院', en: 'Hospital' },
-        cost: 350,
+        cost: 1000,
         powerUsage: 40,
         pollution: 0,
         population: 40,
@@ -509,7 +510,7 @@ export const BUILDING_DATA = {
     levels: {
       1: {
         displayName: { zh: '警察局', en: 'Police Station' },
-        cost: 800,
+        cost: 1200,
         powerUsage: 30,
         pollution: 0,
         population: 25,
@@ -529,7 +530,7 @@ export const BUILDING_DATA = {
     levels: {
       1: {
         displayName: { zh: '消防站', en: 'Fire Station' },
-        cost: 600,
+        cost: 900,
         powerUsage: 35,
         pollution: 0,
         population: 20,
