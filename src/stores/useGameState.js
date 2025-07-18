@@ -1,4 +1,3 @@
-import { BUILDING_DATA } from '@/constants/constants.js'
 import { defineStore } from 'pinia'
 
 export const useGameState = defineStore('gameState', {
@@ -38,13 +37,24 @@ export const useGameState = defineStore('gameState', {
      */
     dailyIncome: (state) => {
       let totalIncome = 0
-      state.metadata.forEach((row) => {
-        row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            if (buildingData && buildingData.levels[tile.level]) {
-              totalIncome += buildingData.levels[tile.level].coinOutput || 0
+      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+      state.metadata.forEach((row, x) => {
+        row.forEach((tile, y) => {
+          if (tile.building && tile.detail) {
+            let buildingIncome = tile.detail.coinOutput || 0
+            // 工业商业也类建筑的收入会受周围环境影响
+            if ((tile.detail.category === 'industrial' || tile.detail.category === 'commercial') && buildingIncome > 0) {
+              let bonusFactor = 0
+              for (const [dx, dy] of dirs) {
+                const neighbor = state.metadata[x + dx]?.[y + dy]
+                // 每有一个相邻的树或公园，收入增加10%
+                if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
+                  bonusFactor += 0.1
+                }
+              }
+              buildingIncome *= (1 + bonusFactor)
             }
+            totalIncome += buildingIncome
           }
         })
       })
@@ -57,12 +67,16 @@ export const useGameState = defineStore('gameState', {
      */
     maxPopulation: (state) => {
       let totalCapacity = 0
-      state.metadata.forEach((row) => {
-        row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            if (buildingData?.category === 'residential' && buildingData.levels[tile.level]) {
-              totalCapacity += buildingData.levels[tile.level].maxPopulation || 0
+      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+      state.metadata.forEach((row, x) => {
+        row.forEach((tile, y) => {
+          if (tile.building && tile.detail && tile.detail.category === 'residential') {
+            totalCapacity += tile.detail.maxPopulation || 0
+            for (const [dx, dy] of dirs) {
+              const neighbor = state.metadata[x + dx]?.[y + dy]
+              if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
+                totalCapacity += tile.detail.maxPopulation * 0.1
+              }
             }
           }
         })
@@ -78,9 +92,8 @@ export const useGameState = defineStore('gameState', {
       let totalJobs = 0
       state.metadata.forEach((row) => {
         row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            totalJobs += buildingData.levels[tile.level].population || 0
+          if (tile.building && tile.detail) {
+            totalJobs += tile.detail.population || 0
           }
         })
       })
@@ -98,11 +111,8 @@ export const useGameState = defineStore('gameState', {
       let totalPower = 0
       state.metadata.forEach((row) => {
         row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            if (buildingData && buildingData.levels[tile.level]) {
-              totalPower += buildingData.levels[tile.level].powerOutput || 0
-            }
+          if (tile.building && tile.detail) {
+            totalPower += tile.detail.powerOutput || 0
           }
         })
       })
@@ -117,11 +127,8 @@ export const useGameState = defineStore('gameState', {
       let totalUsage = 0
       state.metadata.forEach((row) => {
         row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            if (buildingData && buildingData.levels[tile.level]) {
-              totalUsage += buildingData.levels[tile.level].powerUsage || 0
-            }
+          if (tile.building && tile.detail) {
+            totalUsage += tile.detail.powerUsage || 0
           }
         })
       })
@@ -140,13 +147,26 @@ export const useGameState = defineStore('gameState', {
     },
     pollution: (state) => {
       let totalPollution = 0
-      state.metadata.forEach((row) => {
-        row.forEach((tile) => {
-          if (tile.building && tile.level > 0) {
-            const buildingData = BUILDING_DATA[tile.building]
-            if (buildingData && buildingData.levels[tile.level]) {
-              totalPollution += buildingData.levels[tile.level].pollution || 0
+      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+      state.metadata.forEach((row, x) => {
+        row.forEach((tile, y) => {
+          // 工业商业类建筑的污染会受周围环境影响
+          if (tile.building && tile.detail
+          ) {
+            let buildingPollution = tile.detail.pollution
+            if (tile.detail.category === 'industrial') {
+              let treeCount = 0
+              // 检查周围的树木数量
+              for (const [dx, dy] of dirs) {
+                const neighbor = state.metadata[x + dx]?.[y + dy]
+                if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
+                  treeCount++
+                }
+              }
+              // 每棵相邻的树减少25%的污染
+              buildingPollution *= Math.max(0, 1 - treeCount * 0.25)
             }
+            totalPollution += buildingPollution
           }
         })
       })
@@ -170,7 +190,7 @@ export const useGameState = defineStore('gameState', {
 
       // 2. 就业不足导致的稳定度下降
       const jobDeficit = this.totalJobs - this.maxPopulation
-      if (jobDeficit > 0) {
+      if (jobDeficit > 0 && this.maxPopulation > 0) {
         const unemploymentRatio = Number((jobDeficit / this.maxPopulation).toFixed(2))
         changeRate -= unemploymentRatio * 0.5 // 失业率越高，下降越快
       }
@@ -281,6 +301,8 @@ export const useGameState = defineStore('gameState', {
       this.citySize = 16
       this.language = 'en'
       this.showMapOverview = false
+      this.stability = 100
+      this.stabilityChangeRate = 0
     },
   },
   persist: true, // 启用持久化
