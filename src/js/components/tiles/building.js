@@ -72,6 +72,14 @@ export default class Building extends SimObject {
     }
   }
 
+  /**
+   * 获取建筑升级所需资源
+   * @returns {number} 升级所需资源
+   */
+  getCost() {
+    return BUILDING_DATA[this.type].levels[this.level].cost
+  }
+
   getPopulation() { return 0 }
   getPower() { return 0 }
   getEconomy() { return 0 }

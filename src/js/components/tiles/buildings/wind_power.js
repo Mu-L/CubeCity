@@ -5,6 +5,8 @@ export default class WindPower extends Building {
   constructor(type = 'wind_power', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
     this.mesh.rotateY(-45)
+    // 随机的fan 旋转速度
+    this.fanRotationSpeed = Math.random() * 0.02 + 0.01
   }
 
   // 可扩展升级等方法
@@ -16,7 +18,7 @@ export default class WindPower extends Building {
     // 寻找 name 为 fan 的Object 并旋转他
     this.mesh.traverse((child) => {
       if (child.name === 'fan') {
-        child.rotation.x += 0.01
+        child.rotation.x += this.fanRotationSpeed
       }
     })
   }
