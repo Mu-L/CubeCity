@@ -10,6 +10,7 @@ export default class IMouse {
   constructor() {
     this.experience = new Experience()
     this.sizes = this.experience.sizes
+    this.canvas = this.experience.canvas
 
     // Initialize mouse positions
     this.mouse = new THREE.Vector2(0, 0)
@@ -49,9 +50,10 @@ export default class IMouse {
     const mouse = this.getMouse(x, y)
     const normalizedMouse = mouse.clone()
     normalizedMouse.x /= this.sizes.width / 2
-    normalizedMouse.y /= this.sizes.height / 2
+    normalizedMouse.y /= (this.sizes.height) / 2
     normalizedMouse.x -= 1
     normalizedMouse.y -= 1
+
     return normalizedMouse
   }
 
@@ -97,12 +99,16 @@ export default class IMouse {
    */
   listenForDesktop() {
     window.addEventListener('mousemove', (event_) => {
-      this.mouse = this.getMouse(event_.clientX, event_.clientY)
-      this.mouseDOM = this.getMouseDOM(event_.clientX, event_.clientY)
-      this.mouseScreen = this.getMouseScreen(event_.clientX, event_.clientY)
+      const rect = this.canvas.getBoundingClientRect()
+      const x = event_.clientX - rect.left
+      const y = event_.clientY - rect.top
+
+      this.mouse = this.getMouse(x, y)
+      this.mouseDOM = this.getMouseDOM(x, y)
+      this.mouseScreen = this.getMouseScreen(x, y)
       this.normalizedMouse = this.getNormalizedMouse(
-        event_.clientX,
-        event_.clientY,
+        x,
+        y,
       )
     })
   }
@@ -111,26 +117,25 @@ export default class IMouse {
    * Set up mobile event listeners
    */
   listenForMobile() {
+    const handleTouch = (touch) => {
+      const rect = this.canvas.getBoundingClientRect()
+      const x = touch.clientX - rect.left
+      const y = touch.clientY - rect.top
+
+      this.mouse = this.getMouse(x, y)
+      this.mouseDOM = this.getMouseDOM(x, y)
+      this.mouseScreen = this.getMouseScreen(x, y)
+      this.normalizedMouse = this.getNormalizedMouse(
+        x,
+        y,
+      )
+    }
     window.addEventListener('touchstart', (event_) => {
-      this.updateTouchPosition(event_.touches[0])
+      handleTouch(event_.touches[0])
     })
     window.addEventListener('touchmove', (event_) => {
-      this.updateTouchPosition(event_.touches[0])
+      handleTouch(event_.touches[0])
     })
-  }
-
-  /**
-   * Update touch position
-   * @param {Touch} touch - Touch event data
-   */
-  updateTouchPosition(touch) {
-    this.mouse = this.getMouse(touch.clientX, touch.clientY)
-    this.mouseDOM = this.getMouseDOM(touch.clientX, touch.clientY)
-    this.mouseScreen = this.getMouseScreen(touch.clientX, touch.clientY)
-    this.normalizedMouse = this.getNormalizedMouse(
-      touch.clientX,
-      touch.clientY,
-    )
   }
 
   /**
