@@ -1,3 +1,4 @@
+import { useGameState } from '@/stores/useGameState.js'
 import * as THREE from 'three'
 import Camera from './camera.js'
 import Renderer from './renderer.js'
@@ -43,6 +44,7 @@ export default class Experience {
     this.physics = new PhysicsWorld()
     this.iMouse = new IMouse()
     this.world = new World()
+    this.gameState = useGameState()
 
     this.sizes.on('resize', () => {
       this.resize()

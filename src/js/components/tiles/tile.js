@@ -83,7 +83,7 @@ export default class Tile extends SimObject {
     this.removeBuilding()
     const buildingData = BUILDING_DATA[type]
     const levelData = buildingData.levels[level]
-    const options = { buildingData, levelData }
+    const options = { buildingData, levelData, position: { x: this.x, y: this.y } }
     const buildingInstance = createBuilding(type, level, direction, options)
     if (buildingInstance) {
       this.buildingInstance = buildingInstance
