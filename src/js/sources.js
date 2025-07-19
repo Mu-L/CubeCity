@@ -136,5 +136,25 @@ export default [
     type: 'texture',
     path: 'textures/perlin.png',
   },
-
+  // effect 专用texture
+  {
+    name: 'power',
+    type: 'texture',
+    path: 'textures/effect/power.png',
+  },
+  {
+    name: 'human',
+    type: 'texture',
+    path: 'textures/effect/human.png',
+  },
+  {
+    name: 'coin',
+    type: 'texture',
+    path: 'textures/effect/coin.png',
+  },
+  {
+    name: 'upgrade',
+    type: 'texture',
+    path: 'textures/effect/upgrade.png',
+  },
 ]
