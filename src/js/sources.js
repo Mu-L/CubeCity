@@ -157,4 +157,25 @@ export default [
     type: 'texture',
     path: 'textures/effect/upgrade.png',
   },
+  {
+    name: 'miss-road',
+    type: 'texture',
+    path: 'textures/effect/miss-road.png',
+  },
+  {
+    name: 'miss-population',
+    type: 'texture',
+    path: 'textures/effect/miss-population.png',
+  },
+  {
+    name: 'miss-power',
+    type: 'texture',
+    path: 'textures/effect/miss-power.png',
+  },
+  {
+    name: 'miss-pollution',
+    type: 'texture',
+    path: 'textures/effect/lower-pollution.png',
+  },
+
 ]

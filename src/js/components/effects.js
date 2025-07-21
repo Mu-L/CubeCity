@@ -34,14 +34,14 @@ function billboardEffectFactory(textureName) {
         opacity: 0, // 初始透明度为0，用于缓入
       })
 
-      const geometry = new THREE.PlaneGeometry(config.scale || 0.7, config.scale || 0.7)
+      const geometry = new THREE.PlaneGeometry(config.scale || 0.5, config.scale || 0.5)
       const billboard = new THREE.Mesh(geometry, material)
       billboard.name = `buff_billboard_${textureName}`
 
       // 计算广告牌的理想高度，并添加到建筑上
       const box = new THREE.Box3().setFromObject(mesh)
       const height = box.max.y
-      const startY = height + (config.offsetY || 0.5)
+      const startY = height + (config.offsetY || 0.1)
       billboard.position.set(0, startY, 0)
       mesh.add(billboard)
 
@@ -205,6 +205,11 @@ const BuffEffects = {
   humanBuff: billboardEffectFactory('human'),
   coinBuff: billboardEffectFactory('coin'),
   upgrade: billboardEffectFactory('upgrade'),
+  // 新增状态指示器效果
+  missRoad: billboardEffectFactory('miss-road'),
+  missPopulation: billboardEffectFactory('miss-population'),
+  missPower: billboardEffectFactory('miss-power'),
+  missPollution: billboardEffectFactory('miss-pollution'),
 }
 
 export { BuffEffects }

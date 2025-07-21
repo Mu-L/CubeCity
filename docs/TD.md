@@ -12,8 +12,6 @@
 
 # Metadata 设计
 
-
-
 ## BUILDING_DATA 数据结构说明
 
 `BUILDING_DATA` 是一个包含所有建筑类型及其属性的常量对象，定义于 `src/constants/constants.js`。其结构如下：
@@ -143,11 +141,7 @@ house: {
 
 1. 单一职责原则
 
-- Tile 只负责地皮格子的表现和状态，不关心建筑的具体逻辑。
-
-- Building 负责建筑的加载、表现、升级、功能（如产出人口、电力、经济等）。
-
-2. 多态与扩展性
+- 0多态与扩展性
 
 - 不同类型建筑继承自 Building，重写各自的功能方法（如 getPopulation、getPower、getEconomy）。
 
@@ -342,7 +336,7 @@ _onClick(_event) {
   // experience.js / interactor.js
   import { eventBus } from './event-bus'
   eventBus.emit('building:placed', { tile, type })
-  
+
   // index.js
   import { eventBus } from './event-bus'
   eventBus.on('building:placed', ({ tile, type }) => {
@@ -453,7 +447,7 @@ graph TD
 - 交互限制：
   - 禁用放置/删除操作
   - 升级按钮仅在满足条件时可用
-  
+
   ```mermaid
   graph TD
     A[用户鼠标点击/移动] --> B[Interactor 监听事件]
@@ -508,8 +502,6 @@ sequenceDiagram
   end
   App->>App: 响应状态, 刷新地图
 ```
-
-
 
 ## 2. BUILD（建造）模式
 
@@ -653,8 +645,6 @@ graph TD
   Q --> R[App.vue 及子组件响应, 刷新地图]
 ```
 
-
-
 ## 4. DEMOLISH（拆除）模式
 
 **安全交互流程**：
@@ -702,8 +692,6 @@ graph TD
   M & N --> O[UI 组件监听 Pinia 状态]
   O --> P[App.vue 及子组件响应, 刷新地图]
 ```
-
-
 
 # 产出系统
 
@@ -881,22 +869,173 @@ graph LR
     I[公园] -->|减少| G[污染]
     I -->|提升| H[满意度]
 
-    J[学校] -->|提升| K[劳动力质量]
-    K -->|增加| D[商业收入]
+    J[医院] -->|提升| H[满意度]
+    J -->|减少| K[人口流失]
+
+    L[消防站] -->|提升| M[工业安全性]
+    N[警察局] -->|提升| O[商业安全性]
+    P[垃圾站] -->|减少| G[污染]
 ```
 
-### 2.2 建筑升级树示例（住宅）
+### 2.2 建筑状态指示器系统
+
+#### 2.2.1 状态类型定义
+基于 `statusConfig` 配置，建筑可显示以下状态：
+
+| 状态类型 | 触发条件 | 显示图标 | 效果类型 |
+|---------|---------|---------|---------|
+| `UPGRADE_AVAILABLE` | 建筑可升级且金币充足 | ⬆️ | upgrade |
+| `POWER_SHORTAGE` | 城市电力不足 | ⚡ | missPower |
+| `POPULATION_OVERLOAD` | 人口超负荷 | 👥 | missPopulation |
+| `POPULATION_SHORTAGE` | 人口不足 | 👥 | missPopulation |
+| `MISSING_ROAD` | 缺少道路连接 | 🛣️ | missRoad |
+| `HIGH_POLLUTION` | 污染过高 | 🌫️ | missPollution |
+| `PROVIDING_BUFF` | 为相邻建筑提供增益 | 🌟 | upgrade |
+
+#### 2.2.2 建筑互动配置
+
+**住宅类建筑（house, house2）**
+```js
+statusConfig: [
+  {
+    statusType: 'UPGRADE_AVAILABLE',
+    condition: (building, gs) => {
+      const upgradeInfo = building.upgrade()
+      return upgradeInfo && gs.credits >= building.getCost()
+    },
+    effect: { type: 'upgrade' }
+  },
+  {
+    statusType: 'POPULATION_OVERLOAD',
+    condition: (building, gs) => {
+      return gs.population >= gs.maxPopulation
+    },
+    effect: { type: 'humanBuff' }
+  }
+]
 ```
-基础住宅
-  ├─ 升级方向A：公寓大楼
-  │    ├─ 高级公寓
-  │    │    └─ 豪华公寓
-  │    └─ 绿色公寓（减少污染）
-  │
-  └─ 升级方向B：社区住宅
-       ├─ 学区房（靠近学校提升满意度）
-       └─ 商业住宅（增加商业收入）
+
+**工业类建筑（factory, chemistry-factory, nuke-factory）**
+```js
+statusConfig: [
+  {
+    statusType: 'POWER_SHORTAGE',
+    condition: (building, gs) => {
+      return gs.powerUsage > gs.powerOutput
+    },
+    effect: { type: 'missPower' }
+  },
+  {
+    statusType: 'MISSING_ROAD',
+    condition: (building, _gs) => {
+      return !building.hasRoadConnection()
+    },
+    effect: { type: 'missRoad' }
+  },
+  {
+    statusType: 'HIGH_POLLUTION',
+    condition: (building, gs) => {
+      return gs.pollution > 80
+    },
+    effect: { type: 'missPollution' }
+  }
+]
 ```
+
+**基础设施类建筑**
+```js
+// 公园 - 为住宅提供满意度加成
+{
+  statusType: 'PROVIDING_BUFF',
+  condition: (building, gs) => {
+    building.buffConfig = { targets: ['house', 'house2'], range: 2 }
+    return building.checkForBuffTargets(gs)
+  },
+  effect: { type: 'upgrade' }
+}
+
+// 医院 - 为住宅提供满意度加成
+{
+  statusType: 'PROVIDING_BUFF',
+  condition: (building, gs) => {
+    building.buffConfig = { targets: ['house', 'house2'], range: 3 }
+    return building.checkForBuffTargets(gs)
+  },
+  effect: { type: 'upgrade' }
+}
+
+// 消防站 - 为工业建筑提供安全性
+{
+  statusType: 'PROVIDING_BUFF',
+  condition: (building, gs) => {
+    building.buffConfig = { targets: ['factory', 'chemistry-factory', 'nuke-factory'], range: 2 }
+    return building.checkForBuffTargets(gs)
+  },
+  effect: { type: 'upgrade' }
+}
+
+// 警察局 - 为商业建筑提供安全性
+{
+  statusType: 'PROVIDING_BUFF',
+  condition: (building, gs) => {
+    building.buffConfig = { targets: ['shop', 'office'], range: 2 }
+    return building.checkForBuffTargets(gs)
+  },
+  effect: { type: 'upgrade' }
+}
+
+// 垃圾站 - 为工业建筑减少污染
+{
+  statusType: 'PROVIDING_BUFF',
+  condition: (building, gs) => {
+    building.buffConfig = { targets: ['factory', 'chemistry-factory', 'nuke-factory'], range: 2 }
+    return building.checkForBuffTargets(gs)
+  },
+  effect: { type: 'missPollution' }
+}
+```
+
+### 2.3 建筑升级系统
+
+#### 2.3.1 升级条件
+- 建筑达到当前等级上限
+- 玩家金币充足
+- 城市发展水平满足要求
+
+#### 2.3.2 升级效果
+- 人口容量提升（住宅类）
+- 金币产出增加（商业/工业类）
+- 电力产出提升（发电类）
+- 污染减少（基础设施类）
+
+### 2.4 实现规范
+
+#### 2.4.1 状态检测机制
+```js
+// 在建筑类中实现状态检测
+checkStatus(gs) {
+  for (const config of this.statusConfig) {
+    if (config.condition(this, gs)) {
+      return config
+    }
+  }
+  return null
+}
+
+// 检查相邻建筑
+checkForBuffTargets(gs) {
+  const neighbors = this.getNeighborTiles(this.buffConfig.range)
+  return neighbors.some(tile =>
+    tile.building && this.buffConfig.targets.includes(tile.building.type)
+  )
+}
+```
+
+#### 2.4.2 视觉效果实现
+- 使用 `effects.js` 中的广告牌系统
+- 状态图标位置：建筑顶部 0.5 单位高度
+- 动画效果：缓入缓出 + 浮动动画
+- 颜色编码：绿色（正常）、黄色（警告）、红色（危险）
 
 ## 3. 动态事件系统
 
@@ -1158,4 +1297,3 @@ class SaveSystem {
 同时保持了游戏的休闲本质，所有复杂系统都通过清晰的UI和渐进式引导呈现给玩家。
 
 ---
-
