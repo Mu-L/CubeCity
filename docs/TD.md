@@ -1297,3 +1297,147 @@ class SaveSystem {
 同时保持了游戏的休闲本质，所有复杂系统都通过清晰的UI和渐进式引导呈现给玩家。
 
 ---
+
+# useGameState.js 变量引用表
+
+> 本文档记录了 `src/stores/useGameState.js` 中所有可用的变量、getters 和 actions，供开发时查询引用。
+
+## State 状态变量
+
+| 变量名 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `currentMode` | string | `'build'` | 当前操作模式：`'build'`、`'demolish'`、`'relocate'`、`'select'` |
+| `selectedBuilding` | object/null | `null` | 当前选中建筑：`{type, level}` |
+| `selectedPosition` | object/null | `null` | 当前选中位置：`{x, z}` |
+| `toastQueue` | array | `[]` | Toast 消息队列 |
+| `gameDay` | number | `1` | 游戏天数 |
+| `credits` | number | `10000` | 金币数量 |
+| `territory` | number | `16` | 地皮数量 |
+| `cityLevel` | number | `1` | 城市等级 |
+| `cityName` | string | `'HeXian City'` | 城市名称 |
+| `citySize` | number | `16` | 城市大小 |
+| `language` | string | `'en'` | 语言设置：`'en'`、`'zh'` |
+| `metadata` | array | `17x17` 数组 | 地图元数据，每个元素包含：`{type, building, direction, level}` |
+| `showMapOverview` | boolean | `false` | 地图总览显示状态 |
+| `stability` | number | `100` | 城市稳定度 (0-100) |
+| `stabilityChangeRate` | number | `0` | 稳定度每秒变化率 |
+
+## Getters 计算属性
+
+| Getter名 | 返回类型 | 说明 | 计算公式 |
+|----------|----------|------|----------|
+| `dailyIncome` | number | 每日总收入 | 所有建筑的 `coinOutput` 总和，受相邻公园影响 |
+| `maxPopulation` | number | 总人口容量 | 住宅建筑的 `maxPopulation` 总和，受相邻公园影响 |
+| `totalJobs` | number | 总就业岗位 | 所有建筑的 `population` 总和 |
+| `population` | number | 实际人口 | `Math.min(maxPopulation * 1.5, totalJobs)` |
+| `maxPower` | number | 最大发电量 | 所有建筑的 `powerOutput` 总和 |
+| `power` | number | 总耗电量 | 所有建筑的 `powerUsage` 总和 |
+| `buildingCount` | number | 建筑总数 | 排除道路的建筑数量 |
+| `pollution` | number | 总污染值 | 所有建筑的 `pollution` 总和，工业建筑受相邻公园影响 |
+| `hospitalCount` | number | 医院数量 | 统计 `building === 'hospital'` 的数量 |
+| `policeStationCount` | number | 警察局数量 | 统计 `building === 'police'` 的数量 |
+| `fireStationCount` | number | 消防站数量 | 统计 `building === 'fire_station'` 的数量 |
+
+## Actions 操作方法
+
+| Action名 | 参数 | 说明 |
+|----------|------|------|
+| `updateStability()` | 无 | 更新稳定度变化率 |
+| `applyStabilityChange()` | 无 | 应用稳定度变化 |
+| `setMode(mode)` | string | 设置操作模式 |
+| `setSelectedBuilding(payload)` | object | 设置选中建筑 |
+| `setSelectedPosition(position)` | object | 设置选中位置 |
+| `setCredits(credits)` | number | 设置金币数量 |
+| `updateCredits(credits)` | number | 更新金币数量（增减） |
+| `setTerritory(territory)` | number | 设置地皮数量 |
+| `setCityLevel(cityLevel)` | number | 设置城市等级 |
+| `setCityName(cityName)` | string | 设置城市名称 |
+| `setCitySize(citySize)` | number | 设置城市大小 |
+| `addToast(message, type)` | string, string | 添加 Toast 消息 |
+| `setLanguage(lang)` | string | 设置语言 |
+| `removeToast(id)` | number | 移除 Toast 消息 |
+| `clearSelection()` | 无 | 清除选中状态 |
+| `setTile(x, y, patch)` | number, number, object | 设置地图瓦片 |
+| `updateTile(x, y, patch)` | number, number, object | 更新地图瓦片（同 setTile） |
+| `getTile(x, y)` | number, number | 获取地图瓦片 |
+| `setShowMapOverview(val)` | boolean | 设置地图总览显示 |
+| `nextDay()` | 无 | 进入下一天，更新金币 |
+| `resetAll()` | 无 | 重置所有状态 |
+
+## 建筑状态检测中的变量引用
+
+在建筑类的 `statusConfig` 中，`gs` 参数代表 `useGameState` 实例，可访问以下属性：
+
+### 常用变量引用示例
+
+```js
+// 电力相关
+gs.power // 总耗电量 (getter)
+gs.maxPower // 最大发电量 (getter)
+
+// 人口相关
+gs.population // 实际人口 (getter)
+gs.maxPopulation // 总人口容量 (getter)
+gs.totalJobs // 总就业岗位 (getter)
+
+// 其他资源
+gs.credits // 金币数量 (state)
+gs.pollution // 总污染值 (getter)
+gs.stability // 城市稳定度 (state)
+
+// 建筑统计
+gs.buildingCount // 建筑总数 (getter)
+gs.hospitalCount // 医院数量 (getter)
+gs.policeStationCount // 警察局数量 (getter)
+gs.fireStationCount // 消防站数量 (getter)
+```
+
+### 建筑状态配置示例
+
+```js
+// 电力短缺检测
+{
+  statusType: 'POWER_SHORTAGE',
+  condition: (building, gs) => {
+    return gs.power > gs.maxPower  // 耗电量 > 发电量
+  },
+  effect: { type: 'missPower' }
+}
+
+// 人口超负荷检测
+{
+  statusType: 'POPULATION_OVERLOAD',
+  condition: (building, gs) => {
+    return gs.population >= gs.maxPopulation  // 实际人口 >= 人口容量
+  },
+  effect: { type: 'missPopulation' }
+}
+
+// 可升级检测
+{
+  statusType: 'UPGRADE_AVAILABLE',
+  condition: (building, gs) => {
+    const upgradeInfo = building.upgrade()
+    return upgradeInfo && gs.credits >= building.getCost()  // 有下一级且金币充足
+  },
+  effect: { type: 'upgrade' }
+}
+```
+
+## 注意事项
+
+1. **State vs Getter**:
+   - `state` 中的变量是直接存储的值
+   - `getter` 中的变量是计算得出的值，会实时更新
+
+2. **变量命名一致性**:
+   - 电力相关：`power` (耗电量) vs `maxPower` (发电量)
+   - 人口相关：`population` (实际人口) vs `maxPopulation` (人口容量)
+
+3. **地图访问**:
+   - 使用 `gs.getTile(x, y)` 安全访问地图数据
+   - 使用 `gs.setTile(x, y, patch)` 更新地图数据
+
+4. **持久化**:
+   - 所有 state 变量都会自动持久化到 localStorage
+   - 页面刷新后会自动恢复状态

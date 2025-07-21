@@ -70,7 +70,6 @@ export default class Building extends SimObject {
     for (const status of this.statusConfig) {
       if (status.condition(this, gameState)) {
         highestPriorityStatus = status
-
         break // 找到第一个就停止，因为数组是有序的
       }
     }
@@ -80,10 +79,13 @@ export default class Building extends SimObject {
 
     // 如果新状态和当前状态不同，则更新效果
     if (newStatusType !== this.activeStatusType) {
-      // 如果之前有效果，先停掉
+      // 如果之前有效果，先停掉并等待一帧确保清理完成
       if (this.activeStatusType) {
         this.deactivateStatusEffect()
+        // 立即清理所有可能残留的广告牌
+        this.cleanupBillboards()
       }
+
       // 如果有新状态，启动新效果
       if (highestPriorityStatus) {
         this.activateStatusEffect(highestPriorityStatus.effect)
@@ -137,6 +139,30 @@ export default class Building extends SimObject {
     // 检查处理器是否有 update 方法
     if (handler.update)
       handler.update(this.mesh, this.activeStatusInstance)
+  }
+
+  /**
+   * 清理所有残留的广告牌效果
+   */
+  cleanupBillboards() {
+    if (!this.mesh)
+      return
+
+    // 立即清理所有广告牌相关的子对象
+    this.mesh.children.forEach((child) => {
+      if (child.name && child.name.startsWith('buff_billboard_')) {
+        // 立即停止任何正在进行的动画
+        if (child.userData.timeline) {
+          child.userData.timeline.kill()
+        }
+        this.mesh.remove(child)
+        if (child.geometry)
+          child.geometry.dispose()
+        if (child.material)
+          child.material.dispose()
+        delete child.userData.timeline
+      }
+    })
   }
 
   /**
@@ -202,5 +228,19 @@ export default class Building extends SimObject {
         <div><span class="info-label text-gray-500">朝向：</span><span class="info-value text-gray-800">${dirText}</span></div>
       </div>
     `
+  }
+
+  getDefaultStatusConfig() {
+    return [
+      // 缺少道路连接
+      {
+        statusType: 'MISSING_ROAD',
+        condition: (building, gs) => {
+          building.buffConfig = { targets: ['road'] }
+          return !building.checkForBuffTargets(gs)
+        },
+        effect: { type: 'missRoad', offsetY: 0.7 },
+      },
+    ]
   }
 }

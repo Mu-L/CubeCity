@@ -7,6 +7,14 @@ export default class WindPower extends Building {
     this.mesh.rotateY(-45)
     // 随机的fan 旋转速度
     this.fanRotationSpeed = Math.random() * 0.02 + 0.01
+
+    // --- 状态指示系统配置 ---
+    this.statusConfig = [
+      ...super.getDefaultStatusConfig(),
+
+      // 可升级（如有）
+      // ...如有升级逻辑可补充
+    ]
   }
 
   // 可扩展升级等方法

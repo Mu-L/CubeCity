@@ -8,28 +8,36 @@ export default class ChemistryFactory extends Building {
 
     // --- 状态指示系统配置 ---
     this.statusConfig = [
-      // 优先级 1: 可升级
+      ...super.getDefaultStatusConfig(),
+      // 电力不足
+      {
+        statusType: 'POWER_SHORTAGE',
+        condition: (building, gs) => gs.power > gs.maxPower,
+        effect: { type: 'missPower', scale: 0.6, offsetY: 0.1 },
+      },
+      // 缺少人员
+      {
+        statusType: 'POPULATION_SHORTAGE',
+        condition: (building, gs) => gs.population < gs.totalJobs,
+        effect: { type: 'missPopulation', scale: 0.6, offsetY: -0.5 },
+      },
+      // 可升级
       {
         statusType: 'UPGRADE_AVAILABLE',
-        // 条件：可升级 且 玩家有足够的钱
         condition: (building, gs) => {
           const upgradeInfo = building.upgrade()
           return upgradeInfo && gs.credits >= building.getCost()
         },
-        // 效果：蓝色描边
-        effect: { type: 'upgrade' },
+        effect: { type: 'upgrade', level: this.nextLevel, scale: 0.6, offsetY: -0.5 },
       },
-      // 优先级 2: 提供增益 (假设化工厂能给普通工厂提速)
+      // 提供增益
       {
         statusType: 'PROVIDING_BUFF',
-        // 条件：周围有普通工厂
         condition: (building, gs) => {
-          // 我们需要定义此建筑能为哪些建筑提供增益
           building.buffConfig = { targets: ['factory'] }
           return building.checkForBuffTargets(gs)
         },
-        // 效果：绿色辉光
-        effect: { type: 'statusBillboard' },
+        effect: { type: 'coinBuff', scale: 0.6, offsetY: 0.2 },
       },
     ]
   }

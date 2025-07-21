@@ -18,6 +18,19 @@ export default class NukeFactory extends Building {
     this.time = this.experience.time
     this.camera = this.experience.camera.instance
     this.smoke()
+
+    // --- 状态指示系统配置 ---
+    this.statusConfig = [
+      ...super.getDefaultStatusConfig(),
+      // 缺少人员
+      {
+        statusType: 'POPULATION_SHORTAGE',
+        condition: (building, gs) => gs.population < gs.totalJobs,
+        effect: { type: 'missPopulation' },
+      },
+      // 可升级（如有）
+      // ...如有升级逻辑可补充
+    ]
   }
 
   // 可扩展升级逻辑
@@ -65,6 +78,4 @@ export default class NukeFactory extends Building {
       this.smokeMaterial.uniforms.uTime.value = this.time.elapsed * 0.008
     }
   }
-
-  // 可扩展更多核工厂特有方法
 }

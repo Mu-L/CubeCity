@@ -23,6 +23,22 @@ function billboardEffectFactory(textureName) {
         return null
       }
 
+      // 修复：确保在计算高度前移除所有现有的广告牌，避免累积效应
+      // 立即清理所有现有的广告牌，不等待动画完成
+      mesh.children.forEach((child) => {
+        if (child.name && child.name.startsWith('buff_billboard_')) {
+          // 立即停止任何正在进行的动画
+          if (child.userData.timeline) {
+            child.userData.timeline.kill()
+          }
+          mesh.remove(child)
+          if (child.geometry)
+            child.geometry.dispose()
+          if (child.material)
+            child.material.dispose()
+        }
+      })
+
       // 调整纹理的色彩空间以保证颜色显示正确
       texture.colorSpace = THREE.SRGBColorSpace
       texture.needsUpdate = true // 确保更新生效
@@ -34,14 +50,17 @@ function billboardEffectFactory(textureName) {
         opacity: 0, // 初始透明度为0，用于缓入
       })
 
-      const geometry = new THREE.PlaneGeometry(config.scale || 0.5, config.scale || 0.5)
+      const geometry = new THREE.PlaneGeometry(config.scale || 0.8, config.scale || 0.8)
       const billboard = new THREE.Mesh(geometry, material)
+      // 无视射线
+      billboard.raycast = () => {}
       billboard.name = `buff_billboard_${textureName}`
 
       // 计算广告牌的理想高度，并添加到建筑上
+      // 使用原始建筑网格的边界框，而不是包含广告牌的整体边界框
       const box = new THREE.Box3().setFromObject(mesh)
       const height = box.max.y
-      const startY = height + (config.offsetY || 0.1)
+      const startY = height + (config.offsetY || 0.3)
       billboard.position.set(0, startY, 0)
       mesh.add(billboard)
 
@@ -60,14 +79,23 @@ function billboardEffectFactory(textureName) {
         '-=0.25', // 让浮动动画稍微提前开始，更自然
       )
 
+      // 将时间线存储在广告牌的用户数据中，便于后续清理
+      billboard.userData.timeline = tl
+
       // 返回的实例中包含 experience，以便 update 方法使用
-      return { billboard, timeline: tl, experience }
+      return { billboard, timeline: tl, experience, startY }
     },
 
     deactivate(mesh, instance) {
       if (instance && instance.billboard) {
+        // 立即停止时间线动画
         if (instance.timeline) {
           instance.timeline.kill()
+        }
+
+        // 也检查并停止存储在用户数据中的时间线
+        if (instance.billboard.userData.timeline) {
+          instance.billboard.userData.timeline.kill()
         }
 
         // 缓出动画后清理资源
@@ -81,6 +109,8 @@ function billboardEffectFactory(textureName) {
             }
             instance.billboard.geometry.dispose()
             instance.billboard.material.dispose()
+            // 清理用户数据
+            delete instance.billboard.userData.timeline
           },
         })
       }
@@ -210,6 +240,7 @@ const BuffEffects = {
   missPopulation: billboardEffectFactory('miss-population'),
   missPower: billboardEffectFactory('miss-power'),
   missPollution: billboardEffectFactory('miss-pollution'),
+  overPopulation: billboardEffectFactory('over-population'),
 }
 
 export { BuffEffects }

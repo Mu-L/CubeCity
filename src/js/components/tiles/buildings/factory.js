@@ -16,6 +16,20 @@ export default class Factory extends Building {
     this.time = this.experience.time
     this.camera = this.experience.camera.instance
     this.smoke()
+
+    // --- 状态指示系统配置 ---
+    this.statusConfig = [
+      ...super.getDefaultStatusConfig(),
+      // 电力不足
+      {
+        statusType: 'POWER_SHORTAGE',
+        condition: (building, gs) => gs.power > gs.maxPower,
+        effect: { type: 'missPower' },
+      },
+
+      // 可升级（如有）
+      // ...如有升级逻辑可补充
+    ]
   }
 
   // 不可升级
