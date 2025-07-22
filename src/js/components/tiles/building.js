@@ -4,6 +4,21 @@ import Experience from '../../experience.js'
 import { BuffEffects } from '../effects.js'
 import SimObject from './sim-object.js'
 
+// 状态分类配置
+const STATUS_CATEGORIES = {
+  // debuff 状态（问题状态，优先显示）
+  DEBUFF: ['MISSING_ROAD', 'MISSING_POWER', 'MISSING_POPULATION', 'OVER_POPULATION', 'MISSING_POLLUTION'],
+  // buff 状态（增益状态）
+  BUFF: ['POWER_BOOST', 'ECONOMY_BOOST', 'POPULATION_BOOST', 'COIN_BUFF', 'HUMAN_BUFF', 'UPGRADE'],
+}
+
+// 轮循配置
+const ROTATION_CONFIG = {
+  interval: 2500, // 2.5秒切换一次
+  debuffPriority: true, // debuff优先显示
+  fadeTransition: 300, // 切换动画时长(ms)
+}
+
 // 建筑物基类，所有具体建筑继承自此类
 export default class Building extends SimObject {
   /**
@@ -23,10 +38,15 @@ export default class Building extends SimObject {
     this.options = options
     this.levelData = options.levelData || null
 
-    // 状态指示系统相关属性
+    // 新的轮循状态系统
     this.statusConfig = [] // 由子类定义所有可能的状态及其效果
-    this.activeStatusType = null // 当前激活的状态类型 (e.g., 'NO_POWER')
-    this.activeStatusInstance = null // 当前激活效果的实例 (e.g., gsap animation)
+    this.activeBuffs = [] // 当前激活的buff状态
+    this.activeDebuffs = [] // 当前激活的debuff状态
+    this.currentDisplayArray = [] // 当前轮循显示的状态数组
+    this.rotationIndex = 0 // 当前轮循索引
+    this.rotationTimer = null // 轮循定时器
+    this.currentStatusInstance = null // 当前显示的状态实例
+    this.isTransitioning = false // 是否正在切换中
 
     this.initModel()
   }
@@ -64,87 +84,231 @@ export default class Building extends SimObject {
     }
 
     const gameState = this.experience.gameState
-    let highestPriorityStatus = null
 
-    // 1. 遍历配置，找到当前优先级最高且被激活的状态
+    // 1. 收集当前激活的状态，按类型分类
+    const newActiveBuffs = []
+    const newActiveDebuffs = []
+
     for (const status of this.statusConfig) {
       if (status.condition(this, gameState)) {
-        highestPriorityStatus = status
-        break // 找到第一个就停止，因为数组是有序的
+        if (this.isDebuffStatus(status.statusType)) {
+          newActiveDebuffs.push(status)
+        }
+        else {
+          newActiveBuffs.push(status)
+        }
       }
     }
 
-    // 2. 状态机逻辑：根据找到的状态更新视觉效果
-    const newStatusType = highestPriorityStatus ? highestPriorityStatus.statusType : null
+    // 2. 检查状态是否发生变化
+    const buffsChanged = this.hasStatusArrayChanged(this.activeBuffs, newActiveBuffs)
+    const debuffsChanged = this.hasStatusArrayChanged(this.activeDebuffs, newActiveDebuffs)
 
-    // 如果新状态和当前状态不同，则更新效果
-    if (newStatusType !== this.activeStatusType) {
-      // 如果之前有效果，先停掉并等待一帧确保清理完成
-      if (this.activeStatusType) {
-        this.deactivateStatusEffect()
-        // 立即清理所有可能残留的广告牌
-        this.cleanupBillboards()
-      }
+    if (buffsChanged || debuffsChanged) {
+      // 更新状态数组
+      this.activeBuffs = newActiveBuffs
+      this.activeDebuffs = newActiveDebuffs
 
-      // 如果有新状态，启动新效果
-      if (highestPriorityStatus) {
-        this.activateStatusEffect(highestPriorityStatus.effect)
-      }
-      this.activeStatusType = newStatusType // 更新当前状态类型
-    }
-
-    // 3. 特殊处理：需要每帧更新的效果（如光墙的shader）
-    if (this.activeStatusType) {
-      this.updateActiveEffect()
+      // 重新启动轮循显示
+      this.restartStatusRotation()
     }
   }
 
   /**
-   * 激活状态的视觉效果
-   * @param {object} effectConfig - 效果配置
+   * 判断是否为debuff状态
+   * @param {string} statusType - 状态类型
+   * @returns {boolean}
    */
-  activateStatusEffect(effectConfig) {
-    const handler = BuffEffects[effectConfig.type]
+  isDebuffStatus(statusType) {
+    return STATUS_CATEGORIES.DEBUFF.includes(statusType)
+  }
 
-    if (handler) {
-      this.activeStatusInstance = handler.activate(this.mesh, effectConfig, this.experience)
+  /**
+   * 检查状态数组是否发生变化
+   * @param {Array} oldArray - 旧状态数组
+   * @param {Array} newArray - 新状态数组
+   * @returns {boolean}
+   */
+  hasStatusArrayChanged(oldArray, newArray) {
+    if (oldArray.length !== newArray.length)
+      return true
+
+    const oldTypes = oldArray.map(s => s.statusType).sort()
+    const newTypes = newArray.map(s => s.statusType).sort()
+
+    return !oldTypes.every((type, index) => type === newTypes[index])
+  }
+
+  /**
+   * 重新启动状态轮循显示
+   */
+  restartStatusRotation() {
+    // 停止当前轮循
+    this.stopStatusRotation()
+
+    // 根据优先级选择要显示的状态数组
+    this.currentDisplayArray = ROTATION_CONFIG.debuffPriority && this.activeDebuffs.length > 0
+      ? this.activeDebuffs
+      : this.activeBuffs
+
+    // 如果没有状态需要显示，清理当前效果
+    if (this.currentDisplayArray.length === 0) {
+      this.deactivateCurrentStatus()
+      return
+    }
+
+    // 重置轮循索引
+    this.rotationIndex = 0
+
+    // 如果只有一个状态，直接显示
+    if (this.currentDisplayArray.length === 1) {
+      this.displayStatusAtIndex(0)
     }
     else {
-      console.warn(`未找到名为 "${effectConfig.type}" 的效果处理器。`)
+      // 多个状态，启动轮循
+      this.displayStatusAtIndex(0)
+      this.startRotationTimer()
     }
   }
 
   /**
-   * 关闭当前激活的状态效果
+   * 启动轮循定时器
    */
-  deactivateStatusEffect() {
-    if (!this.activeStatusType)
-      return
-    const effectConfig = this.statusConfig.find(s => s.statusType === this.activeStatusType).effect
-    const handler = BuffEffects[effectConfig.type]
-    if (handler) {
-      handler.deactivate(this.mesh, this.activeStatusInstance, this.experience)
-      this.activeStatusInstance = null
+  startRotationTimer() {
+    if (this.rotationTimer) {
+      clearInterval(this.rotationTimer)
     }
+
+    this.rotationTimer = setInterval(() => {
+      if (!this.isTransitioning && this.currentDisplayArray.length > 1) {
+        this.rotationIndex = (this.rotationIndex + 1) % this.currentDisplayArray.length
+        this.displayStatusAtIndex(this.rotationIndex)
+      }
+    }, ROTATION_CONFIG.interval)
+  }
+
+  /**
+   * 停止状态轮循
+   */
+  stopStatusRotation() {
+    if (this.rotationTimer) {
+      clearInterval(this.rotationTimer)
+      this.rotationTimer = null
+    }
+  }
+
+  /**
+   * 显示指定索引的状态
+   * @param {number} index - 状态索引
+   */
+  displayStatusAtIndex(index) {
+    if (index >= this.currentDisplayArray.length || this.isTransitioning)
+      return
+
+    const targetStatus = this.currentDisplayArray[index]
+
+    // 如果当前已经显示相同状态，跳过
+    if (this.currentStatusInstance
+      && this.currentStatusInstance.statusType === targetStatus.statusType) {
+      return
+    }
+
+    // 设置过渡状态
+    this.isTransitioning = true
+
+    // 如果有当前状态，先执行淡出
+    if (this.currentStatusInstance) {
+      this.fadeOutCurrentStatus(() => {
+        this.activateNewStatus(targetStatus)
+      })
+    }
+    else {
+      this.activateNewStatus(targetStatus)
+    }
+  }
+
+  /**
+   * 淡出当前状态
+   * @param {Function} onComplete - 淡出完成回调
+   */
+  fadeOutCurrentStatus(onComplete) {
+    if (!this.currentStatusInstance) {
+      onComplete()
+      return
+    }
+
+    const handler = BuffEffects[this.currentStatusInstance.effect.type]
+    if (handler && handler.fadeOut) {
+      // 使用专门的淡出方法
+      handler.fadeOut(this.mesh, this.currentStatusInstance.instance, () => {
+        this.currentStatusInstance = null
+        onComplete()
+      })
+    }
+    else {
+      // 使用标准的deactivate方法
+      this.deactivateCurrentStatus()
+      onComplete()
+    }
+  }
+
+  /**
+   * 激活新状态
+   * @param {object} status - 状态配置
+   */
+  activateNewStatus(status) {
+    const handler = BuffEffects[status.effect.type]
+    if (handler) {
+      const instance = handler.activate(this.mesh, status.effect, this.experience)
+      this.currentStatusInstance = {
+        statusType: status.statusType,
+        effect: status.effect,
+        instance,
+      }
+    }
+
+    // 重置过渡状态
+    this.isTransitioning = false
+  }
+
+  /**
+   * 停用当前状态
+   */
+  deactivateCurrentStatus() {
+    if (!this.currentStatusInstance)
+      return
+
+    const handler = BuffEffects[this.currentStatusInstance.effect.type]
+    if (handler) {
+      handler.deactivate(this.mesh, this.currentStatusInstance.instance, this.experience)
+    }
+    this.currentStatusInstance = null
   }
 
   /**
    * 更新需要持续调用的效果（如Shader）
    */
   updateActiveEffect() {
-    if (!this.activeStatusType)
+    if (!this.currentStatusInstance)
       return
-    const effectConfig = this.statusConfig.find(s => s.statusType === this.activeStatusType).effect
-    const handler = BuffEffects[effectConfig.type]
+
+    const handler = BuffEffects[this.currentStatusInstance.effect.type]
     // 检查处理器是否有 update 方法
-    if (handler.update)
-      handler.update(this.mesh, this.activeStatusInstance)
+    if (handler && handler.update) {
+      handler.update(this.mesh, this.currentStatusInstance.instance)
+    }
   }
 
   /**
-   * 清理所有残留的广告牌效果
+   * 清理所有残留的广告牌效果和轮循系统
    */
   cleanupBillboards() {
+    // 停止轮循
+    this.stopStatusRotation()
+
+    // 停用当前状态
+    this.deactivateCurrentStatus()
+
     if (!this.mesh)
       return
 
@@ -163,6 +327,24 @@ export default class Building extends SimObject {
         delete child.userData.timeline
       }
     })
+
+    // 重置状态
+    this.activeBuffs = []
+    this.activeDebuffs = []
+    this.currentDisplayArray = []
+    this.rotationIndex = 0
+    this.isTransitioning = false
+  }
+
+  /**
+   * 组件销毁时的清理
+   */
+  destroy() {
+    this.cleanupBillboards()
+    // 调用父类销毁方法（如果有的话）
+    if (super.destroy) {
+      super.destroy()
+    }
   }
 
   /**
@@ -173,14 +355,24 @@ export default class Building extends SimObject {
   checkForBuffTargets(gameState) {
     if (!gameState)
       return false
-    const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
-    for (const [dx, dy] of dirs) {
-      // 使用 this.x 和 this.y 来获取邻居
-      const neighborTile = gameState.getTile(this.x + dx, this.y + dy)
 
-      // 检查邻居是否存在，以及其建筑类型是否在我们的目标列表里
-      if (neighborTile && this.buffConfig.targets.includes(neighborTile.building)) {
-        return true // 只要找到一个目标，就应该激活
+    // 从 buffConfig 中获取检查范围，默认为1（相邻）
+    const range = this.buffConfig.range || 1
+
+    // 在指定范围内检查所有位置（使用切比雪夫距离，形成正方形范围）
+    for (let dx = -range; dx <= range; dx++) {
+      for (let dy = -range; dy <= range; dy++) {
+        // 跳过自己的位置
+        if (dx === 0 && dy === 0)
+          continue
+
+        // 使用 this.x 和 this.y 来获取指定范围内的位置
+        const neighborTile = gameState.getTile(this.x + dx, this.y + dy)
+
+        // 检查邻居是否存在，以及其建筑类型是否在我们的目标列表里
+        if (neighborTile && this.buffConfig.targets.includes(neighborTile.building)) {
+          return true // 只要找到一个目标，就应该激活
+        }
       }
     }
     return false // 没有找到任何目标

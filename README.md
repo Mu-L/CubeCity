@@ -64,3 +64,60 @@ Developed by [hexianWeb](https://github.com/hexianWeb).
 ## 📄 许可
 
 This project is licensed under the [MIT License](LICENSE).
+
+## 新功能：建筑状态轮循显示系统 🔄
+
+### 功能特点
+
+1. **智能分类展示**
+   - **Debuff 优先**：当建筑存在问题状态时，优先轮循显示所有 debuff 状态
+   - **Buff 候补**：当没有问题状态时，轮循显示所有增益状态
+   - **平滑切换**：状态间采用淡入淡出动画，视觉体验流畅
+
+2. **轮循机制**
+   - 每 2.5 秒自动切换显示下一个状态
+   - 单状态时静态显示，多状态时自动轮循
+   - 支持实时状态变化响应
+
+3. **状态分类**
+   ```javascript
+   DEBUFF: ['MISSING_ROAD', 'MISSING_POWER', 'MISSING_POPULATION', 'OVER_POPULATION', 'MISSING_POLLUTION']
+   BUFF: ['POWER_BOOST', 'ECONOMY_BOOST', 'POPULATION_BOOST', 'COIN_BUFF', 'HUMAN_BUFF', 'UPGRADE']
+   ```
+
+### 使用示例
+
+在建筑类中配置状态：
+
+```javascript
+this.statusConfig = [
+  // === DEBUFF 状态（问题状态，优先轮循） ===
+  {
+    statusType: 'MISSING_ROAD',
+    condition: (building, gs) => {
+      building.buffConfig = { targets: ['road'] }
+      return !building.checkForBuffTargets(gs)
+    },
+    effect: { type: 'missRoad', offsetY: 0.7 },
+  },
+
+  // === BUFF 状态（增益状态，无问题时轮循） ===
+  {
+    statusType: 'COIN_BUFF',
+    condition: (building, gs) => {
+      building.buffConfig = { targets: ['shop'], range: 1 }
+      return building.checkForBuffTargets(gs)
+    },
+    effect: { type: 'coinBuff', offsetY: 0.7 },
+  },
+]
+```
+
+### 技术实现
+
+- **状态管理**：从单状态改为多状态数组管理
+- **定时轮循**：使用 `setInterval` 实现自动切换
+- **动画优化**：专门的 `fadeOut` 方法确保切换流畅
+- **内存安全**：完善的清理机制防止内存泄漏
+
+参考实现：`src/js/components/tiles/buildings/park.js`

@@ -175,7 +175,7 @@ export default [
   {
     name: 'miss-pollution',
     type: 'texture',
-    path: 'textures/effect/lower-pollution.png',
+    path: 'textures/effect/miss-pollution.png',
   },
   {
     name: 'over-population',

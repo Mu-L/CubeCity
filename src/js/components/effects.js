@@ -7,7 +7,7 @@ import outlineVertexShader from '../../shaders/effects/outline/vertex.glsl'
 /**
  * 广告牌效果工厂函数
  * @param {string} textureName - 要在广告牌上显示的纹理名称
- * @returns {object} - 返回一个包含 activate 和 deactivate 方法的效果处理器
+ * @returns {object} - 返回一个包含 activate、deactivate、fadeOut 和 update 方法的效果处理器
  */
 function billboardEffectFactory(textureName) {
   return {
@@ -23,21 +23,8 @@ function billboardEffectFactory(textureName) {
         return null
       }
 
-      // 修复：确保在计算高度前移除所有现有的广告牌，避免累积效应
-      // 立即清理所有现有的广告牌，不等待动画完成
-      mesh.children.forEach((child) => {
-        if (child.name && child.name.startsWith('buff_billboard_')) {
-          // 立即停止任何正在进行的动画
-          if (child.userData.timeline) {
-            child.userData.timeline.kill()
-          }
-          mesh.remove(child)
-          if (child.geometry)
-            child.geometry.dispose()
-          if (child.material)
-            child.material.dispose()
-        }
-      })
+      // 清理所有现有的广告牌，但在轮循模式下会更温和
+      this.cleanupExistingBillboards(mesh, false)
 
       // 调整纹理的色彩空间以保证颜色显示正确
       texture.colorSpace = THREE.SRGBColorSpace
@@ -81,9 +68,55 @@ function billboardEffectFactory(textureName) {
 
       // 将时间线存储在广告牌的用户数据中，便于后续清理
       billboard.userData.timeline = tl
+      billboard.userData.originalY = startY
 
       // 返回的实例中包含 experience，以便 update 方法使用
-      return { billboard, timeline: tl, experience, startY }
+      return { billboard, timeline: tl, experience, startY, material }
+    },
+
+    /**
+     * 专门的淡出方法，用于状态轮循时的平滑切换
+     * @param {THREE.Mesh} mesh - 目标建筑
+     * @param {object} instance - 广告牌实例
+     * @param {Function} onComplete - 淡出完成回调
+     */
+    fadeOut(mesh, instance, onComplete) {
+      if (!instance || !instance.billboard) {
+        onComplete()
+        return
+      }
+
+      // 立即停止所有相关动画
+      if (instance.timeline) {
+        instance.timeline.kill()
+      }
+      if (instance.billboard.userData.timeline) {
+        instance.billboard.userData.timeline.kill()
+      }
+
+      // 执行快速淡出动画（比正常deactivate更快）
+      gsap.to(instance.billboard.material, {
+        opacity: 0,
+        duration: 0.2, // 更快的淡出
+        ease: 'power2.in',
+        onComplete: () => {
+          // 立即清理资源
+          if (instance.billboard.parent) {
+            instance.billboard.parent.remove(instance.billboard)
+          }
+          if (instance.billboard.geometry) {
+            instance.billboard.geometry.dispose()
+          }
+          if (instance.billboard.material) {
+            instance.billboard.material.dispose()
+          }
+          // 清理用户数据
+          delete instance.billboard.userData.timeline
+          delete instance.billboard.userData.originalY
+
+          onComplete()
+        },
+      })
     },
 
     deactivate(mesh, instance) {
@@ -111,6 +144,7 @@ function billboardEffectFactory(textureName) {
             instance.billboard.material.dispose()
             // 清理用户数据
             delete instance.billboard.userData.timeline
+            delete instance.billboard.userData.originalY
           },
         })
       }
@@ -124,6 +158,37 @@ function billboardEffectFactory(textureName) {
           instance.billboard.quaternion.copy(camera.quaternion)
         }
       }
+    },
+
+    /**
+     * 清理现有广告牌的辅助方法
+     * @param {THREE.Mesh} mesh - 目标建筑
+     * @param {boolean} immediate - 是否立即清理（不使用动画）
+     */
+    cleanupExistingBillboards(mesh, immediate = true) {
+      mesh.children.forEach((child) => {
+        if (child.name && child.name.startsWith('buff_billboard_')) {
+          // 立即停止任何正在进行的动画
+          if (child.userData.timeline) {
+            child.userData.timeline.kill()
+          }
+
+          if (immediate) {
+            // 立即清理
+            mesh.remove(child)
+            if (child.geometry)
+              child.geometry.dispose()
+            if (child.material)
+              child.material.dispose()
+            delete child.userData.timeline
+            delete child.userData.originalY
+          }
+          else {
+            // 标记为待清理，但不立即移除
+            child.userData.markedForRemoval = true
+          }
+        }
+      })
     },
   }
 }
