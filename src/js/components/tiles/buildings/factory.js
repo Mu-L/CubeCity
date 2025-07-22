@@ -3,6 +3,7 @@ import smokeFragmentShader from '@/shaders/smoke/fragment.glsl'
 import smokeVertexShader from '@/shaders/smoke/vertex.glsl'
 import * as THREE from 'three'
 import Building from '../building.js'
+
 // 工厂类建筑
 export default class Factory extends Building {
   constructor(type = 'factory', level = 1, direction = 0, options = {}) {
@@ -17,19 +18,50 @@ export default class Factory extends Building {
     this.camera = this.experience.camera.instance
     this.smoke()
 
-    // --- 状态指示系统配置 ---
+    // --- 新的轮循状态系统配置 ---
     this.statusConfig = [
+      // 继承基础的 debuff 状态（如缺少道路）
       ...super.getDefaultStatusConfig(),
-      // 电力不足
+
+      // === DEBUFF 状态（问题状态，优先轮循显示） ===
+
+      // 电力过载（工厂消耗太多电力）
       {
-        statusType: 'POWER_SHORTAGE',
+        statusType: 'MISSING_POWER',
         condition: (building, gs) => gs.power > gs.maxPower,
-        effect: { type: 'missPower' },
+        effect: { type: 'missPower', offsetY: 0.6 },
       },
 
-      // 可升级（如有）
-      // ...如有升级逻辑可补充
+      // 环境污染（需要垃圾站）
+      {
+        statusType: 'MISSING_POLLUTION',
+        condition: (building, gs) => {
+          // 周围没有垃圾站时激活污染警告
+          building.buffConfig = { targets: ['garbage_station'], range: 4 }
+          return !building.checkForBuffTargets(gs)
+        },
+        effect: { type: 'missPollution', offsetY: 0.6 },
+      },
+
+      // === BUFF 状态（增益状态，无问题时轮循显示） ===
+
+      // 为化工厂提供增益
+      {
+        statusType: 'POWER_BOOST',
+        condition: (building, gs) => {
+          // 周围有化工厂时提供工业增益
+          building.buffConfig = { targets: ['chemistry_factory'], range: 2 }
+          return building.checkForBuffTargets(gs)
+        },
+        effect: { type: 'powerup', offsetY: 0.6 },
+      },
     ]
+  }
+
+  // 辅助方法：检查指定范围内的目标
+  checkTargetsInRange(targets, range, gameState) {
+    this.buffConfig = { targets, range }
+    return this.checkForBuffTargets(gameState)
   }
 
   // 不可升级
@@ -71,9 +103,15 @@ export default class Factory extends Building {
   }
 
   update() {
+    // 更新烟雾动画
     if (this.smokeMaterial) {
       this.smokeMaterial.uniforms.uTime.value = this.time.elapsed * 0.008
     }
+
+    // 调用父类的新轮循逻辑
+    super.update()
+
+    // 调用需要持续更新的效果（如shader、广告牌朝向相机等）
+    super.updateActiveEffect()
   }
-  // 可扩展更多工厂特有方法
 }
