@@ -4,69 +4,31 @@ export default class Park extends Building {
   constructor(type = 'park', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，会优先轮循显示） ===
+      // === 特殊状态（无法配置化的复杂逻辑） ===
 
-      // 缺少人口（示例 debuff）
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 周围2格内没有住宅建筑时激活
-          building.buffConfig = { targets: ['house', 'house2'], range: 2 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
-      },
+      // // 缺少电力（全局状态检查）
+      // {
+      //   statusType: 'MISSING_POWER',
+      //   condition: (building, gs) => gs.power > gs.maxPower,
+      //   effect: { type: 'missPower', offsetY: 0.7 },
+      // },
 
-      // 缺少电力（示例 debuff）
-      {
-        statusType: 'MISSING_POWER',
-        condition: (building, gs) => {
-          // 假设公园也需要电力支持
-          return gs.power < 1
-        },
-        effect: { type: 'missPower', offsetY: 0.7 },
-      },
+      // // 高级公园的能量增益（等级依赖）
+      // {
+      //   statusType: 'POWER_BOOST',
+      //   condition: (building, gs) => {
+      //     // 3级公园可以提供少量电力增益
+      //     return this.level >= 3 && gs.power > 5
+      //   },
+      //   effect: { type: 'powerup', offsetY: 0.7 },
+      // },
 
-      // === BUFF 状态（增益状态，在没有 debuff 时轮循显示） ===
-
-      // 提供居民幸福度增益
-      {
-        statusType: 'HUMAN_BUFF',
-        condition: (building, gs) => {
-          // 当周围有住宅时提供人口增益效果
-          building.buffConfig = { targets: ['house', 'house2'], range: 1 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-
-      // 提供经济增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 当公园等级>=2且周围有商业建筑时激活
-          building.buffConfig = { targets: ['shop'], range: 1 }
-          return this.level >= 2 && building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
-      },
-
-      // 能量增益（高级公园提供）
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 3级公园可以提供少量电力增益
-          return this.level >= 3 && gs.power > 5
-        },
-        effect: { type: 'powerup', offsetY: 0.7 },
-      },
-
-      // 可升级状态
+      // 可升级状态（依赖复杂的升级逻辑）
       {
         statusType: 'UPGRADE',
         condition: (building, gs) => {

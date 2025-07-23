@@ -18,51 +18,23 @@ export default class Factory extends Building {
     this.camera = this.experience.camera.instance
     this.smoke()
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
+      // === 特殊状态（无法配置化的复杂逻辑） ===
 
-      // 电力过载（工厂消耗太多电力）
+      // 电力过载（全局状态检查）
       {
         statusType: 'MISSING_POWER',
         condition: (building, gs) => gs.power > gs.maxPower,
         effect: { type: 'missPower', offsetY: 0.6 },
       },
-
-      // 环境污染（需要垃圾站）
-      {
-        statusType: 'MISSING_POLLUTION',
-        condition: (building, gs) => {
-          // 周围没有垃圾站时激活污染警告
-          building.buffConfig = { targets: ['garbage_station'], range: 4 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPollution', offsetY: 0.6 },
-      },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 为化工厂提供增益
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 周围有化工厂时提供工业增益
-          building.buffConfig = { targets: ['chemistry_factory'], range: 2 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'powerup', offsetY: 0.6 },
-      },
     ]
   }
 
-  // 辅助方法：检查指定范围内的目标
-  checkTargetsInRange(targets, range, gameState) {
-    this.buffConfig = { targets, range }
-    return this.checkForBuffTargets(gameState)
-  }
+  // 注意：原有的辅助方法已被新的配置系统替代
 
   // 不可升级
   upgrade() { return null }

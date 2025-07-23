@@ -5,28 +5,19 @@ export default class WindPower extends Building {
     super(type, level, direction, options)
 
     this.fanRotationSpeed = 0.01 + Math.random() * 0.02
-    // --- 新的轮循状态系统配置 ---
-    this.statusConfig = [
-      // 环保增益（和垃圾站配合）
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 周围有垃圾处理设施时提供环保经济增益
-          building.buffConfig = { targets: ['garbage_station'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'coinBuff', offsetY: 0.8 },
-      },
 
-      // 能源集群增益
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
+    this.statusConfig = [
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
+      // ...super.getDefaultStatusConfig(),
+
       {
-        statusType: 'HUMAN_BUFF',
+        statusType: 'POWER_BOOST',
         condition: (building, gs) => {
-          // 与其他能源设施形成集群时激活
-          building.buffConfig = { targets: ['sun_power', 'factory'], range: 2 }
-          return building.checkForBuffTargets(gs)
+          // 太阳能发电站正常运行时激活
+          return gs.power >= 0
         },
-        effect: { type: 'humanBuff', offsetY: 0.8 },
+        effect: { type: 'powerup', offsetY: 0.6 },
       },
     ]
   }

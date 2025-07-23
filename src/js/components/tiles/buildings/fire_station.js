@@ -4,64 +4,17 @@ export default class FireStation extends Building {
   constructor(type = 'fire_station', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
-
-      // 缺少电力
+      // === 特殊状态（无法配置化的复杂逻辑） ===
+      // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',
-        condition: (building, gs) => gs.power < 1,
+        condition: (building, gs) => gs.power > gs.maxPower,
         effect: { type: 'missPower', offsetY: 0.7 },
-      },
-
-      // 缺少服务人口
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 周围没有住宅时激活
-          building.buffConfig = { targets: ['house', 'house2'], range: 4 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
-      },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 提供安全增益
-      {
-        statusType: 'HUMAN_BUFF',
-        condition: (building, gs) => {
-          // 为周围建筑提供消防安全增益
-          building.buffConfig = { targets: ['house', 'house2', 'shop', 'office'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-
-      // 工业安全增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 为工业建筑提供安全保障增益
-          building.buffConfig = { targets: ['factory', 'chemistry_factory'], range: 4 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
-      },
-
-      // 服务网络增益
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 与其他紧急服务设施形成网络时激活
-          building.buffConfig = { targets: ['hospital', 'police'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'powerup', offsetY: 0.7 },
       },
     ]
   }

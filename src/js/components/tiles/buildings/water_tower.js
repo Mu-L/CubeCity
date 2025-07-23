@@ -4,54 +4,17 @@ export default class WaterTower extends Building {
   constructor(type = 'water_tower', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === BUFF 状态（水塔主要提供正面效果） ===
+      // === 特殊状态（无法配置化的复杂逻辑） ===
 
-      // 提供水资源增益
-      {
-        statusType: 'HUMAN_BUFF',
-        condition: (building, gs) => {
-          // 为周围住宅提供水资源增益
-          building.buffConfig = { targets: ['house', 'house2'], range: 4 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'humanBuff', offsetY: 1.2 },
-      },
-
-      // 工业支持增益
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 为工业建筑提供水资源支持
-          building.buffConfig = { targets: ['factory', 'chemistry_factory'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'powerup', offsetY: 1.2 },
-      },
-
-      // 城市基础设施增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 与其他基础设施形成网络时激活
-          const hasServices = this.checkTargetsInRange(['hospital', 'police', 'fire_station'], 4, gs)
-          const hasUtilities = this.checkTargetsInRange(['garbage_station'], 3, gs)
-          return hasServices || hasUtilities
-        },
-        effect: { type: 'coinBuff', offsetY: 1.2 },
-      },
     ]
   }
 
-  // 辅助方法：检查指定范围内的目标
-  checkTargetsInRange(targets, range, gameState) {
-    this.buffConfig = { targets, range }
-    return this.checkForBuffTargets(gameState)
-  }
+  // 注意：原有的辅助方法已被新的配置系统替代
 
   getCost() {
     return this.options.buildingData?.cost || 0

@@ -4,68 +4,20 @@ export default class ChemistryFactory extends Building {
   constructor(type = 'chemistry_factory', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
-
-      // 缺少电力
+      // === 特殊状态（无法配置化的复杂逻辑） ===
+      // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',
-        condition: (building, gs) => gs.power < 1,
+        condition: (building, gs) => gs.power > gs.maxPower,
         effect: { type: 'missPower', offsetY: 0.7 },
       },
 
-      // 缺少工业支持
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 需要基础工厂支持
-          building.buffConfig = { targets: ['factory'], range: 3 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
-      },
-
-      // 环境污染警告
-      {
-        statusType: 'MISSING_POLLUTION',
-        condition: (building, gs) => {
-          // 周围没有垃圾站时激活污染警告
-          building.buffConfig = { targets: ['garbage_station'], range: 3 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPollution', offsetY: 0.7 },
-      },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 高级工业增益
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 与基础工厂形成工业集群时激活
-          building.buffConfig = { targets: ['factory'], range: 2 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'powerup', offsetY: 0.7 },
-      },
-
-      // 经济增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 工业区完善时提供经济增益
-          const hasFactory = this.checkTargetsInRange(['factory'], 2, gs)
-          const hasCleanup = this.checkTargetsInRange(['garbage_station'], 3, gs)
-          return hasFactory && hasCleanup
-        },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
-      },
-
-      // 可升级状态
+      // 可升级状态（依赖复杂的升级逻辑）
       {
         statusType: 'UPGRADE',
         condition: (building, gs) => {
@@ -77,11 +29,7 @@ export default class ChemistryFactory extends Building {
     ]
   }
 
-  // 辅助方法：检查指定范围内的目标
-  checkTargetsInRange(targets, range, gameState) {
-    this.buffConfig = { targets, range }
-    return this.checkForBuffTargets(gameState)
-  }
+  // 注意：原有的辅助方法已被新的配置系统替代
 
   getCost() {
     return this.options.buildingData?.cost || 0

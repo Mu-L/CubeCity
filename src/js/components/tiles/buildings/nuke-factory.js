@@ -5,36 +5,14 @@ export default class NukeFactory extends Building {
   constructor(type = 'nuke_factory', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，但核工厂有特殊的安全要求需要保留
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
+      // === 特殊状态（核工厂的复杂安全逻辑） ===
 
-      // 缺少安全服务
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 核工厂需要强制安全服务覆盖
-          building.buffConfig = { targets: ['police', 'fire_station'], range: 4 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.8 },
-      },
-
-      // 缺少废料处理
-      {
-        statusType: 'MISSING_POLLUTION',
-        condition: (building, gs) => {
-          // 核工厂必须有垃圾处理设施
-          building.buffConfig = { targets: ['garbage_station'], range: 3 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPollution', offsetY: 0.8 },
-      },
-
-      // 人口过载风险
+      // 人口过载风险（特殊的密度检查）
       {
         statusType: 'OVER_POPULATION',
         condition: (building, gs) => {
@@ -44,54 +22,9 @@ export default class NukeFactory extends Building {
         },
         effect: { type: 'overPopulation', offsetY: 0.8 },
       },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 强力电力增益
-      {
-        statusType: 'POWER_BOOST',
-        condition: (building, gs) => {
-          // 安全运行时提供强力电力增益
-          const hasSafety = this.checkTargetsInRange(['police', 'fire_station'], 4, gs)
-          const hasCleanup = this.checkTargetsInRange(['garbage_station'], 3, gs)
-          return hasSafety && hasCleanup
-        },
-        effect: { type: 'powerup', offsetY: 0.8 },
-      },
-
-      // 高端经济增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 完整的工业区配套时激活
-          const hasIndustrial = this.checkTargetsInRange(['factory', 'chemistry_factory'], 4, gs)
-          const hasServices = this.checkTargetsInRange(['hospital'], 4, gs)
-          return hasIndustrial && hasServices
-        },
-        effect: { type: 'coinBuff', offsetY: 0.8 },
-      },
-
-      // 可升级状态
-      {
-        statusType: 'UPGRADE',
-        condition: (building, gs) => {
-          const upgradeInfo = building.upgrade()
-          const hasSafety = this.checkTargetsInRange(['police', 'fire_station'], 4, gs)
-          // 核工厂升级需要安全保障
-          return upgradeInfo && gs.credits >= building.getCost() && hasSafety
-        },
-        effect: { type: 'upgrade', offsetY: 0.8 },
-      },
     ]
   }
 
-  // 辅助方法：检查指定范围内的目标
-  checkTargetsInRange(targets, range, gameState) {
-    this.buffConfig = { targets, range }
-    return this.checkForBuffTargets(gameState)
-  }
-
-  // 辅助方法：计算指定范围内的目标数量
   countTargetsInRange(targets, range, gameState) {
     if (!gameState)
       return 0

@@ -4,53 +4,18 @@ export default class Police extends Building {
   constructor(type = 'police', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
+      // === 特殊状态（无法配置化的复杂逻辑） ===
 
-      // 缺少电力
+      // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',
-        condition: (building, gs) => gs.power < 1,
+        condition: (building, gs) => gs.power > gs.maxPower,
         effect: { type: 'missPower', offsetY: 0.7 },
-      },
-
-      // 缺少服务人口
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 周围没有住宅时激活
-          building.buffConfig = { targets: ['house', 'house2'], range: 4 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
-      },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 提供安全增益
-      {
-        statusType: 'HUMAN_BUFF',
-        condition: (building, gs) => {
-          // 为周围住宅和商业提供安全增益
-          building.buffConfig = { targets: ['house', 'house2', 'shop'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-
-      // 服务网络增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 与医院、消防站形成服务网络时激活
-          building.buffConfig = { targets: ['hospital', 'fire_station'], range: 3 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
       },
     ]
   }

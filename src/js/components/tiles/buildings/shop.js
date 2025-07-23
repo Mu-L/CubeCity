@@ -4,57 +4,21 @@ export default class Shop extends Building {
   constructor(type = 'shop', level = 1, direction = 0, options = {}) {
     super(type, level, direction, options)
 
-    // --- 新的轮循状态系统配置 ---
+    // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
-      // 继承基础的 debuff 状态（如缺少道路）
+      // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
 
-      // === DEBUFF 状态（问题状态，优先轮循显示） ===
+      // === 特殊状态（无法配置化的复杂逻辑） ===
 
-      // 缺少电力
+      // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',
-        condition: (building, gs) => gs.power < 1,
+        condition: (building, gs) => gs.power > gs.maxPower,
         effect: { type: 'missPower', offsetY: 0.7 },
       },
 
-      // 缺少人口
-      {
-        statusType: 'MISSING_POPULATION',
-        condition: (building, gs) => {
-          // 周围没有住宅时激活
-          building.buffConfig = { targets: ['house', 'house2'], range: 3 }
-          return !building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
-      },
-
-      // === BUFF 状态（增益状态，无问题时轮循显示） ===
-
-      // 提供经济增益
-      {
-        statusType: 'COIN_BUFF',
-        condition: (building, gs) => {
-          // 周围有住宅时提供经济增益
-          building.buffConfig = { targets: ['house', 'house2'], range: 2 }
-          return building.checkForBuffTargets(gs)
-        },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
-      },
-
-      // 人口增益（商业繁荣）
-      {
-        statusType: 'HUMAN_BUFF',
-        condition: (building, gs) => {
-          // 高级商店且周围有多种建筑时激活
-          const hasResidential = this.checkTargetsInRange(['house', 'house2'], 2, gs)
-          const hasOffice = this.checkTargetsInRange(['office'], 2, gs)
-          return this.level >= 2 && hasResidential && hasOffice
-        },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-
-      // 可升级状态
+      // 可升级状态（依赖复杂的升级逻辑）
       {
         statusType: 'UPGRADE',
         condition: (building, gs) => {
@@ -66,11 +30,7 @@ export default class Shop extends Building {
     ]
   }
 
-  // 辅助方法：检查指定范围内的目标
-  checkTargetsInRange(targets, range, gameState) {
-    this.buffConfig = { targets, range }
-    return this.checkForBuffTargets(gameState)
-  }
+  // 注意：原有的辅助方法已被新的配置系统替代
 
   getCost() {
     return this.options.buildingData?.cost || 0
