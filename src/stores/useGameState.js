@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { getEffectiveBuildingValue } from '../js/utils/building-interaction-utils.js'
 
 export const useGameState = defineStore('gameState', {
   state: () => ({
@@ -31,56 +32,43 @@ export const useGameState = defineStore('gameState', {
   }),
   getters: {
     /**
-     * 计算每日总收入
-     * @param {object} state - a
-     * @returns {number} - b
+     * 计算每日总收入（直接使用metadata中的detail，大幅提升性能）
+     * @param {object} state - 游戏状态
+     * @returns {number} 总收入
      */
     dailyIncome: (state) => {
       let totalIncome = 0
-      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+
       state.metadata.forEach((row, x) => {
         row.forEach((tile, y) => {
           if (tile.building && tile.detail) {
-            let buildingIncome = tile.detail.coinOutput || 0
-            // 工业商业也类建筑的收入会受周围环境影响
-            if ((tile.detail.category === 'industrial' || tile.detail.category === 'commercial') && buildingIncome > 0) {
-              let bonusFactor = 0
-              for (const [dx, dy] of dirs) {
-                const neighbor = state.metadata[x + dx]?.[y + dy]
-                // 每有一个相邻的树或公园，收入增加10%
-                if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
-                  bonusFactor += 0.1
-                }
-              }
-              buildingIncome *= (1 + bonusFactor)
-            }
-            totalIncome += buildingIncome
+            // 使用高效函数：自动判断是否需要相互作用计算
+            const income = getEffectiveBuildingValue(state, x, y, 'coinOutput')
+            totalIncome += income
           }
         })
       })
+
       return totalIncome
     },
     /**
-     * 计算总人口容量
-     * @param {object} state - a
-     * @returns {number} - b
+     * 计算总人口容量（优化：直接使用detail，仅对有相互作用的建筑计算修正）
+     * @param {object} state - 游戏状态
+     * @returns {number} 总人口容量
      */
     maxPopulation: (state) => {
       let totalCapacity = 0
-      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+
       state.metadata.forEach((row, x) => {
         row.forEach((tile, y) => {
           if (tile.building && tile.detail && tile.detail.category === 'residential') {
-            totalCapacity += tile.detail.maxPopulation || 0
-            for (const [dx, dy] of dirs) {
-              const neighbor = state.metadata[x + dx]?.[y + dy]
-              if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
-                totalCapacity += tile.detail.maxPopulation * 0.1
-              }
-            }
+            // 使用高效函数：自动判断是否需要相互作用计算
+            const capacity = getEffectiveBuildingValue(state, x, y, 'maxPopulation')
+            totalCapacity += capacity
           }
         })
       })
+
       return totalCapacity
     },
     /**
@@ -103,19 +91,23 @@ export const useGameState = defineStore('gameState', {
       return Math.min(this.maxPopulation * 1.5, this.totalJobs)
     },
     /**
-     * 计算最大发电量
-     * @param {object} state - a
-     * @returns {number} - b
+     * 计算最大发电量（优化：直接使用detail，仅对有相互作用的建筑计算修正）
+     * @param {object} state - 游戏状态
+     * @returns {number} 最大发电量
      */
     maxPower: (state) => {
       let totalPower = 0
-      state.metadata.forEach((row) => {
-        row.forEach((tile) => {
+
+      state.metadata.forEach((row, x) => {
+        row.forEach((tile, y) => {
           if (tile.building && tile.detail) {
-            totalPower += tile.detail.powerOutput || 0
+            // 使用高效函数：自动判断是否需要相互作用计算
+            const power = getEffectiveBuildingValue(state, x, y, 'powerOutput')
+            totalPower += power
           }
         })
       })
+
       return totalPower
     },
     /**
@@ -134,6 +126,7 @@ export const useGameState = defineStore('gameState', {
       })
       return totalUsage
     },
+
     buildingCount: (state) => {
       let count = 0
       state.metadata.forEach((row) => {
@@ -145,31 +138,24 @@ export const useGameState = defineStore('gameState', {
       })
       return count
     },
+    /**
+     * 计算总污染值（优化：直接使用detail，仅对有相互作用的建筑计算修正）
+     * @param {object} state - 游戏状态
+     * @returns {number} 总污染值
+     */
     pollution: (state) => {
       let totalPollution = 0
-      const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+
       state.metadata.forEach((row, x) => {
         row.forEach((tile, y) => {
-          // 工业商业类建筑的污染会受周围环境影响
-          if (tile.building && tile.detail
-          ) {
-            let buildingPollution = tile.detail.pollution
-            if (tile.detail.category === 'industrial') {
-              let treeCount = 0
-              // 检查周围的树木数量
-              for (const [dx, dy] of dirs) {
-                const neighbor = state.metadata[x + dx]?.[y + dy]
-                if (neighbor && (neighbor.building === 'park' || neighbor.building === 'hero_park')) {
-                  treeCount++
-                }
-              }
-              // 每棵相邻的树减少25%的污染
-              buildingPollution *= Math.max(0, 1 - treeCount * 0.25)
-            }
-            totalPollution += buildingPollution
+          if (tile.building && tile.detail) {
+            // 使用高效函数：自动判断是否需要相互作用计算
+            const pollution = getEffectiveBuildingValue(state, x, y, 'pollution')
+            totalPollution += pollution
           }
         })
       })
+
       return totalPollution
     },
     hospitalCount: state =>

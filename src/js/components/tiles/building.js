@@ -1,6 +1,7 @@
 import { BUILDING_DATA } from '@/constants/constants.js'
 import * as THREE from 'three'
 import Experience from '../../experience.js'
+import { checkStatusCondition, getBuildingStatusEffects } from '../../utils/building-interaction-utils.js'
 import { BuffEffects } from '../effects.js'
 import SimObject from './sim-object.js'
 
@@ -422,9 +423,13 @@ export default class Building extends SimObject {
     `
   }
 
+  /**
+   * 获取默认状态配置（结合配置文件和基础检查）
+   * @returns {Array} 状态配置数组
+   */
   getDefaultStatusConfig() {
-    return [
-      // 缺少道路连接
+    const baseConfig = [
+      // 缺少道路连接（保留基础检查）
       {
         statusType: 'MISSING_ROAD',
         condition: (building, gs) => {
@@ -434,5 +439,18 @@ export default class Building extends SimObject {
         effect: { type: 'missRoad', offsetY: 0.7 },
       },
     ]
+
+    // 从配置文件加载建筑专属的状态效果
+    const buildingStatusEffects = getBuildingStatusEffects(this.type)
+
+    // 将配置文件中的状态效果转换为Building类可以理解的格式
+    const configuredEffects = buildingStatusEffects.map(statusConfig => ({
+      statusType: statusConfig.type,
+      condition: (building, gs) => checkStatusCondition(gs, building.type, building.x, building.y, statusConfig),
+      effect: statusConfig.effect,
+    }))
+
+    // 合并基础配置和配置文件中的效果
+    return [...baseConfig, ...configuredEffects]
   }
 }
