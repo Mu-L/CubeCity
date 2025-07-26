@@ -49,6 +49,13 @@ Welcome to CubeCity! This is a cartoon-style 2.5D city simulation game where you
 *   **状态管理:** [Pinia](https://pinia.vuejs.org/)
 *   **事件总线:** [mitt](https://github.com/developit/mitt)
 
+## 📚 文档
+
+*   **🎮 新手指南:** [玩家游玩指南](./docs/新手指南.md) - 详细的游戏玩法说明和技巧
+*   **👨‍💻 开发指南:** [新手开发指南](./docs/新手开发指南.md) - 完整的开发环境搭建和开发规范
+*   **📋 产品需求:** [PRD 文档](./docs/PRD.md) - 产品需求文档
+*   **🔧 技术设计:** [TD 文档](./docs/TD.md) - 技术设计文档
+
 ## 🚀 未来展望
 
 我们计划在未来为游戏增加更多有趣的功能，包括：

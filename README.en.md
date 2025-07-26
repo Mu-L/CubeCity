@@ -49,6 +49,13 @@ The game revolves around four main operation modes, allowing you to easily manag
 *   **State Management:** [Pinia](https://pinia.vuejs.org/)
 *   **Event Bus:** [mitt](https://github.com/developit/mitt)
 
+## 📚 Documentation
+
+*   **🎮 Player Guide:** [Game Guide](./docs/新手指南.md) - Detailed gameplay instructions and tips
+*   **👨‍💻 Developer Guide:** [Developer Guide](./docs/新手开发指南.md) - Complete development environment setup and coding standards
+*   **📋 Product Requirements:** [PRD Document](./docs/PRD.md) - Product requirements document
+*   **🔧 Technical Design:** [TD Document](./docs/TD.md) - Technical design document
+
 ## 🚀 Roadmap
 
 We plan to add more exciting features in the future, including:
