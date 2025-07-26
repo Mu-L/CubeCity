@@ -1,10 +1,12 @@
 <script setup>
 import { useGameState } from '@/stores/useGameState.js'
 import { storeToRefs } from 'pinia'
-import AnimatedNumber from './AnimatedNumber.vue' // Add this import
+import { ref } from 'vue'
+import AnimatedNumber from './AnimatedNumber.vue'
+import GuideModal from './GuideModal.vue'
 
 const gameState = useGameState()
-const { credits, population, totalJobs, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay, power, maxPower } = storeToRefs(gameState)
+const { credits, totalJobs, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay, power, maxPower } = storeToRefs(gameState)
 
 function toggleLang() {
   gameState.setLanguage(language.value === 'zh' ? 'en' : 'zh')
@@ -14,7 +16,12 @@ function toggleMapOverview() {
   gameState.setShowMapOverview(!showMapOverview.value)
 }
 
-// Remove all CountUp related logic
+// 新手指南状态
+const showGuide = ref(false)
+
+function toggleGuide() {
+  showGuide.value = !showGuide.value
+}
 </script>
 
 <template>
@@ -99,7 +106,14 @@ function toggleMapOverview() {
         <button class="ml-4 px-2 py-1 rounded bg-gray-700 text-white" @click="toggleLang">
           {{ language === 'zh' ? 'EN' : '中' }}
         </button>
-        <!-- 新增：显示地图按钮 -->
+        <!-- 新手指南按钮 -->
+        <button
+          class="ml-2 px-3 py-1 rounded bg-industrial-green text-white font-bold shadow hover:bg-industrial-green/80 transition"
+          @click="toggleGuide"
+        >
+          📖 {{ language === 'zh' ? '新手指南' : 'Guide' }}
+        </button>
+        <!-- 显示地图按钮 -->
         <button
           class="ml-2 px-3 py-1 rounded bg-industrial-accent text-white font-bold shadow hover:bg-industrial-accent/80 transition"
           @click="toggleMapOverview"
@@ -108,5 +122,11 @@ function toggleMapOverview() {
         </button>
       </div>
     </div>
+
+    <!-- 新手指南弹窗 -->
+    <GuideModal
+      :is-visible="showGuide"
+      @close="showGuide = false"
+    />
   </header>
 </template>
