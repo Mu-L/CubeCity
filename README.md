@@ -1,3 +1,5 @@
+[English README](./README.en.md)
+
 # 2.5D 卡通城市放置系统 (CubeCity)
 
 > A lightweight 2.5D city-building simulation game based on Three.js and Vue.
