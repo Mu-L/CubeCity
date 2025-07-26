@@ -9,7 +9,7 @@ export const useGameState = defineStore('gameState', {
     toastQueue: [], // Toast 消息队列
     gameDay: 1, // 新增：游戏天数
     // 其他全局状态可在此扩展
-    credits: 10000, // 金币
+    credits: 3000, // 金币
     territory: 16, // 地皮
     cityLevel: 1, // 城市等级
     cityName: 'HeXian City', // 城市名称
@@ -280,7 +280,7 @@ export const useGameState = defineStore('gameState', {
       this.selectedPosition = null
       this.toastQueue = []
       this.gameDay = 1
-      this.credits = 10000
+      this.credits = 3000
       this.territory = 16
       this.cityLevel = 1
       this.cityName = 'HeXian City'

@@ -10,7 +10,7 @@ export const BUILDING_INTERACTIONS = {
         {
           targets: ['factory'],
           range: 3,
-          effect: -0.5, // 减少50%污染
+          effect: 0.2, // 增加20%污染
           description: '附近工厂形成工业集群，减少污染排放',
         },
         {
@@ -41,58 +41,75 @@ export const BUILDING_INTERACTIONS = {
       {
         type: 'MISSING_FACTORY_SUPPORT',
         condition: { targets: ['factory'], range: 3, inverse: true },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
+        effect: { type: 'pollutionUpBuff', offsetY: 0.7 },
       },
       {
         type: 'MISSING_CLEANUP',
         condition: { targets: ['garbage_station'], range: 3, inverse: true },
-        effect: { type: 'missPollution', offsetY: 0.7 },
+        effect: { type: 'pollutionUpBuff', offsetY: 0.7 },
       },
       {
-        type: 'INDUSTRIAL_CLUSTER_BONUS',
-        condition: { targets: ['factory'], range: 2, inverse: false },
-        effect: { type: 'powerup', offsetY: 0.7 },
+        type: 'GETTING_CLEANUP',
+        condition: { targets: ['garbage_station'], range: 3, inverse: false },
+        effect: { type: 'pollutionDownBuff', offsetY: 0.7 },
       },
-      {
-        type: 'ECONOMIC_BOOST',
-        condition: { targets: ['garbage_station', 'park'], range: 3, requireAll: false, inverse: false },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
-      },
+
     ],
   },
 
+  garbage_station: {
+    statusEffects: [
+      {
+        type: 'GETTING_CLEANUP',
+        condition: { targets: ['factory', 'chemistry_factory'], range: 3, inverse: false },
+        effect: { type: 'pollutionLowerBuff', offsetY: 0.7 },
+      },
+    ],
+  },
   factory: {
     modifiers: {
       pollution: [
         {
-          targets: ['park', 'hero_park'],
+          targets: ['park', 'hero_park', 'sun_power', 'wind_power'],
           range: 1,
           effect: -0.25, // 每个相邻公园减少25%
           description: '相邻绿化减少污染',
           stackable: true, // 可叠加效果
         },
+        {
+          targets: ['chemistry_factory'],
+          range: 1,
+          effect: -0.25,
+          description: '化学工厂减少污染',
+          stackable: false,
+        },
       ],
       coinOutput: [
         {
-          targets: ['park', 'hero_park'],
+          targets: ['water_tower'],
           range: 1,
-          effect: 0.1, // 每个相邻公园增加10%收入
-          description: '良好环境提升工作效率',
+          effect: 0.25,
+          description: '水塔增加收入',
           stackable: true,
-          maxStacks: 4, // 最多叠加4次（四个方向）
+          maxStacks: 4,
         },
       ],
     },
     statusEffects: [
       {
         type: 'POLLUTION_WARNING',
-        condition: { targets: ['park', 'hero_park'], range: 1, inverse: true },
-        effect: { type: 'missPollution', offsetY: 0.7 },
+        condition: { targets: ['park', 'hero_park', 'sun_power', 'wind_power'], range: 1, inverse: true },
+        effect: { type: 'pollutionUpBuff', offsetY: 0.7 },
       },
+    ],
+  },
+
+  water_tower: {
+    statusEffects: [
       {
-        type: 'GREEN_BOOST',
-        condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
+        type: 'ECONOMIC_BOOST',
+        condition: { targets: ['shop'], range: 1, inverse: false },
+        effect: { type: 'coinBuff' },
       },
     ],
   },
@@ -101,14 +118,6 @@ export const BUILDING_INTERACTIONS = {
   shop: {
     modifiers: {
       coinOutput: [
-        {
-          targets: ['house', 'house2'],
-          range: 2,
-          effect: 0.1, // 每个住宅区增加10%收入
-          description: '居民区提供客流',
-          stackable: true,
-          maxStacks: 3, // 最多叠加3次
-        },
         {
           targets: ['park', 'hero_park'],
           range: 1,
@@ -122,13 +131,8 @@ export const BUILDING_INTERACTIONS = {
     statusEffects: [
       {
         type: 'CUSTOMER_BOOST',
-        condition: { targets: ['house', 'house2'], range: 2, inverse: false },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-      {
-        type: 'MISSING_CUSTOMERS',
-        condition: { targets: ['house', 'house2'], range: 2, inverse: true },
-        effect: { type: 'missPopulation', offsetY: 0.7 },
+        condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
+        effect: { type: 'happy', offsetY: 0.7 },
       },
     ],
   },
@@ -136,14 +140,6 @@ export const BUILDING_INTERACTIONS = {
   office: {
     modifiers: {
       coinOutput: [
-        {
-          targets: ['house', 'house2'],
-          range: 2,
-          effect: 0.15, // 住宅区提供更多收入（办公室需要白领）
-          description: '住宅区提供优质员工',
-          stackable: true,
-          maxStacks: 2,
-        },
         {
           targets: ['park', 'hero_park'],
           range: 1,
@@ -156,14 +152,9 @@ export const BUILDING_INTERACTIONS = {
     },
     statusEffects: [
       {
-        type: 'EMPLOYEE_BOOST',
-        condition: { targets: ['house', 'house2'], range: 2, inverse: false },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
-      },
-      {
         type: 'ENVIRONMENT_BOOST',
         condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
-        effect: { type: 'coinBuff', offsetY: 0.7 },
+        effect: { type: 'happy', offsetY: 0.7 },
       },
     ],
   },
@@ -180,13 +171,26 @@ export const BUILDING_INTERACTIONS = {
           stackable: true,
           maxStacks: 4,
         },
+        {
+          targets: ['factory', 'chemistry_factory'],
+          range: 1,
+          effect: -0.15,
+          description: '工厂环境减少居民',
+          stackable: true,
+          maxStacks: 4,
+        },
       ],
     },
     statusEffects: [
       {
         type: 'ENVIRONMENT_BOOST',
         condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
+        effect: { type: 'happy', offsetY: 0.7 },
+      },
+      {
+        type: 'SAD',
+        condition: { targets: ['factory', 'chemistry_factory'], range: 1, inverse: false },
+        effect: { type: 'sad', offsetY: 0.7 },
       },
     ],
   },
@@ -202,13 +206,26 @@ export const BUILDING_INTERACTIONS = {
           stackable: true,
           maxStacks: 4,
         },
+        {
+          targets: ['factory', 'chemistry_factory'],
+          range: 1,
+          effect: -0.15,
+          description: '工厂环境减少居民',
+          stackable: true,
+          maxStacks: 4,
+        },
       ],
     },
     statusEffects: [
       {
         type: 'ENVIRONMENT_BOOST',
         condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
-        effect: { type: 'humanBuff', offsetY: 0.7 },
+        effect: { type: 'happy', offsetY: 0.7 },
+      },
+      {
+        type: 'SAD',
+        condition: { targets: ['factory', 'chemistry_factory'], range: 1, inverse: false },
+        effect: { type: 'sad', offsetY: 0.7 },
       },
     ],
   },
@@ -218,10 +235,18 @@ export const BUILDING_INTERACTIONS = {
     modifiers: {
       powerOutput: [
         {
-          targets: ['park', 'hero_park'],
+          targets: ['house', 'house2'],
           range: 1,
-          effect: 0.05, // 每个相邻公园增加5%发电效率
+          effect: 0.05, // 每个相邻住宅增加5%发电效率
           description: '清洁环境提升太阳能效率',
+          stackable: true,
+          maxStacks: 4,
+        },
+        {
+          targets: ['sun_power', 'wind_power'],
+          range: 1,
+          effect: 0.05,
+          description: '发电设施相邻也会提升发电效率',
           stackable: true,
           maxStacks: 4,
         },
@@ -230,9 +255,15 @@ export const BUILDING_INTERACTIONS = {
     statusEffects: [
       {
         type: 'EFFICIENCY_BOOST',
-        condition: { targets: ['park', 'hero_park'], range: 1, inverse: false },
-        effect: { type: 'powerup', offsetY: 0.7 },
+        condition: { targets: ['house', 'house2', 'wind_power', 'sun_power'], range: 1, inverse: false },
+        effect: { type: 'powerBuff', offsetY: 0.7 },
       },
+      {
+        type: 'GETTING_CLEANUP',
+        condition: { targets: ['factory', 'chemistry_factory'], range: 1, inverse: false },
+        effect: { type: 'pollutionDownBuff', offsetY: 0.7 },
+      },
+
     ],
   },
 
@@ -257,4 +288,25 @@ export const BUILDING_INTERACTIONS = {
       },
     ],
   },
+
+  park: {
+    statusEffects: [
+      {
+        type: 'HUMAN_BOOST',
+        condition: { targets: ['house', 'house2'], range: 1, inverse: false },
+        effect: { type: 'humanBuff', offsetY: 0.7 },
+      },
+      {
+        type: 'COIN_BOOST',
+        condition: { targets: ['shop', 'office'], range: 1, inverse: false },
+        effect: { type: 'coinBuff', offsetY: 0.7 },
+      },
+      {
+        type: 'GETTING_CLEANUP',
+        condition: { targets: ['factory', 'chemistry_factory'], range: 1, inverse: false },
+        effect: { type: 'pollutionDownBuff', offsetY: 0.7 },
+      },
+    ],
+  },
+
 }

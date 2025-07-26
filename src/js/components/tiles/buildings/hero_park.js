@@ -8,8 +8,6 @@ export default class HeroPark extends Building {
     this.statusConfig = [
       // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
-
-      // === 特殊状态（英雄公园的复杂增益逻辑） ===
     ]
   }
 

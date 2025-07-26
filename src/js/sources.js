@@ -137,20 +137,83 @@ export default [
     path: 'textures/perlin.png',
   },
   // effect 专用texture
+  // 电力 buff
+  // 电力正常产出
   {
-    name: 'power',
+    name: 'powerOutPut',
     type: 'texture',
     path: 'textures/effect/power.png',
   },
+  // 电力产出带有增益
   {
-    name: 'human',
+    name: 'powerOutBoost',
     type: 'texture',
-    path: 'textures/effect/human.png',
+    path: 'textures/effect/powerBuff.png',
+  },
+
+  {
+    name: 'powerUnder',
+    type: 'texture',
+    path: 'textures/effect/miss-power.png',
+  },
+  // 人口 buff
+  {
+    name: 'CrewGain',
+    type: 'texture',
+    path: 'textures/effect/humanBuff.png',
   },
   {
-    name: 'coin',
+    name: 'CrewDecay',
     type: 'texture',
-    path: 'textures/effect/coin.png',
+    path: 'textures/effect/humanDebuff.png',
+  },
+  {
+    name: 'CrewUnder',
+    type: 'texture',
+    path: 'textures/effect/miss-population.png',
+  },
+  {
+    name: 'CrewOver',
+    type: 'texture',
+    path: 'textures/effect/over-population.png',
+  },
+  // 污染buff
+  {
+    name: 'pollutionUpBuff',
+    type: 'texture',
+    path: 'textures/effect/pollutionUp.png',
+  },
+  {
+    name: 'pollutionDownBuff',
+    type: 'texture',
+    path: 'textures/effect/pollutionDown.png',
+  },
+  {
+    name: 'pollutionLowerBuff',
+    type: 'texture',
+    path: 'textures/effect/pollutionlowerBuff.png',
+  },
+  // 金币 buff
+  {
+    name: 'coinBuff',
+    type: 'texture',
+    path: 'textures/effect/coinBuff.png',
+  },
+  // 表情
+  {
+    name: 'happy',
+    type: 'texture',
+    path: 'textures/effect/happy.png',
+  },
+  {
+    name: 'sad',
+    type: 'texture',
+    path: 'textures/effect/sad.png',
+  },
+  {
+    name: 'angry',
+    type: 'texture',
+    path: 'textures/effect/angry.png',
   },
   {
     name: 'upgrade',
@@ -161,25 +224,5 @@ export default [
     name: 'miss-road',
     type: 'texture',
     path: 'textures/effect/miss-road.png',
-  },
-  {
-    name: 'miss-population',
-    type: 'texture',
-    path: 'textures/effect/miss-population.png',
-  },
-  {
-    name: 'miss-power',
-    type: 'texture',
-    path: 'textures/effect/miss-power.png',
-  },
-  {
-    name: 'miss-pollution',
-    type: 'texture',
-    path: 'textures/effect/miss-pollution.png',
-  },
-  {
-    name: 'over-population',
-    type: 'texture',
-    path: 'textures/effect/over-population.png',
   },
 ]

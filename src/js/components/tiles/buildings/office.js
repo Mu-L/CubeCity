@@ -10,7 +10,6 @@ export default class Office extends Building {
       ...super.getDefaultStatusConfig(),
 
       // === 特殊状态（无法配置化的复杂逻辑） ===
-
       // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',

@@ -9,7 +9,7 @@ import outlineVertexShader from '../../shaders/effects/outline/vertex.glsl'
  * @param {string} textureName - 要在广告牌上显示的纹理名称
  * @returns {object} - 返回一个包含 activate、deactivate、fadeOut 和 update 方法的效果处理器
  */
-function billboardEffectFactory(textureName) {
+function billboardEffectFactory(textureName, duration = 2.5) {
   return {
     /**
      * @param {THREE.Mesh} mesh - 目标建筑
@@ -58,7 +58,7 @@ function billboardEffectFactory(textureName) {
         billboard.position,
         {
           y: startY + 0.25, // 浮动高度
-          duration: 1.5,
+          duration,
           ease: 'sine.inOut',
           yoyo: true,
           repeat: -1,
@@ -296,16 +296,38 @@ const BuffEffects = {
   },
 
   // 由工厂函数创建的广告牌效果
-  powerup: billboardEffectFactory('power'),
-  humanBuff: billboardEffectFactory('human'),
-  coinBuff: billboardEffectFactory('coin'),
-  upgrade: billboardEffectFactory('upgrade'),
+  // 电力产出
+  powerup: billboardEffectFactory('powerOutPut'),
+  // 电力增幅
+  powerBuff: billboardEffectFactory('powerOutBoost'),
+  // 电力缺失
+  missPower: billboardEffectFactory('powerUnder'),
+  // 人员增加
+  humanBuff: billboardEffectFactory('CrewGain'),
+  // 人员减少
+  humanDeBuff: billboardEffectFactory('CrewDecay'),
+  // 人员缺失
+  missPopulation: billboardEffectFactory('CrewUnder'),
+  // 人员过多
+  overPopulation: billboardEffectFactory('CrewOver'),
+  // 污染增加
+  pollutionUpBuff: billboardEffectFactory('pollutionUpBuff'),
+  // 污染减少
+  pollutionDownBuff: billboardEffectFactory('pollutionDownBuff'),
+  // 降低
+  pollutionLowerBuff: billboardEffectFactory('pollutionLowerBuff'),
+  // 金币增加
+  coinBuff: billboardEffectFactory('coinBuff'),
+  // 升级
+  upgrade: billboardEffectFactory('upgrade', 0.5),
+  // 开心
+  happy: billboardEffectFactory('happy'),
+  // 悲伤
+  sad: billboardEffectFactory('sad'),
+  // 愤怒
+  angry: billboardEffectFactory('angry'),
   // 新增状态指示器效果
   missRoad: billboardEffectFactory('miss-road'),
-  missPopulation: billboardEffectFactory('miss-population'),
-  missPower: billboardEffectFactory('miss-power'),
-  missPollution: billboardEffectFactory('miss-pollution'),
-  overPopulation: billboardEffectFactory('over-population'),
 }
 
 export { BuffEffects }

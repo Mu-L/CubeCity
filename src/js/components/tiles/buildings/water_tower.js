@@ -7,9 +7,6 @@ export default class WaterTower extends Building {
     // 使用新的配置系统，大部分状态效果已在配置文件中定义
     this.statusConfig = [
       // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
-      ...super.getDefaultStatusConfig(),
-
-      // === 特殊状态（无法配置化的复杂逻辑） ===
 
     ]
   }

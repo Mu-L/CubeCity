@@ -8,7 +8,7 @@ import SimObject from './sim-object.js'
 // 状态分类配置
 const STATUS_CATEGORIES = {
   // debuff 状态（问题状态，优先显示）
-  DEBUFF: ['MISSING_ROAD', 'MISSING_POWER', 'MISSING_POPULATION', 'OVER_POPULATION', 'MISSING_POLLUTION'],
+  DEBUFF: ['MISSING_ROAD', 'MISSING_POWER', 'MISSING_POPULATION', 'OVER_POPULATION', 'MISSING_POLLUTION', 'SAD', 'EFFICIENCY_BOOST'],
   // buff 状态（增益状态）
   BUFF: ['POWER_BOOST', 'ECONOMY_BOOST', 'POPULATION_BOOST', 'COIN_BUFF', 'HUMAN_BUFF', 'UPGRADE'],
 }
@@ -86,22 +86,39 @@ export default class Building extends SimObject {
 
     const gameState = this.experience.gameState
 
-    // 1. 收集当前激活的状态，按类型分类
+    // 检查升级状态
+    const upgradeStatus = this.statusConfig.find(s => s.statusType === 'UPGRADE')
+    const isUpgradeActive = upgradeStatus
+      && upgradeStatus.condition(this, gameState)
+      && gameState.currentMode === 'select'
+
     const newActiveBuffs = []
     const newActiveDebuffs = []
 
-    for (const status of this.statusConfig) {
-      if (status.condition(this, gameState)) {
-        if (this.isDebuffStatus(status.statusType)) {
-          newActiveDebuffs.push(status)
+    if (isUpgradeActive) {
+      // 如果升级状态激活，则只处理升级
+      newActiveBuffs.push(upgradeStatus)
+    }
+    else {
+      // 否则，处理所有其他状态
+      for (const status of this.statusConfig) {
+        // 如果升级状态的条件满足，但不处于'select'模式，则不显示它
+        if (status.statusType === 'UPGRADE') {
+          continue
         }
-        else {
-          newActiveBuffs.push(status)
+
+        if (status.condition(this, gameState)) {
+          if (this.isDebuffStatus(status.statusType)) {
+            newActiveDebuffs.push(status)
+          }
+          else {
+            newActiveBuffs.push(status)
+          }
         }
       }
     }
 
-    // 2. 检查状态是否发生变化
+    // 检查状态是否发生变化
     const buffsChanged = this.hasStatusArrayChanged(this.activeBuffs, newActiveBuffs)
     const debuffsChanged = this.hasStatusArrayChanged(this.activeDebuffs, newActiveDebuffs)
 

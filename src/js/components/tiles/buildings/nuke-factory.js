@@ -48,11 +48,6 @@ export default class NukeFactory extends Building {
     return this.options.buildingData?.cost || 0
   }
 
-  // 核工厂提供最强电力但有风险
-  getPower() {
-    return 150
-  }
-
   // 重写 update 方法以调用新的轮循系统
   update() {
     // 调用父类的新轮循逻辑

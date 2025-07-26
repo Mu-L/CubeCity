@@ -8,9 +8,6 @@ export default class Hospital extends Building {
     this.statusConfig = [
       // 继承基础的状态配置（包括道路检查和配置文件中的所有效果）
       ...super.getDefaultStatusConfig(),
-
-      // === 特殊状态（无法配置化的复杂逻辑） ===
-
       // 缺少电力（全局状态检查）
       {
         statusType: 'MISSING_POWER',
