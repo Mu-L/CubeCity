@@ -155,7 +155,7 @@ function billboardEffectFactory(textureName, duration = 2.5) {
       if (instance && instance.billboard && instance.experience) {
         const camera = instance.experience.camera.instance
         if (camera) {
-          instance.billboard.quaternion.copy(camera.quaternion)
+          instance.billboard.lookAt(camera.position)
         }
       }
     },
