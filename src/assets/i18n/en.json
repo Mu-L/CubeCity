@@ -5,7 +5,14 @@
     "territory": "Territory",
     "power": "Power",
     "level": "Lv",
-    "day": "Day"
+    "day": "Day",
+    "music": {
+      "playMusic": "Play Music",
+      "pauseMusic": "Pause Music",
+      "nextTrack": "Next Track",
+      "volumeControl": "Volume Control",
+      "musicSettings": "Music Settings"
+    }
   },
   "buildingSidebar": {
     "constructionUnits": "Construction Units",

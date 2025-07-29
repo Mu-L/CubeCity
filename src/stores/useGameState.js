@@ -28,6 +28,11 @@ export const useGameState = defineStore('gameState', {
     language: 'en',
     showMapOverview: false,
 
+    // 音乐系统状态
+    musicEnabled: false,
+    musicVolume: 0.5,
+    isPlayingMusic: false,
+
     // 稳定度系统（移除计时器相关状态）
     stability: 100,
     stabilityChangeRate: 0,
@@ -307,6 +312,26 @@ export const useGameState = defineStore('gameState', {
       this.showMapOverview = false
       this.stability = 100
       this.stabilityChangeRate = 0
+      this.musicEnabled = false
+      this.musicVolume = 0.5
+      this.isPlayingMusic = false
+    },
+
+    // 音乐系统相关方法
+    toggleMusic() {
+      this.musicEnabled = !this.musicEnabled
+    },
+    enableMusic() {
+      this.musicEnabled = true
+    },
+    disableMusic() {
+      this.musicEnabled = false
+    },
+    setMusicVolume(volume) {
+      this.musicVolume = Math.max(0, Math.min(1, volume))
+    },
+    setMusicPlaying(playing) {
+      this.isPlayingMusic = playing
     },
   },
   persist: true, // 启用持久化

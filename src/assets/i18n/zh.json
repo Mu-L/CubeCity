@@ -6,7 +6,14 @@
     "power": "电力",
     "level": "等级",
     "online": "在线",
-    "day": "天数"
+    "day": "天数",
+    "music": {
+      "playMusic": "播放音乐",
+      "pauseMusic": "暂停音乐",
+      "nextTrack": "下一首",
+      "volumeControl": "音量控制",
+      "musicSettings": "音乐设置"
+    }
   },
   "buildingSidebar": {
     "constructionUnits": "建造单位",

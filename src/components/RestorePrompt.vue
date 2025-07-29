@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
 const show = ref(false)
+const enableMusic = ref(true) // 默认开启背景音乐
 const STORAGE_KEY = 'gameState' // pinia 默认以 store.$id 作为 key
 const RECENTLY_REJECTED_KEY = 'recentlyRejected'
 const REJECTED_DURATION = 3000 // ms
@@ -23,6 +24,14 @@ onMounted(() => {
 })
 
 function onAccept() {
+  // 设置音乐开关状态
+  const gameState = useGameState()
+  if (enableMusic.value) {
+    gameState.enableMusic()
+  }
+  else {
+    gameState.disableMusic()
+  }
   // 什么都不用做，pinia 会自动恢复
   show.value = false
 }
@@ -30,7 +39,19 @@ function onAccept() {
 function onReject() {
   // 清空存档并重置
   localStorage.removeItem(STORAGE_KEY)
-  useGameState().resetAll()
+  const gameState = useGameState()
+  gameState.resetAll()
+
+  // 设置音乐开关状态
+  if (enableMusic.value) {
+    gameState.enableMusic()
+    gameState.setMusicPlaying(true)
+  }
+  else {
+    gameState.disableMusic()
+    gameState.setMusicPlaying(false)
+  }
+
   localStorage.setItem(RECENTLY_REJECTED_KEY, Date.now().toString())
   window.location.reload()
   show.value = false
@@ -39,13 +60,14 @@ function onReject() {
 
 <template>
   <div v-if="show" class="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-40">
-    <div class="bg-industrial-panel bg-black bg-opacity-70 rounded-xl shadow-industrial p-6 w-[90vw] max-w-sm mx-auto text-center">
+    <div class="bg-industrial-panel bg-black bg-opacity-70 rounded-xl shadow-industrial p-6 w-[90vw] max-w-lg mx-auto text-center">
       <h3 class="text-xl font-bold text-industrial-accent uppercase tracking-wide mb-2">
         Continue Last Game?
       </h3>
-      <p class="text-lg text-gray-400 mb-6">
+      <p class="text-lg text-gray-400 mb-4">
         Previous game save detected. Would you like to continue?
       </p>
+
       <div class="flex flex-col gap-3">
         <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide" @click="onAccept">
           Yes, Continue Last Game
@@ -54,6 +76,19 @@ function onReject() {
           No, Start New Game
         </button>
       </div>
+
+      <!-- 音乐开启提示 -->
+      <!-- 背景音乐选择 -->
+      <label class="flex items-center justify-center space-x-3 cursor-pointer mt-4">
+        <input
+          v-model="enableMusic"
+          type="checkbox"
+          class="w-4 h-4 text-industrial-blue bg-gray-700 border-gray-600 rounded focus:ring-industrial-blue focus:ring-2"
+        >
+        <span class="text-white/60 font-medium">
+          🎵 {{ locale === 'zh' ? '点击右上角音乐按钮 ' : 'Click the music button in the top right corner' }}
+        </span>
+      </label>
       <!-- GPU加速提示 -->
       <div class="mt-4 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg">
         <div class="flex items-center justify-center space-x-2 text-yellow-300/80 text-sm">

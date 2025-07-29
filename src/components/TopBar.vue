@@ -4,10 +4,24 @@ import { useGameState } from '@/stores/useGameState.js'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import AnimatedNumber from './AnimatedNumber.vue'
+import AudioManager from './AudioManager.vue'
 import GuideModal from './GuideModal.vue'
 
 const gameState = useGameState()
-const { credits, totalJobs, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay, power, maxPower } = storeToRefs(gameState)
+const { credits, totalJobs, maxPopulation, territory, citySize, cityLevel, cityName, language, showMapOverview, gameDay, power, maxPower, musicEnabled, musicVolume, isPlayingMusic } = storeToRefs(gameState)
+
+// 音乐相关
+const showVolumeSlider = ref(false)
+
+// 音乐控制方法
+function toggleMusic() {
+  gameState.toggleMusic()
+}
+
+function handleVolumeChange(event) {
+  const volume = Number.parseFloat(event.target.value)
+  gameState.setMusicVolume(volume)
+}
 
 // 警告状态
 const populationWarning = computed(() => totalJobs.value > maxPopulation.value)
@@ -121,8 +135,9 @@ function showGuideModal() {
           </div>
         </div>
       </div>
-      <!-- 右侧城市信息 -->
-      <div class="text-right flex items-center space-x-2">
+      <!-- 右侧城市信息和按钮 -->
+      <div class="text-right flex items-center space-x-4 mr-4">
+        <!-- 城市信息 -->
         <div>
           <h1 class="text-2xl font-black text-industrial-accent neon-text uppercase tracking-wider">
             {{ cityName }}
@@ -132,23 +147,67 @@ function showGuideModal() {
             <span class="text-sm text-gray-400 uppercase tracking-wide">{{ $t('topbar.level') }} <span class="text-white">{{ cityLevel }}</span> • {{ $t('topbar.day') }} <span class="text-white">{{ gameDay }}</span> </span>
           </div>
         </div>
-        <button class="ml-4 px-2 py-1 rounded bg-gray-700 text-white" @click="toggleLang">
-          {{ language === 'zh' ? 'EN' : '中' }}
-        </button>
-        <!-- 新手指南按钮 -->
-        <button
-          class="ml-2 px-3 py-1 rounded bg-industrial-green text-white font-bold shadow hover:bg-industrial-green/80 transition"
-          @click="toggleGuide"
-        >
-          📖 {{ language === 'zh' ? '新手指南' : 'Guide' }}
-        </button>
-        <!-- 显示地图按钮 -->
-        <button
-          class="ml-2 px-3 py-1 rounded bg-industrial-accent text-white font-bold shadow hover:bg-industrial-accent/80 transition"
-          @click="toggleMapOverview"
-        >
-          {{ showMapOverview ? '隐藏地图' : '显示地图' }}
-        </button>
+
+        <!-- 按钮区域 - 两列布局 -->
+        <div class="grid grid-cols-3 gap-2">
+          <!-- 第一行 -->
+          <button class="px-2 py-1 rounded bg-gray-700 text-white text-sm font-medium hover:bg-gray-600 transition" @click="toggleLang">
+            {{ language === 'zh' ? 'EN' : '中' }}
+          </button>
+
+          <button
+            class="px-3 col-span-2 py-1 rounded bg-industrial-green text-white text-sm font-bold shadow hover:bg-industrial-green/80 transition"
+            @click="toggleGuide"
+          >
+            📖 {{ language === 'zh' ? '指南' : 'Guide' }}
+          </button>
+
+          <!-- 第二行 -->
+          <div class="relative">
+            <button
+              class="w-full px-2 py-1 rounded text-white text-sm font-bold shadow transition"
+              :class="musicEnabled ? 'bg-industrial-blue hover:bg-industrial-blue/80' : 'bg-gray-600 hover:bg-gray-500'"
+              :title="musicEnabled ? $t('topbar.music.pauseMusic') : $t('topbar.music.playMusic')"
+              @click="toggleMusic"
+              @mouseenter="showVolumeSlider = true"
+              @mouseleave="showVolumeSlider = false"
+            >
+              {{ musicEnabled && isPlayingMusic ? '🔊' : '🔇' }}
+            </button>
+
+            <!-- 音量滑块 tooltip -->
+            <div
+              v-if="showVolumeSlider"
+              class="absolute bottom-full left-1/2 transform -translate-x-1/2  p-3 bg-gray-800 rounded shadow-lg border border-gray-600 z-20 min-w-max"
+              @mouseenter="showVolumeSlider = true"
+              @mouseleave="showVolumeSlider = false"
+            >
+              <div class="flex items-center space-x-2 whitespace-nowrap">
+                <span class="text-xs text-gray-400">🔉</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  :value="musicVolume"
+                  class="w-20 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                  @input="handleVolumeChange"
+                >
+                <span class="text-xs text-gray-400">🔊</span>
+              </div>
+              <div class="text-xs text-center text-gray-400 mt-1">
+                {{ Math.round(musicVolume * 100) }}%
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="px-3 col-span-2 py-1 rounded bg-industrial-accent text-white text-sm font-bold shadow hover:bg-industrial-accent/80 transition"
+            @click="toggleMapOverview"
+          >
+            {{ language === 'zh' ? (showMapOverview ? '🗺️ 隐藏' : '🗺️ 地图') : (showMapOverview ? '🗺️ Hide' : '🗺️ Map') }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -158,6 +217,9 @@ function showGuideModal() {
       @close="showGuide = false"
       @show-guide="showGuideModal"
     />
+
+    <!-- 音频管理器 -->
+    <AudioManager />
   </header>
 </template>
 
