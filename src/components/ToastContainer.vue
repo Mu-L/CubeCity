@@ -1,7 +1,7 @@
 <script setup>
 import { eventBus } from '@/js/utils/event-bus.js'
 import { useGameState } from '@/stores/useGameState'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 
 const gameState = useGameState()
 const toastQueue = computed(() => gameState.toastQueue)

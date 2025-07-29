@@ -20,8 +20,35 @@ const dialogData = ref({})
 const { getDialogConfig, handleBuildingTransaction } = useBuilding()
 const gameState = useGameState()
 
-// 计时器，用于每日收益
+// 时间管理 - 统一5秒计时器
 let dayInterval = null
+let isPaused = false
+
+// 页面可见性监听 - 实现HX-43离屏暂停功能
+function handleVisibilityChange() {
+  if (document.hidden && !isPaused) {
+    // 页面不可见时暂停计时器
+    if (dayInterval) {
+      clearInterval(dayInterval)
+      isPaused = true
+    }
+  }
+  else if (!document.hidden && isPaused) {
+    // 页面可见时恢复计时器
+    startDayTimer()
+    isPaused = false
+  }
+}
+
+// 启动每日计时器
+function startDayTimer() {
+  if (dayInterval) {
+    clearInterval(dayInterval)
+  }
+  dayInterval = setInterval(() => {
+    gameState.nextDay()
+  }, 5000)
+}
 
 // 监听 mitt 事件
 // 只监听一次即可
@@ -54,19 +81,20 @@ function handleKeydown(e) {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
-  // 每 10 秒触发一次“下一天”
-  dayInterval = setInterval(() => {
-    gameState.nextDay()
-  }, 5000)
-  // 启动稳定度定时器
-  gameState.startStabilityTimer()
+  // 启动统一的5秒计时器（集成每日收益和稳定度更新）
+  startDayTimer()
+  // 监听页面可见性变化 - 实现HX-43离屏暂停功能
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 })
+
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
-  // 清除计时器
-  clearInterval(dayInterval)
-  // 停止稳定度定时器
-  gameState.stopStabilityTimer()
+  // 清除统一计时器
+  if (dayInterval) {
+    clearInterval(dayInterval)
+  }
+  // 移除页面可见性监听
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 

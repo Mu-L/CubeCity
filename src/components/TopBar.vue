@@ -46,6 +46,11 @@ const showGuide = ref(false)
 function toggleGuide() {
   showGuide.value = !showGuide.value
 }
+
+// 显示新手指南
+function showGuideModal() {
+  showGuide.value = true
+}
 </script>
 
 <template>
@@ -151,6 +156,7 @@ function toggleGuide() {
     <GuideModal
       :is-visible="showGuide"
       @close="showGuide = false"
+      @show-guide="showGuideModal"
     />
   </header>
 </template>

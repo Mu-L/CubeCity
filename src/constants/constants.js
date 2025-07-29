@@ -606,3 +606,39 @@ export const RELOCATE_COLOR_OPACITY = 0.7
 // 新增：建造无效时的橙色高亮
 export const BUILD_INVALID_COLOR = 0x555555 // 橙色
 export const BUILD_INVALID_COLOR_OPACITY = 0.7
+
+// ===================== 稳定度系统配置 =====================
+/**
+ * 稳定度变化率配置（每秒基础值）
+ * 实际使用时会根据游戏更新间隔（5秒）进行调整
+ */
+export const STABILITY_CONFIG = {
+  // 基础稳定度
+  BASE_STABILITY: 100,
+  // 默认稳定变化率
+  DEFAULT_STABILITY_CHANGE_RATE: 0.1,
+  // 服务建筑带来的稳定度提升
+  SERVICE_STABILITY_PER_SECOND: 0.06, // 0.05 → 0.06 (每5秒+0.3，略微增强)
+
+  // 失业导致的稳定度下降
+  UNEMPLOYMENT_STABILITY_PENALTY: 0.4, // 0.5 → 0.4 (每5秒×2.0，减轻失业惩罚)
+
+  // 污染导致的稳定度下降
+  POLLUTION_THRESHOLD: 60, // 50 → 60 (提高污染容忍度)
+  POLLUTION_STABILITY_PENALTY: 0.15, // 0.2 → 0.15 (每5秒×0.75，减轻污染惩罚)
+
+  // 电力不足导致的稳定度下降
+  POWER_DEFICIT_STABILITY_PENALTY: 0.6, // 1.0 → 0.6 (每5秒×3.0，大幅减轻电力惩罚)
+
+  // 游戏更新间隔（秒）
+  UPDATE_INTERVAL: 5, // 每5秒更新一次
+}
+
+/**
+ * 获取按更新间隔调整后的稳定度变化率
+ * @param {number} baseRate - 每秒基础变化率
+ * @returns {number} 按更新间隔调整后的变化率
+ */
+export function getAdjustedStabilityRate(baseRate) {
+  return baseRate * STABILITY_CONFIG.UPDATE_INTERVAL
+}

@@ -38,7 +38,7 @@ function onReject() {
 </script>
 
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div v-if="show" class="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-40">
     <div class="bg-industrial-panel bg-black bg-opacity-70 rounded-xl shadow-industrial p-6 w-[90vw] max-w-sm mx-auto text-center">
       <h3 class="text-xl font-bold text-industrial-accent uppercase tracking-wide mb-2">
         Continue Last Game?

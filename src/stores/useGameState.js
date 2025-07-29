@@ -1,34 +1,37 @@
+import { getAdjustedStabilityRate, STABILITY_CONFIG } from '@/constants/constants.js'
+import { getEffectiveBuildingValue } from '@/js/utils/building-interaction-utils.js'
 import { defineStore } from 'pinia'
-import { getEffectiveBuildingValue } from '../js/utils/building-interaction-utils.js'
 
 export const useGameState = defineStore('gameState', {
   state: () => ({
-    currentMode: 'build', // 当前操作模式
-    selectedBuilding: null, // 当前选中建筑 {type, level}
-    selectedPosition: null, // 当前选中位置
-    toastQueue: [], // Toast 消息队列
-    gameDay: 1, // 新增：游戏天数
-    // 其他全局状态可在此扩展
-    credits: 3000, // 金币
-    territory: 16, // 地皮
-    cityLevel: 1, // 城市等级
-    cityName: 'HeXian City', // 城市名称
-    citySize: 16, // 城市大小
-    language: 'en', // 默认英文
-    // 新增：地图元数据
+    // 核心游戏状态
     metadata: Array.from({ length: 17 }, _ =>
       Array.from({ length: 17 }, _ => ({
         type: 'grass',
         building: null,
         direction: 0,
-        level: 0, // 建筑等级
       }))),
-    // 新增：地图总览显隐
+    currentMode: 'build',
+    selectedBuilding: null,
+    selectedPosition: null,
+    toastQueue: [],
+
+    // 游戏时间和经济
+    gameDay: 1,
+    credits: 3000,
+
+    // 城市属性
+    territory: 16,
+    cityLevel: 1,
+    cityName: 'HeXian City',
+    citySize: 16,
+    language: 'en',
     showMapOverview: false,
-    // 新增：稳定度
+
+    // 稳定度系统（移除计时器相关状态）
     stability: 100,
-    // 新增：稳定度每秒变化率
     stabilityChangeRate: 0,
+    // 移除：stabilityIntervalId: null,
   }),
   getters: {
     /**
@@ -167,32 +170,39 @@ export const useGameState = defineStore('gameState', {
   },
   actions: {
     updateStability() {
-      // 每秒变化率
-      let changeRate = 0
+      // 每5秒的变化率，使用配置常量计算
+      let changeRate = STABILITY_CONFIG.DEFAULT_STABILITY_CHANGE_RATE
 
       // 1. 公共服务建筑带来的稳定度提升
       const servicesCount = this.hospitalCount + this.policeStationCount + this.fireStationCount
-      changeRate += servicesCount * 0.05 // 每个服务建筑每秒提升 0.05
+      changeRate += servicesCount * getAdjustedStabilityRate(STABILITY_CONFIG.SERVICE_STABILITY_PER_SECOND)
 
       // 2. 就业不足导致的稳定度下降
       const jobDeficit = this.totalJobs - this.maxPopulation
       if (jobDeficit > 0 && this.maxPopulation > 0) {
         const unemploymentRatio = Number((jobDeficit / this.maxPopulation).toFixed(2))
-        changeRate -= unemploymentRatio * 0.5 // 失业率越高，下降越快
+        changeRate -= unemploymentRatio * getAdjustedStabilityRate(STABILITY_CONFIG.UNEMPLOYMENT_STABILITY_PENALTY)
       }
 
       // 3. 污染导致的稳定度下降
-      if (this.pollution > 50) {
+      if (this.pollution > STABILITY_CONFIG.POLLUTION_THRESHOLD) {
         // 污染越高，下降越快，呈指数增长
-        changeRate -= Number((this.pollution / 50) ** 2 * 0.2).toFixed(2)
+        const pollutionFactor = (this.pollution / STABILITY_CONFIG.POLLUTION_THRESHOLD) ** 2
+        changeRate -= Number((pollutionFactor * getAdjustedStabilityRate(STABILITY_CONFIG.POLLUTION_STABILITY_PENALTY)).toFixed(2))
       }
 
-      // 4. 电力短缺导致的稳定度下降
+      // 4. 电力不足导致的稳定度下降
       const powerDeficit = this.power - this.maxPower
-      if (powerDeficit > 0) {
+      if (powerDeficit > 0 && this.maxPower > 0) {
         const powerDeficitRatio = Number((powerDeficit / this.maxPower).toFixed(2))
-        changeRate -= powerDeficitRatio * 1.0 // 电力缺口越大，下降越快
+        changeRate -= powerDeficitRatio * getAdjustedStabilityRate(STABILITY_CONFIG.POWER_DEFICIT_STABILITY_PENALTY)
       }
+
+      // 确保变化率是有效数值，防止 Infinity 或 NaN
+      if (!Number.isFinite(changeRate)) {
+        changeRate = 0
+      }
+
       this.stabilityChangeRate = changeRate
     },
 
@@ -200,6 +210,9 @@ export const useGameState = defineStore('gameState', {
       const newStability = this.stability + this.stabilityChangeRate
       this.stability = Math.max(0, Math.min(100, newStability))
     },
+
+    // 移除稳定度定时器相关方法，现在使用统一的5秒计时器
+    // startStabilityTimer() 和 stopStabilityTimer() 已移除
 
     setMode(mode) {
       this.currentMode = mode
@@ -262,11 +275,16 @@ export const useGameState = defineStore('gameState', {
       this.showMapOverview = val
     },
     /**
-     * 进入下一天，更新金币
+     * 进入下一天，更新金币和稳定度
      */
     nextDay() {
+      // 经济系统更新
       this.credits += this.dailyIncome
       this.gameDay++
+
+      // 稳定度系统更新（每5秒执行一次）
+      this.updateStability()
+      this.applyStabilityChange()
     },
     resetAll() {
       this.metadata = Array.from({ length: 17 }, _ =>

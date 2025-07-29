@@ -14,13 +14,11 @@ function showAchievements() {
 }
 
 onMounted(() => {
-  // 使用全局定时器管理，避免重复创建定时器
-  gameState.startStabilityTimer()
+  // 时间管理已统一到 App.vue，无需在组件中重复启动计时器
 })
 
 onUnmounted(() => {
-  // 组件卸载时不停止定时器，让全局状态管理
-  // 只有在应用完全关闭时才停止定时器
+  // 时间管理已统一到 App.vue，无需在组件中管理计时器
 })
 
 // 系统状态数据抽离

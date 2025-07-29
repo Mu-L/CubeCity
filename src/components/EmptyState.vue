@@ -70,6 +70,12 @@ const _props = defineProps({
                 </div>
               </div>
             </div>
+            <!-- 新增贴士 提醒用户可通过左右方向键调整东南西北方向 -->
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-700">
+              <p class="text-slate-300 text-sm">
+                Press <kbd class="px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold">←</kbd> or <kbd class="px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold">→</kbd> to adjust the direction of the camera
+              </p>
+            </div>
           </div>
         </template>
         <template v-else-if="currentMode === 'relocate'">

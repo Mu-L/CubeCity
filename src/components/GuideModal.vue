@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const _props = defineProps({
@@ -9,12 +9,35 @@ const _props = defineProps({
   },
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'showGuide'])
 
 const { locale } = useI18n()
 
 // 内容切换状态
 const showQuickReference = ref(false)
+
+// localStorage 相关常量
+const FIRST_VISIT_KEY = 'cubecity_first_visit'
+
+// 检查是否首次访问
+function isFirstVisit() {
+  return !localStorage.getItem(FIRST_VISIT_KEY)
+}
+
+// 标记已访问
+function markAsVisited() {
+  localStorage.setItem(FIRST_VISIT_KEY, 'true')
+}
+
+// 组件挂载时检查首次访问状态
+onMounted(() => {
+  if (isFirstVisit()) {
+    // 首次访问时自动显示新手教程
+    emit('showGuide')
+    // 标记为已访问
+    markAsVisited()
+  }
+})
 
 function closeModal() {
   emit('close')
@@ -53,7 +76,7 @@ function toggleContent() {
             class="px-3 py-1 rounded bg-industrial-green text-white font-bold shadow hover:bg-industrial-green/80 transition text-sm"
             @click="toggleContent"
           >
-            {{ showQuickReference ? (locale === 'zh' ? '📖 新手指南' : '📖 Guide') : (locale === 'zh' ? '📋 速查表' : '📋 Quick Ref') }}
+            {{ showQuickReference ? (locale === 'zh' ? '📖 新手指南' : '📖 Guide') : (locale === 'zh' ? '📋 速查表' : '📋 Quick Ref  (Important)') }}
           </button>
           <!-- GitHub 链接 -->
           <a
