@@ -51,8 +51,5 @@ export default class House2 extends Building {
   update() {
     // 调用父类的新轮循逻辑
     super.update()
-
-    // 调用需要持续更新的效果（如shader、广告牌朝向相机等）
-    super.updateActiveEffect()
   }
 }

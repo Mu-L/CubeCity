@@ -130,6 +130,7 @@ export default class Building extends SimObject {
       // 重新启动轮循显示
       this.restartStatusRotation()
     }
+    this.updateActiveEffect()
   }
 
   /**

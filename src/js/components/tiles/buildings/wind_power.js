@@ -35,9 +35,6 @@ export default class WindPower extends Building {
     // 调用父类的新轮循逻辑
     super.update()
 
-    // 调用需要持续更新的效果（如shader、广告牌朝向相机等）
-    super.updateActiveEffect()
-
     this.mesh.traverse((child) => {
       if (child.name === 'fan') {
         child.rotation.x += this.fanRotationSpeed
