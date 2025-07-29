@@ -58,11 +58,15 @@ onMounted(() => {
   dayInterval = setInterval(() => {
     gameState.nextDay()
   }, 5000)
+  // 启动稳定度定时器
+  gameState.startStabilityTimer()
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
   // 清除计时器
   clearInterval(dayInterval)
+  // 停止稳定度定时器
+  gameState.stopStabilityTimer()
 })
 </script>
 

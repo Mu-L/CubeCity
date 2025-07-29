@@ -360,6 +360,7 @@ function toggleContent() {
                 <li>📊 {{ locale === 'zh' ? '关注状态提示：建筑顶部会出现各种状态图标，及时处理可避免损失' : 'Watch status indicators: Various status icons appear on building tops, handle them promptly to avoid losses' }}</li>
                 <li>💾 {{ locale === 'zh' ? '自动保存：游戏自动保存，无需担心丢失进度' : 'Auto-save: Game auto-saves, no need to worry about losing progress' }}</li>
                 <li>🎮 {{ locale === 'zh' ? '享受过程：城市建设是一个渐进的过程，享受每一步的成长' : 'Enjoy the process: City building is a gradual process, enjoy every step of growth' }}</li>
+                <li>⚡ {{ locale === 'zh' ? '性能优化：建议在 chrome://flags 中开启 GPU 加速以获得更好的游戏体验' : 'Performance optimization: Enable GPU acceleration in chrome://flags for better gaming experience' }}</li>
               </ul>
             </div>
           </section>

@@ -13,18 +13,14 @@ function showAchievements() {
   gameState.addToast(t('dashboardFooter.achievementLoading'), 'info')
 }
 
-let stabilityInterval = null
-
 onMounted(() => {
-  stabilityInterval = setInterval(() => {
-    gameState.updateStability()
-    gameState.applyStabilityChange()
-  }, 1000)
+  // 使用全局定时器管理，避免重复创建定时器
+  gameState.startStabilityTimer()
 })
 
 onUnmounted(() => {
-  if (stabilityInterval)
-    clearInterval(stabilityInterval)
+  // 组件卸载时不停止定时器，让全局状态管理
+  // 只有在应用完全关闭时才停止定时器
 })
 
 // 系统状态数据抽离

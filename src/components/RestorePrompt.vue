@@ -1,7 +1,9 @@
 <script setup>
 import { useGameState } from '@/stores/useGameState.js'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { locale } = useI18n()
 const show = ref(false)
 const STORAGE_KEY = 'gameState' // pinia 默认以 store.$id 作为 key
 const RECENTLY_REJECTED_KEY = 'recentlyRejected'
@@ -51,6 +53,13 @@ function onReject() {
         <button class=" w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide bg-industrial-red hover:bg-red-700" @click="onReject">
           No, Start New Game
         </button>
+      </div>
+      <!-- GPU加速提示 -->
+      <div class="mt-4 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg">
+        <div class="flex items-center justify-center space-x-2 text-yellow-300/80 text-sm">
+          <span class="text-lg">⚡</span>
+          <span>{{ locale === 'zh' ? '建议在 chrome://flags 中开启 GPU 加速以获得更好的游戏体验' : 'Enable GPU acceleration in chrome://flags for better gaming experience' }}</span>
+        </div>
       </div>
     </div>
   </div>
