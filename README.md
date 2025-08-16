@@ -70,6 +70,12 @@ Welcome to CubeCity! This is a cartoon-style 2.5D city simulation game where you
 
 Developed by [hexianWeb](https://github.com/hexianWeb).
 
+## 💖 赞赏支持
+
+如果这个项目对你有帮助，欢迎请作者喝杯咖啡，支持项目长期维护与更新：
+
+![赞赏码](README/coffe.jpg)
+
 ## 📄 许可
 
 This project is licensed under the [MIT License](LICENSE).

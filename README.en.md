@@ -70,6 +70,12 @@ We plan to add more exciting features in the future, including:
 
 Developed by [hexianWeb](https://github.com/hexianWeb).
 
+## 💖 Support
+
+If you find this project helpful, consider buying me a coffee to support long-term maintenance and updates:
+
+![Sponsor QR](README/coffe.jpg)
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
