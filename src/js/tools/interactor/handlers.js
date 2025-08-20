@@ -42,7 +42,7 @@ export function handleBuildMode(ctx, tile) {
   const metadata = ctx.gameState.metadata
   const canBuild = canPlaceBuilding(x, y, buildingTypeToBuild, metadata)
   if (!buildingTypeToBuild || !canBuild || tile.buildingInstance) {
-    showToast('error', '无法在此处建造，请选择合规地块。')
+    showToast('error', '先建个路吧!房子只能建在路旁边')
     return
   }
   // 通过 Pinia 修改 metadata
