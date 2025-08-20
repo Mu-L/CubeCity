@@ -101,6 +101,25 @@ function toggleContent() {
 
       <!-- 内容区域 -->
       <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] custom-scrollbar">
+        <!-- 重要提示：建造需先修路 -->
+        <div
+          class="mb-5 p-4 rounded border text-center shadow-industrial border-industrial-yellow text-white/80 bg-gray-800/60"
+        >
+          <div class="text-2xl md:text-3xl font-extrabold leading-snug">
+            🚧 {{
+              locale === 'zh'
+                ? '建造建筑前必须先修建道路（建筑只能建在道路旁）'
+                : 'Build a road first before placing buildings (buildings must be next to roads)'
+            }}
+          </div>
+          <div class="mt-2 text-base md:text-lg font-semibold text-gray-300">
+            {{
+              locale === 'zh'
+                ? '特例：风力发电与公园可在任意地块建造'
+                : 'Exception: Wind Power and Parks can be built anywhere'
+            }}
+          </div>
+        </div>
         <!-- 新手指南内容 -->
         <div v-if="!showQuickReference" class="space-y-6 text-gray-300">
           <!-- 游戏简介 -->

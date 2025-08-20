@@ -42,7 +42,10 @@ export function handleBuildMode(ctx, tile) {
   const metadata = ctx.gameState.metadata
   const canBuild = canPlaceBuilding(x, y, buildingTypeToBuild, metadata)
   if (!buildingTypeToBuild || !canBuild || tile.buildingInstance) {
-    showToast('error', '先建个路吧!房子只能建在路旁边')
+    const message = ctx.gameState.language === 'zh'
+      ? '先建个路吧！建筑只能建在道路旁边。（特例：风力发电与公园可任意建造）'
+      : 'Build a road first! Buildings can only be placed next to roads. (Exception: Wind Power and Parks can be built anywhere)'
+    showToast('error', message)
     return
   }
   // 通过 Pinia 修改 metadata
@@ -57,7 +60,10 @@ export function handleBuildMode(ctx, tile) {
     outputFactor: 1,
   })
   if (ctx.gameState.credits < BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost) {
-    showToast('error', 'Insufficient funds, unable to build.')
+    const message = ctx.gameState.language === 'zh'
+      ? '资金不足，无法建造。'
+      : 'Insufficient funds, unable to build.'
+    showToast('error', message)
     return
   }
   ctx.gameState.updateCredits(-BUILDING_DATA[buildingTypeToBuild]?.levels[buildingLevelToBuild]?.cost)
@@ -109,7 +115,10 @@ export function handleRelocateMode(ctx, tile) {
   // 步骤1: 选择要搬迁的建筑
   if (!ctx.relocateFirst) {
     if (!tile.buildingInstance) {
-      showToast('error', '请选择一个有建筑的地块进行搬迁。')
+      const message = ctx.gameState.language === 'zh'
+        ? '请选择一个有建筑的地块进行搬迁。'
+        : 'Please select a tile with a building to relocate.'
+      showToast('error', message)
       ctx._clearSelection() // 清空无效选择
       return
     }
@@ -121,11 +130,17 @@ export function handleRelocateMode(ctx, tile) {
   // 步骤2: 选择目标空地
   if (ctx.relocateFirst !== tile) {
     if (!canPlaceBuilding(tile.x, tile.y, ctx.relocateFirst.buildingInstance.type, ctx.gameState.metadata)) {
-      showToast('error', '无法在此处搬迁，请选择合规地块。')
+      const message = ctx.gameState.language === 'zh'
+        ? '无法在此处搬迁，请选择合规地块。'
+        : 'Cannot relocate here. Please choose a valid tile.'
+      showToast('error', message)
       return
     }
     if (tile.buildingInstance) {
-      showToast('error', '目标地块已被占用，无法搬迁。')
+      const message = ctx.gameState.language === 'zh'
+        ? '目标地块已被占用，无法搬迁。'
+        : 'The target tile is occupied and cannot be used for relocation.'
+      showToast('error', message)
       return
     }
     ctx.relocateSecond = tile
@@ -171,10 +186,16 @@ export function confirmUpgrade(ctx) {
         detail: BUILDING_DATA[newBuilding.type]?.levels[newBuilding.level],
         outputFactor: BUILDING_DATA[newBuilding.type]?.levels[newBuilding.level]?.outputFactor || 1,
       })
-      showToast('success', '建筑升级成功！')
+      const message = ctx.gameState.language === 'zh'
+        ? '建筑升级成功！'
+        : 'Building upgraded successfully!'
+      showToast('success', message)
     }
     else {
-      showToast('error', '建筑已达到最高等级。')
+      const message = ctx.gameState.language === 'zh'
+        ? '建筑已达到最高等级。'
+        : 'The building has reached the maximum level.'
+      showToast('error', message)
     }
   }
 }
@@ -214,7 +235,10 @@ export function confirmRelocate(ctx) {
     ctx.gameState.setTile(destTile.x, destTile.y, srcData)
     ctx.gameState.setTile(sourceTile.x, sourceTile.y, { ...dstData, building: null, direction: 0, level: 0 })
     swapBuilding(sourceTile, destTile)
-    showToast('info', '建筑搬迁成功！')
+    const message = ctx.gameState.language === 'zh'
+      ? '建筑搬迁成功！'
+      : 'Building relocated successfully!'
+    showToast('info', message)
     updateAdjacentRoads(sourceTile, ctx.experience.world.city)
     updateAdjacentRoads(destTile, ctx.experience.world.city)
   }

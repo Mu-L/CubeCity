@@ -10,4 +10,4 @@ export const MODES = {
 export const PERSISTENT_HIGHLIGHT_MODES = [MODES.SELECT, MODES.RELOCATE, MODES.DEMOLISH]
 
 // 可随意建造的建筑
-export const FREE_BUILDING_TYPES = ['factory', 'road', 'park', 'chemistry_factory', 'sun_power', 'water_tower', 'wind_power', 'nuke_factory']
+export const FREE_BUILDING_TYPES = ['road', 'park', 'wind_power']
