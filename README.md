@@ -1,3 +1,5 @@
+<a href="https://hellogithub.com/repository/hexianWeb/CubeCity" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=f72043c7eb9145a58e98b5c66eb213cc&claim_uid=hTox9fKc5AdjLus&theme=dark" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 [English README](./README.en.md)
 
 # 2.5D 卡通城市放置系统 (CubeCity)
