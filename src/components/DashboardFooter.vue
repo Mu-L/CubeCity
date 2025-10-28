@@ -55,101 +55,99 @@ const systemStatusList = computed(() => [
 </script>
 
 <template>
-  <footer class="p-2">
-    <div class="grid grid-cols-3 gap-2">
-      <!-- 左侧统计 -->
-      <div class="dashboard-card rounded-lg p-4 z-10">
-        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
-          {{ t('dashboardFooter.cityMetrics') }}
-        </h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-industrial-green neon-text">
-              <AnimatedNumber :value="buildingCount" :duration="2" />
-            </div>
-            <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
-              {{ t('dashboardFooter.buildings') }}
-            </div>
+  <div class="grid grid-cols-3">
+    <!-- 左侧统计 -->
+    <div class="dashboard-card p-4 z-10">
+      <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
+        {{ t('dashboardFooter.cityMetrics') }}
+      </h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-industrial-green neon-text">
+            <AnimatedNumber :value="buildingCount" :duration="2" />
           </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-industrial-blue neon-text">
-              +<AnimatedNumber :value="dailyIncome" :duration="2" separator="," />
-            </div>
-            <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
-              {{ t('dashboardFooter.dailyIncome') }}
-            </div>
-          </div>
-          <div class="text-center">
-            <div
-              class="text-2xl font-bold neon-text"
-              :class="pollution > 100 ? 'text-red-500' : 'text-industrial-yellow'"
-            >
-              <AnimatedNumber :value="pollution" :duration="2" />
-              <span v-if="pollution > 100" class="text-sm"> DANGER</span>
-            </div>
-            <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
-              {{ t('dashboardFooter.efficiency') }}
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-industrial-green neon-text">
-              <AnimatedNumber :value="stability" :duration="2" />%
-            </div>
-            <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
-              {{ t('dashboardFooter.stability') }}
-            </div>
+          <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
+            {{ t('dashboardFooter.buildings') }}
           </div>
         </div>
-      </div>
-      <!-- 中间成就系统 -->
-      <div class="dashboard-card rounded-lg p-4 z-10">
-        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 text-center neon-text">
-          {{ t('dashboardFooter.achievements') }}
-        </h3>
-        <div class="space-y-2">
-          <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
-            <div class="flex items-center space-x-2">
-              <span class="text-industrial-yellow">🏆</span>
-              <span class="text-xs text-gray-300 uppercase">{{ t('dashboardFooter.firstFactory') }}</span>
-            </div>
-            <div class="status-indicator status-online" />
+        <div class="text-center">
+          <div class="text-2xl font-bold text-industrial-blue neon-text">
+            +<AnimatedNumber :value="dailyIncome" :duration="2" separator="," />
           </div>
-          <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
-            <div class="flex items-center space-x-2">
-              <span class="text-gray-500">🏆</span>
-              <span class="text-xs text-gray-500 uppercase">{{ t('dashboardFooter.industrialTycoon') }}</span>
-            </div>
-            <div class="text-xs text-gray-500">
-              75%
-            </div>
+          <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
+            {{ t('dashboardFooter.dailyIncome') }}
           </div>
-          <button
-            class="industrial-button w-full text-white font-bold py-2 px-4 text-xs uppercase tracking-wide"
-            @click="showAchievements"
-          >
-            {{ t('dashboardFooter.viewAllAchievements') }}
-          </button>
         </div>
-      </div>
-      <!-- 右侧系统状态 -->
-      <div class="dashboard-card rounded-lg p-4 z-10">
-        <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
-          {{ t('dashboardFooter.systemStatus') }}
-        </h3>
-        <div class="space-y-3">
+        <div class="text-center">
           <div
-            v-for="item in systemStatusList"
-            :key="item.key"
-            class="flex justify-between items-center"
+            class="text-2xl font-bold neon-text"
+            :class="pollution > 100 ? 'text-red-500' : 'text-industrial-yellow'"
           >
-            <span class="text-xs text-gray-400 uppercase">{{ t(`dashboardFooter.${item.key}`) }}</span>
-            <div class="flex items-center space-x-2">
-              <div class="status-indicator" :class="item.statusClass" />
-              <span class="text-xs uppercase" :class="item.colorClass">{{ item.label }}</span>
-            </div>
+            <AnimatedNumber :value="pollution" :duration="2" />
+            <span v-if="pollution > 100" class="text-sm"> DANGER</span>
+          </div>
+          <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
+            {{ t('dashboardFooter.efficiency') }}
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-industrial-green neon-text">
+            <AnimatedNumber :value="stability" :duration="2" />%
+          </div>
+          <div class="text-sm text-gray-400 uppercase" :class="gameState.language === 'zh' ? 'tracking-[0.3rem]' : 'tracking-wide'">
+            {{ t('dashboardFooter.stability') }}
           </div>
         </div>
       </div>
     </div>
-  </footer>
+    <!-- 中间成就系统 -->
+    <div class="dashboard-card p-4 z-10">
+      <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 text-center neon-text">
+        {{ t('dashboardFooter.achievements') }}
+      </h3>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-industrial-yellow">🏆</span>
+            <span class="text-xs text-gray-300 uppercase">{{ t('dashboardFooter.firstFactory') }}</span>
+          </div>
+          <div class="status-indicator status-online" />
+        </div>
+        <div class="flex items-center justify-between bg-industrial-gray rounded p-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-gray-500">🏆</span>
+            <span class="text-xs text-gray-500 uppercase">{{ t('dashboardFooter.industrialTycoon') }}</span>
+          </div>
+          <div class="text-xs text-gray-500">
+            75%
+          </div>
+        </div>
+        <button
+          class="industrial-button w-full text-white font-bold py-2 px-4 text-xs uppercase tracking-wide"
+          @click="showAchievements"
+        >
+          {{ t('dashboardFooter.viewAllAchievements') }}
+        </button>
+      </div>
+    </div>
+    <!-- 右侧系统状态 -->
+    <div class="dashboard-card p-4 z-10">
+      <h3 class="text-sm font-bold text-industrial-accent uppercase tracking-wide mb-3 neon-text">
+        {{ t('dashboardFooter.systemStatus') }}
+      </h3>
+      <div class="space-y-3">
+        <div
+          v-for="item in systemStatusList"
+          :key="item.key"
+          class="flex justify-between items-center"
+        >
+          <span class="text-xs text-gray-400 uppercase">{{ t(`dashboardFooter.${item.key}`) }}</span>
+          <div class="flex items-center space-x-2">
+            <div class="status-indicator" :class="item.statusClass" />
+            <span class="text-xs uppercase" :class="item.colorClass">{{ item.label }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

@@ -54,7 +54,7 @@ function demolishBuilding() {
 </script>
 
 <template>
-  <aside class="w-80 industrial-panel shadow-industrial z-40 absolute right-2 top-2 bottom-2">
+  <aside class="industrial-panel shadow-industrial z-40 relative h-full">
     <div class="p-4 h-full flex flex-col">
       <h2 class="text-lg font-bold text-industrial-accent uppercase tracking-wide mb-4 border-b border-gray-600 pb-2">
         <span class="neon-text">{{ t('buildingDetails.unitDetails') }}</span>

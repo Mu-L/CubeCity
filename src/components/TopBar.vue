@@ -68,12 +68,12 @@ function showGuideModal() {
 </script>
 
 <template>
-  <header class="industrial-panel p-4 m-2 shadow-industrial z-[10] relative ">
-    <div class="flex justify-between items-center">
+  <header class="industrial-panel p-2 shadow-industrial z-[10] relative ">
+    <div class="flex justify-between items-center ">
       <!-- 左侧资源信息 -->
       <div class="flex items-center space-x-6">
         <!-- 金币 -->
-        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3  min-w-[10vw]">
+        <div class="resource-display rounded-lg px-4 py-1 flex items-center space-x-3  min-w-[10vw]">
           <div class="status-indicator status-online" />
           <div class="flex items-center space-x-2">
             <span class="text-industrial-green text-xl">💰</span>
@@ -88,7 +88,7 @@ function showGuideModal() {
           </div>
         </div>
         <!-- 人口 -->
-        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3 min-w-[10vw]" :class="{ 'warning-pulse': populationWarning }">
+        <div class="resource-display rounded-lg px-4 py-1 flex items-center space-x-3 min-w-[10vw]" :class="{ 'warning-pulse': populationWarning }">
           <div class="status-indicator" :class="populationWarning ? 'status-error' : 'status-online'" />
           <div class="flex items-center space-x-2">
             <span class="text-xl" :class="populationWarning ? 'text-red-500' : 'text-industrial-blue'">👥</span>
@@ -104,7 +104,7 @@ function showGuideModal() {
           </div>
         </div>
         <!-- 地皮 -->
-        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3">
+        <div class="resource-display rounded-lg px-4 py-1 flex items-center space-x-3">
           <div class="status-indicator status-warning" />
           <div class="flex items-center space-x-2">
             <span class="text-industrial-accent text-xl">🏭</span>
@@ -119,7 +119,7 @@ function showGuideModal() {
           </div>
         </div>
         <!-- 电力 -->
-        <div class="resource-display rounded-lg px-4 py-2 flex items-center space-x-3 min-w-[10vw]" :class="{ 'warning-pulse': powerWarning }">
+        <div class="resource-display rounded-lg px-4 py-1 flex items-center space-x-3 min-w-[10vw]" :class="{ 'warning-pulse': powerWarning }">
           <div class="status-indicator" :class="powerWarning ? 'status-error' : 'status-online'" />
           <div class="flex items-center space-x-2">
             <span class="text-xl" :class="powerWarning ? 'text-red-500' : 'text-industrial-yellow'">⚡️</span>
