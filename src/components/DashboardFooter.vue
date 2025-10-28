@@ -141,10 +141,10 @@ const systemStatusList = computed(() => [
           :key="item.key"
           class="flex justify-between items-center"
         >
-          <span class="text-xs text-gray-400 uppercase">{{ t(`dashboardFooter.${item.key}`) }}</span>
+          <span class="text-sm text-gray-400 uppercase">{{ t(`dashboardFooter.${item.key}`) }}</span>
           <div class="flex items-center space-x-2">
             <div class="status-indicator" :class="item.statusClass" />
-            <span class="text-xs uppercase" :class="item.colorClass">{{ item.label }}</span>
+            <span class="text-sm uppercase" :class="item.colorClass">{{ item.label }}</span>
           </div>
         </div>
       </div>

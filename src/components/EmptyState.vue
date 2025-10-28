@@ -5,6 +5,9 @@ import { useI18n } from 'vue-i18n'
 const _props = defineProps({
   currentMode: { type: String, required: true },
 })
+
+// 使用 i18n 进行国际化
+const { t } = useI18n()
 </script>
 
 <template>
@@ -22,16 +25,16 @@ const _props = defineProps({
             <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-400 rounded-full animate-ping" />
           </div>
           <h3 class="text-xl font-bold text-white mb-3 uppercase tracking-wider">
-            Selection Mode
+            {{ t('emptyState.selectMode.title') }}
           </h3>
           <div class="space-y-3">
             <p class="text-slate-300 text-sm leading-relaxed">
-              Click any building in the scene to view detailed information and statistics
+              {{ t('emptyState.selectMode.description') }}
             </p>
             <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-700">
               <div class="flex items-center justify-center space-x-2 text-xs text-slate-400">
                 <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                <span>Ready to inspect buildings</span>
+                <span>{{ t('emptyState.selectMode.readyText') }}</span>
               </div>
             </div>
           </div>
@@ -47,11 +50,11 @@ const _props = defineProps({
             <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-ping" />
           </div>
           <h3 class="text-xl font-bold text-white mb-3 uppercase tracking-wider">
-            Build Mode
+            {{ t('emptyState.buildMode.title') }}
           </h3>
           <div class="space-y-4">
             <p class="text-slate-300 text-sm leading-relaxed">
-              Select a building type from the sidebar, then click on any empty tile to construct it
+              {{ t('emptyState.buildMode.description') }}
             </p>
             <div class="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-lg p-4 border border-yellow-500/30">
               <div class="flex items-start space-x-3">
@@ -62,19 +65,17 @@ const _props = defineProps({
                 </div>
                 <div class="text-left">
                   <p class="text-yellow-200 text-xs font-medium uppercase tracking-wide mb-1">
-                    Strategic Tip
+                    {{ t('emptyState.buildMode.strategicTip') }}
                   </p>
                   <p class="text-yellow-100 text-xs leading-relaxed">
-                    Power supply, environmental factors, and resident satisfaction directly impact population growth and coin production
+                    {{ t('emptyState.buildMode.strategicTipText') }}
                   </p>
                 </div>
               </div>
             </div>
             <!-- 新增贴士 提醒用户可通过左右方向键调整东南西北方向 -->
             <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-700">
-              <p class="text-slate-300 text-sm">
-                Press <kbd class="px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold">←</kbd> or <kbd class="px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold">→</kbd> to adjust the direction of the camera
-              </p>
+              <p class="text-slate-300 text-sm" v-html="t('emptyState.buildMode.cameraTip')" />
             </div>
           </div>
         </template>
@@ -89,22 +90,18 @@ const _props = defineProps({
             <div class="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full animate-ping" />
           </div>
           <h3 class="text-xl font-bold text-white mb-3 uppercase tracking-wider">
-            Relocation Mode
+            {{ t('emptyState.relocateMode.title') }}
           </h3>
           <div class="space-y-4">
             <div class="space-y-3">
               <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-700">
                 <div class="flex items-center space-x-2 text-sm text-slate-200">
                   <kbd class="px-2 py-1 bg-slate-700 rounded text-xs font-mono">R</kbd>
-                  <span>Rotate selected building</span>
+                  <span>{{ t('emptyState.relocateMode.rotateHint') }}</span>
                 </div>
               </div>
               <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-700">
-                <p class="text-slate-300 text-sm">
-                  Click tile <span class="px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold">A</span>
-                  then tile <span class="px-1.5 py-0.5 bg-green-500 text-white rounded text-xs font-bold">B</span>
-                  to relocate building
-                </p>
+                <p class="text-slate-300 text-sm" v-html="t('emptyState.relocateMode.relocateHint')" />
               </div>
             </div>
             <div class="bg-red-500/20 backdrop-blur-sm rounded-lg p-3 border border-red-500/30">
@@ -113,13 +110,8 @@ const _props = defineProps({
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                 </svg>
                 <div class="text-left">
-                  <p class="text-red-200 text-xs">
-                    Tile <span class="font-bold">A</span> must have a building<br>
-                    Tile <span class="font-bold">B</span> must be empty
-                  </p>
-                  <p class="text-red-300 text-xs mt-2">
-                    Press <kbd class="px-1 py-0.5 bg-red-700 rounded text-xs">ESC</kbd> to cancel
-                  </p>
+                  <p class="text-red-200 text-xs" v-html="t('emptyState.relocateMode.requirementsText')" />
+                  <p class="text-red-300 text-xs mt-2" v-html="t('emptyState.relocateMode.cancelHint')" />
                 </div>
               </div>
             </div>
@@ -136,11 +128,11 @@ const _props = defineProps({
             <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-400 rounded-full animate-ping" />
           </div>
           <h3 class="text-xl font-bold text-white mb-3 uppercase tracking-wider">
-            Demolition Mode
+            {{ t('emptyState.demolishMode.title') }}
           </h3>
           <div class="space-y-4">
             <p class="text-slate-300 text-sm leading-relaxed">
-              Click on any building in the scene to demolish it permanently
+              {{ t('emptyState.demolishMode.description') }}
             </p>
             <div class="bg-green-500/20 backdrop-blur-sm rounded-lg p-4 border border-green-500/30">
               <div class="flex items-center space-x-3">
@@ -152,10 +144,10 @@ const _props = defineProps({
                 </div>
                 <div class="text-left">
                   <p class="text-green-200 text-xs font-medium uppercase tracking-wide mb-1">
-                    Material Recovery
+                    {{ t('emptyState.demolishMode.recoveryTitle') }}
                   </p>
                   <p class="text-green-100 text-xs">
-                    70% of construction materials will be refunded to your inventory
+                    {{ t('emptyState.demolishMode.recoveryText') }}
                   </p>
                 </div>
               </div>

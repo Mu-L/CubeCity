@@ -110,5 +110,40 @@
   },
   "error": {
     "insufficientFunds": "Insufficient funds"
+  },
+  "restorePrompt": {
+    "title": "Continue Last Game?",
+    "description": "Previous game save detected. Would you like to continue?",
+    "continueButton": "Yes, Continue Last Game",
+    "newGameButton": "No, Start New Game",
+    "musicHint": "🎵 Click the music button in the top right corner",
+    "gpuHint": "⚡ Enable GPU acceleration in chrome://flags for better gaming experience"
+  },
+  "emptyState": {
+    "selectMode": {
+      "title": "Selection Mode",
+      "description": "Click any building in the scene to view detailed information and statistics",
+      "readyText": "Ready to inspect buildings"
+    },
+    "buildMode": {
+      "title": "Build Mode",
+      "description": "Select a building type from the sidebar, then click on any empty tile to construct it",
+      "strategicTip": "Strategic Tip",
+      "strategicTipText": "Power supply, environmental factors, and resident satisfaction directly impact population growth and coin production",
+      "cameraTip": "Press <kbd class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">←</kbd> or <kbd class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">→</kbd> to adjust the direction of the camera"
+    },
+    "relocateMode": {
+      "title": "Relocation Mode",
+      "rotateHint": "Rotate selected building",
+      "relocateHint": "Click tile <span class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">A</span> then tile <span class=\"px-1.5 py-0.5 bg-green-500 text-white rounded text-xs font-bold\">B</span> to relocate building",
+      "requirementsText": "Tile <span class=\"font-bold\">A</span> must have a building<br>Tile <span class=\"font-bold\">B</span> must be empty",
+      "cancelHint": "Press <kbd class=\"px-1 py-0.5 bg-red-700 rounded text-xs\">ESC</kbd> to cancel"
+    },
+    "demolishMode": {
+      "title": "Demolition Mode",
+      "description": "Click on any building in the scene to demolish it permanently",
+      "recoveryTitle": "Material Recovery",
+      "recoveryText": "70% of construction materials will be refunded to your inventory"
+    }
   }
 }

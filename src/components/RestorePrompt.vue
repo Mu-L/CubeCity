@@ -3,7 +3,7 @@ import { useGameState } from '@/stores/useGameState.js'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { locale } = useI18n()
+const { t } = useI18n()
 const show = ref(false)
 const enableMusic = ref(true) // 默认开启背景音乐
 const STORAGE_KEY = 'gameState' // pinia 默认以 store.$id 作为 key
@@ -62,18 +62,18 @@ function onReject() {
   <div v-if="show" class="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-40">
     <div class="bg-industrial-panel bg-black bg-opacity-70 rounded-xl shadow-industrial p-6 w-[90vw] max-w-lg mx-auto text-center">
       <h3 class="text-xl font-bold text-industrial-accent uppercase tracking-wide mb-2">
-        Continue Last Game?
+        {{ t('restorePrompt.title') }}
       </h3>
       <p class="text-lg text-gray-400 mb-4">
-        Previous game save detected. Would you like to continue?
+        {{ t('restorePrompt.description') }}
       </p>
 
       <div class="flex flex-col gap-3">
         <button class="industrial-button w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide" @click="onAccept">
-          Yes, Continue Last Game
+          {{ t('restorePrompt.continueButton') }}
         </button>
         <button class=" w-full text-white font-bold py-3 px-4 text-sm uppercase tracking-wide bg-industrial-red hover:bg-red-700" @click="onReject">
-          No, Start New Game
+          {{ t('restorePrompt.newGameButton') }}
         </button>
       </div>
 
@@ -86,14 +86,14 @@ function onReject() {
           class="w-4 h-4 text-industrial-blue bg-gray-700 border-gray-600 rounded focus:ring-industrial-blue focus:ring-2"
         >
         <span class="text-white/60 font-medium">
-          🎵 {{ locale === 'zh' ? '点击右上角音乐按钮 ' : 'Click the music button in the top right corner' }}
+          {{ t('restorePrompt.musicHint') }}
         </span>
       </label>
       <!-- GPU加速提示 -->
       <div class="mt-4 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg">
         <div class="flex items-center justify-center space-x-2 text-yellow-300/80 text-sm">
           <span class="text-lg">⚡</span>
-          <span>{{ locale === 'zh' ? '建议在 chrome://flags 中开启 GPU 加速以获得更好的游戏体验' : 'Enable GPU acceleration in chrome://flags for better gaming experience' }}</span>
+          <span>{{ t('restorePrompt.gpuHint') }}</span>
         </div>
       </div>
     </div>

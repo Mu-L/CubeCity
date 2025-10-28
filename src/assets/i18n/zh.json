@@ -104,5 +104,40 @@
     "demolishMessage": "确定要拆除 <span class=\"text-[#ff4402] font-bold\"> {building} </span>? 拆除后将获得 {refund} 金币。",
     "demolishConfirm": "确认拆除",
     "building": "建筑"
+  },
+  "restorePrompt": {
+    "title": "继续上局游戏？",
+    "description": "检测到之前的游戏存档。您想要继续吗？",
+    "continueButton": "是的，继续上局游戏",
+    "newGameButton": "不，开始新游戏",
+    "musicHint": "🎵 点击右上角音乐按钮",
+    "gpuHint": "⚡ 建议在 chrome://flags 中开启 GPU 加速以获得更好的游戏体验"
+  },
+  "emptyState": {
+    "selectMode": {
+      "title": "选择模式",
+      "description": "点击场景中的任意建筑查看详细信息和统计数据",
+      "readyText": "准备检查建筑"
+    },
+    "buildMode": {
+      "title": "建造模式",
+      "description": "从侧边栏选择建筑类型，然后点击任意空地块进行建造",
+      "strategicTip": "战略提示",
+      "strategicTipText": "电力供应、环境因素和居民满意度直接影响人口增长和金币产出",
+      "cameraTip": "按 <kbd class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">←</kbd> 或 <kbd class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">→</kbd> 键调整相机方向"
+    },
+    "relocateMode": {
+      "title": "搬迁模式",
+      "rotateHint": "旋转选中的建筑",
+      "relocateHint": "先点击地块 <span class=\"px-1.5 py-0.5 bg-blue-500 text-white rounded text-xs font-bold\">A</span> 再点击地块 <span class=\"px-1.5 py-0.5 bg-green-500 text-white rounded text-xs font-bold\">B</span> 来搬迁建筑",
+      "requirementsText": "地块 <span class=\"font-bold\">A</span> 必须有建筑<br>地块 <span class=\"font-bold\">B</span> 必须为空",
+      "cancelHint": "按 <kbd class=\"px-1 py-0.5 bg-red-700 rounded text-xs\">ESC</kbd> 取消"
+    },
+    "demolishMode": {
+      "title": "拆除模式",
+      "description": "点击场景中的任意建筑永久拆除它",
+      "recoveryTitle": "材料回收",
+      "recoveryText": "70%的建筑材料将退回到您的库存中"
+    }
   }
 }
